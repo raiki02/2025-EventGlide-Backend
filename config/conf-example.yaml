@@ -1,0 +1,13 @@
+mysql:
+  dsn: username:password@tcp(addr)/dbname?options
+  maxIdleConns: max-idle-connections
+  maxOpenConns: max-open-connections
+
+redis:
+  addr: addr
+
+kafka:
+  addr: addr
+
+jwt:
+  key: secret-key-for-jwt
