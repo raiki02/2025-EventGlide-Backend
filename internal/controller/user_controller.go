@@ -17,11 +17,10 @@ import (
 	"time"
 )
 
-// user这边操作数据库不频繁，不接入redis，如果有神人喜欢一直换名字和头像当我没说。
+// user这边操作数据库不频繁
 type UserControllerHdl interface {
 	Login(context.Context) gin.HandlerFunc
 	Logout(context.Context) gin.HandlerFunc
-	NewUser(context.Context, string, string) error
 	GetUserInfo(context.Context) gin.HandlerFunc
 	CheckToken(context.Context) gin.HandlerFunc
 	UpdateAvatar(context.Context) gin.HandlerFunc
@@ -64,7 +63,7 @@ func (uc *UserController) Login(ctx context.Context) gin.HandlerFunc {
 
 		//首次登录要初始化信息，全部使用默认
 		if !uc.udh.CheckUserExist(c.Request.Context(), tools.StrToInt(studentid)) {
-			uc.udh.Insert(c, studentid, password)
+			uc.udh.Insert(c, studentid)
 		}
 
 		success, err := uc.cSvc.Login(context.Background(), studentid, password)
@@ -114,10 +113,6 @@ func (uc *UserController) Logout(ctx context.Context) gin.HandlerFunc {
 
 }
 
-func (uc *UserController) NewUser(ctx context.Context, sid, pwd string) error {
-	return uc.udh.Insert(ctx, sid, pwd)
-}
-
 func (uc *UserController) GetUserInfo(ctx context.Context) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// TODO 我的页面，返回信息，头像去图床找，没有就用默认
@@ -139,6 +134,7 @@ func (uc *UserController) GetUserInfo(ctx context.Context) gin.HandlerFunc {
 	}
 }
 
+// 这个被当成了中间件用作检测token
 func (uc *UserController) CheckToken(ctx context.Context) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// TODO 检查token，过期就返回401，前端重新登录

@@ -37,7 +37,6 @@ func migrate(db *gorm.DB) error {
 		&model.User{},
 		&model.Activity{},
 		&model.ActivityDraft{},
-		&model.ActivityDraft{},
 		&model.Comment{},
 	)
 }

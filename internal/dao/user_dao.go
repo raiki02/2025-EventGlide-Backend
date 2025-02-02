@@ -9,7 +9,7 @@ import (
 type UserDAOHdl interface {
 	UpdateAvatar(context.Context) error
 	UpdateUsername(context.Context) error
-	Insert(context.Context, string, string) error
+	Insert(context.Context, string) error
 	CheckUserExist(context.Context, int) bool
 	FindUserById(context.Context, string) (model.User, error)
 }
@@ -31,7 +31,7 @@ func (dao *UserDAO) UpdateUsername(ctx context.Context) error {
 }
 
 // 新建用户时默认username是studentid，默认头像全一样/头像库随机
-func (dao *UserDAO) Insert(ctx context.Context, ssid, pwd string) error {
+func (dao *UserDAO) Insert(ctx context.Context, ssid string) error {
 	u := model.User{
 		Name:      ssid,
 		StudentId: ssid,

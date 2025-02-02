@@ -10,7 +10,8 @@ import (
 	"time"
 )
 
-// userhandler 要操作这个 管理token
+// userhandler 要操作这个 管理token - X
+// 所有操作都应该 检测token， 不应该只是在user中
 type ClaimsHdl interface {
 	GenToken(context.Context, string) string
 	StoreInRedis(context.Context, string, string) error
