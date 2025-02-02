@@ -1,318 +1,102 @@
 package main
 
 import (
-	"github.com/IBM/sarama"
-	"log"
-	"math/rand"
-	"sync"
-	"time"
+	"context"
+	"github.com/gin-gonic/gin"
+	"github.com/qiniu/go-sdk/v7/auth/qbox"
+	"github.com/qiniu/go-sdk/v7/storage"
+	"mime/multipart"
+	"net/http"
 )
 
-type Kafka struct {
-	Producer sarama.SyncProducer
-	Consumer sarama.Consumer
-}
-
-func NewKafka() *Kafka {
-	conf := sarama.NewConfig()
-	conf.Producer.RequiredAcks = sarama.WaitForAll
-	conf.Producer.Return.Successes = true
-	conf.Producer.Return.Errors = true
-	producer, err := sarama.NewSyncProducer([]string{"8.148.22.219:9092"}, conf)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	consumer, err := sarama.NewConsumer([]string{"8.148.22.219:9092"}, nil)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return &Kafka{Producer: producer, Consumer: consumer}
-}
-
-func (k *Kafka) SendLikes(msg string) {
-	defer wg.Done()
-
-	log.Println("sent msg: ", msg)
-	k.Producer.SendMessage(&sarama.ProducerMessage{
-		Topic: "likes",
-		Value: sarama.StringEncoder(msg),
-	})
-}
-
-func (k *Kafka) ConsumeLikes() {
-	//partitionConsumer, _ := k.Consumer.ConsumePartition("likes", 0, sarama.OffsetNewest)
-	//for {
-	//	select {
-	//	case msg := <-partitionConsumer.Messages():
-	//		println(string(msg.Value))
-	//	default:
-	//		log.Println("no message, sleep 1s")
-	//		time.Sleep(1 * time.Second)
-	//	}
-	//}
-
-	partitionConsumer, _ := k.Consumer.ConsumePartition("likes", 0, sarama.OffsetOldest)
-	defer partitionConsumer.Close()
-	for {
-		select {
-
-		case <-time.After(5 * time.Second):
-
-			log.Println("no msg ,sleep 5s")
-
-		case msg := <-partitionConsumer.Messages():
-			log.Println("consume msg: ", string(msg.Value))
-
-		}
-	}
-}
-
-var wg sync.WaitGroup
+var AccessKey = "tgq04Gd9MG-6z9KEM-U9eVTl0zetB_bbIDxTBNQ4"
+var SerectKey = "ijalOIFxBETP6NUjSdM3PEKbN-35OWcisSLOkXHf"
+var Bucket = "raiki-test"
+var ImgUrl = "http://img.inside-me.top"
 
 func main() {
-	kafka := NewKafka()
-	likes_contents := []string{"like1", "like2", "like3", "like4", "like5"}
 
-	go kafka.ConsumeLikes()
+	r := gin.Default()
 
-	time.Sleep(7 * time.Second)
-	log.Println("start send likes after 7s")
-	for i := 0; i < 5; i++ {
-		wg.Add(1)
-		time.Sleep(2 * time.Second)
-		kafka.SendLikes(likes_contents[rand.Intn(5)])
-	}
+	r.LoadHTMLGlob("view/index.html")
 
-	wg.Wait()
+	// index页面显示
+	r.GET("/index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	})
+
+	// 表单提交
+	r.POST("/uploadfile", func(c *gin.Context) {
+
+		f, err := c.FormFile("f1")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": 10010,
+				"msg":  err.Error(),
+			})
+			return
+		}
+
+		// 上传到七牛云
+		code, url := UploadToQiNiu(f)
+
+		c.JSON(http.StatusOK, gin.H{
+			"code": code,
+			"msg":  "OK",
+			"url":  url,
+		})
+
+	})
+	// 运行，监听127.0.0.1:8080
+	r.Run()
 }
 
-// ------------------------------------------------------------
-//package main
-//
-//import (
-//	"context"
-//	"fmt"
-//	"github.com/IBM/sarama"
-//	"log"
-//	"os"
-//	"os/signal"
-//	"sync"
-//)
-//
-//type consumerGroupHandler struct {
-//}
-//
-//func (consumerGroupHandler) Setup(sarama.ConsumerGroupSession) error {
-//	return nil
-//}
-//func (consumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error { return nil }
-//
-//// ConsumeClaim must start a consumer loop of ConsumerGroupClaim's Messages().
-//func (consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
-//	for msg := range claim.Messages() {
-//		log.Printf("Message claimed: value = %s, timestamp = %v, topic = %s", msg.Value, msg.Timestamp, msg.Topic)
-//		session.MarkMessage(msg, "")
-//	}
-//	return nil
-//}
-//
-//// 消费者组
-//func SaramaConsumerGroup() {
-//	config := sarama.NewConfig()
-//	config.Consumer.Return.Errors = false
-//	config.Version = sarama.V0_10_2_0                     // specify appropriate version
-//	config.Consumer.Offsets.Initial = sarama.OffsetOldest // 未找到组消费位移的时候从哪边开始消费
-//
-//	group, err := sarama.NewConsumerGroup([]string{"localhost:9092"}, "my-group", config)
-//	if err != nil {
-//		panic(err)
-//	}
-//	defer func() { _ = group.Close() }()
-//
-//	// Track errors
-//	go func() {
-//		for err := range group.Errors() {
-//			fmt.Println("ERROR", err)
-//		}
-//	}()
-//	fmt.Println("Consumed start")
-//	// Iterate over consumer sessions.
-//	ctx := context.Background()
-//	for {
-//		topics := []string{"my_topic"}
-//		handler := consumerGroupHandler{}
-//
-//		// `Consume` should be called inside an infinite loop, when a
-//		// server-side rebalance happens, the consumer session will need to be
-//		// recreated to get the new claims
-//		err := group.Consume(ctx, topics, handler)
-//		if err != nil {
-//			panic(err)
-//		}
-//	}
-//}
-//
-//// 消费者
-//func SaramaConsumer() {
-//	consumer, err := sarama.NewConsumer([]string{"localhost:9092"}, sarama.NewConfig())
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	defer func() {
-//		if err := consumer.Close(); err != nil {
-//			log.Fatalln(err)
-//		}
-//	}()
-//
-//	partitionConsumer, err := consumer.ConsumePartition("my_topic", 0, sarama.OffsetNewest)
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	defer func() {
-//		if err := partitionConsumer.Close(); err != nil {
-//			log.Fatalln(err)
-//		}
-//	}()
-//
-//	// Trap SIGINT to trigger a shutdown.
-//	signals := make(chan os.Signal, 1)
-//	signal.Notify(signals, os.Interrupt)
-//
-//	consumed := 0
-//ConsumerLoop:
-//	for {
-//		select {
-//		case msg := <-partitionConsumer.Messages():
-//			log.Printf("Consumed message offset %d\n", msg.Offset)
-//			consumed++
-//		case <-signals:
-//			break ConsumerLoop
-//		}
-//	}
-//
-//	log.Printf("Consumed: %d\n", consumed)
-//}
-//
-//// 异步生产者Goroutines
-//func SyncProducer() {
-//	config := sarama.NewConfig()
-//	config.Producer.Return.Successes = true
-//	config.Producer.Return.Errors = true
-//	producer, err := sarama.NewAsyncProducer([]string{"localhost:9092"}, config)
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	// Trap SIGINT to trigger a graceful shutdown.
-//	signals := make(chan os.Signal, 1)
-//	signal.Notify(signals, os.Interrupt)
-//
-//	var (
-//		wg                                  sync.WaitGroup
-//		enqueued, successes, producerErrors int
-//	)
-//
-//	wg.Add(1)
-//	go func() {
-//		defer wg.Done()
-//		for range producer.Successes() {
-//			successes++
-//		}
-//	}()
-//
-//	wg.Add(1)
-//	go func() {
-//		defer wg.Done()
-//		for err := range producer.Errors() {
-//			log.Println(err)
-//			producerErrors++
-//		}
-//	}()
-//
-//ProducerLoop:
-//	for {
-//		message := &sarama.ProducerMessage{Topic: "my_topic", Value: sarama.StringEncoder("testing 456")}
-//		select {
-//		case producer.Input() <- message:
-//			enqueued++
-//
-//		case <-signals:
-//			producer.AsyncClose() // Trigger a shutdown of the producer.
-//			break ProducerLoop
-//		}
-//	}
-//
-//	wg.Wait()
-//
-//	log.Printf("Successfully produced: %d; errors: %d\n", successes, producerErrors)
-//}
-//
-//// 异步生产者Select
-//func SyncProducerSelect() {
-//	producer, err := sarama.NewAsyncProducer([]string{"localhost:9092"}, nil)
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	defer func() {
-//		if err := producer.Close(); err != nil {
-//			log.Fatalln(err)
-//		}
-//	}()
-//
-//	// Trap SIGINT to trigger a shutdown.
-//	signals := make(chan os.Signal, 1)
-//	signal.Notify(signals, os.Interrupt)
-//
-//	var enqueued, producerErrors int
-//ProducerLoop:
-//	for {
-//		select {
-//		case producer.Input() <- &sarama.ProducerMessage{Topic: "my_topic", Key: nil, Value: sarama.StringEncoder("testing 123")}:
-//			enqueued++
-//		case err := <-producer.Errors():
-//			log.Println("Failed to produce message", err)
-//			producerErrors++
-//		case <-signals:
-//			break ProducerLoop
-//		}
-//	}
-//	log.Printf("Enqueued: %d; errors: %d\n", enqueued, producerErrors)
-//}
-//
-//// 同步生产模式
-//func SaramaProducer() {
-//	producer, err := sarama.NewSyncProducer([]string{"localhost:9092"}, nil)
-//	if err != nil {
-//		log.Fatalln(err)
-//	}
-//	defer func() {
-//		if err := producer.Close(); err != nil {
-//			log.Fatalln(err)
-//		}
-//	}()
-//
-//	msg := &sarama.ProducerMessage{Topic: "my_topic", Value: sarama.StringEncoder("testing 123")}
-//	partition, offset, err := producer.SendMessage(msg)
-//	if err != nil {
-//		log.Printf("FAILED to send message: %s\n", err)
-//	} else {
-//		log.Printf("> message sent to partition %d at offset %d\n", partition, offset)
-//	}
-//
-//}
-//
-//func main() {
-//	//生产者
-//	go SyncProducer()
-//	//go SaramaProducer()
-//	//go SyncProducerSelect()
-//
-//	//消费者
-//	SaramaConsumerGroup()
-//	//SaramaConsumer()
-//
-//}
+func UploadToQiNiu(file *multipart.FileHeader) (int, string) {
+	src, err := file.Open()
+	if err != nil {
+		return 10011, err.Error()
+	}
+	defer src.Close()
+
+	putPlicy := storage.PutPolicy{
+		Scope: Bucket,
+	}
+	mac := qbox.NewMac(AccessKey, SerectKey)
+
+	// 获取上传凭证
+	upToken := putPlicy.UploadToken(mac)
+
+	// 配置参数
+	cfg := storage.Config{
+		Zone:          &storage.ZoneHuanan, // 华南区
+		UseCdnDomains: false,
+		UseHTTPS:      false, // 非https
+	}
+	formUploader := storage.NewFormUploader(&cfg)
+
+	ret := storage.PutRet{}        // 上传后返回的结果
+	putExtra := storage.PutExtra{} // 额外参数
+
+	// 上传 自定义key，可以指定上传目录及文件名和后缀，
+	key := "image/" + file.Filename // 上传路径，如果当前目录中已存在相同文件，则返回上传失败错误
+	err = formUploader.Put(context.Background(), &ret, upToken, key, src, file.Size, &putExtra)
+
+	// 以默认key方式上传
+	// err = formUploader.PutWithoutKey(context.Background(), &ret, upToken, src, fileSize, &putExtra)
+
+	// 自定义key，上传指定路径的文件
+	// localFilePath = "./aa.jpg"
+	// err = formUploader.PutFile(context.Background(), &ret, upToken, key, localFilePath, &putExtra)
+
+	// 默认key，上传指定路径的文件
+	// localFilePath = "./aa.jpg"
+	// err = formUploader.PutFile(context.Background(), &ret, upToken, key, localFilePath, &putExtra)
+
+	if err != nil {
+		code := 501
+		return code, err.Error()
+	}
+
+	url := ImgUrl + ret.Key // 返回上传后的文件访问路径
+	return 0, url
+}
