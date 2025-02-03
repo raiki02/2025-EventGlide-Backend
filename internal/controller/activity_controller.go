@@ -8,7 +8,7 @@ import (
 	"github.com/raiki02/EG/tools"
 )
 
-// TODO: find函数写成过滤器模式？
+// TODO: find函数写成过滤器模式
 type ActControllerHdl interface {
 	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
@@ -21,6 +21,7 @@ type ActControllerHdl interface {
 
 	FindActByTime() gin.HandlerFunc
 	FindActByName() gin.HandlerFunc
+	FindActByDate() gin.HandlerFunc
 }
 
 type ActController struct {
@@ -64,6 +65,7 @@ func (ac ActController) FindActByHost() gin.HandlerFunc {
 		tools.ReturnMSG(ctx, "success", as)
 	}
 }
+
 func (ac ActController) FindActByType() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("type")
@@ -80,6 +82,7 @@ func (ac ActController) FindActByType() gin.HandlerFunc {
 		tools.ReturnMSG(ctx, "success", as)
 	}
 }
+
 func (ac ActController) FindActByLocation() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("type")
@@ -96,6 +99,7 @@ func (ac ActController) FindActByLocation() gin.HandlerFunc {
 		tools.ReturnMSG(ctx, "success", as)
 	}
 }
+
 func (ac ActController) FindActByIfSignup() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("type")
@@ -112,6 +116,7 @@ func (ac ActController) FindActByIfSignup() gin.HandlerFunc {
 		tools.ReturnMSG(ctx, "success", as)
 	}
 }
+
 func (ac ActController) FindActByIsForeign() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("type")
@@ -143,10 +148,24 @@ func (ac ActController) FindActByTime() gin.HandlerFunc {
 		tools.ReturnMSG(ctx, "success", as)
 	}
 }
+
 func (ac ActController) FindActByName() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		n := ctx.Query("name")
 		as, err := ac.ad.FindActByName(ctx, n)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
+	}
+}
+
+func (ac ActController) FindActByDate() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// ../act/01-02 -> 01-02
+		date := ctx.Param("date")
+		as, err := ac.ad.FindActByDate(ctx, date)
 		if err != nil {
 			tools.ReturnMSG(ctx, err.Error(), nil)
 			return

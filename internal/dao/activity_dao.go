@@ -18,6 +18,7 @@ type ActDaoHdl interface {
 
 	FindActByTime(*gin.Context, string, string) ([]model.Activity, error)
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
+	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 
 	CheckExist(*gin.Context, *model.Activity) bool
 }
@@ -35,6 +36,7 @@ func NewActDao(db *gorm.DB) ActDaoHdl {
 func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 	return nil
 }
+
 func (ad ActDao) CreateDraft(c *gin.Context, d *model.ActivityDraft) error {
 	return nil
 }
@@ -49,6 +51,7 @@ func (ad ActDao) FindActByHost(c *gin.Context, h string) ([]model.Activity, erro
 	}
 	return as, nil
 }
+
 func (ad ActDao) FindActByType(c *gin.Context, t string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("type = ? ", t).Find(&as).Error
@@ -58,6 +61,7 @@ func (ad ActDao) FindActByType(c *gin.Context, t string) ([]model.Activity, erro
 	return as, nil
 
 }
+
 func (ad ActDao) FindActByLocation(c *gin.Context, l string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("location = ? ", l).Find(&as).Error
@@ -67,6 +71,7 @@ func (ad ActDao) FindActByLocation(c *gin.Context, l string) ([]model.Activity, 
 	return as, nil
 
 }
+
 func (ad ActDao) FindActByIfSignup(c *gin.Context, sn string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("if_register = ? ", sn).Find(&as).Error
@@ -76,6 +81,7 @@ func (ad ActDao) FindActByIfSignup(c *gin.Context, sn string) ([]model.Activity,
 	return as, nil
 
 }
+
 func (ad ActDao) FindActByIsForeign(c *gin.Context, f string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("visibility = ? ", f).Find(&as).Error
@@ -94,6 +100,7 @@ func (ad ActDao) FindActByTime(c *gin.Context, start string, end string) ([]mode
 	}
 	return as, nil
 }
+
 func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("name like ?", "%n%").Find(&as).Error
@@ -101,7 +108,15 @@ func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, erro
 		return nil, err
 	}
 	return as, nil
+}
 
+func (ad ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Where("start_time like ?", "%d%").Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
 }
 
 func (ad ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {

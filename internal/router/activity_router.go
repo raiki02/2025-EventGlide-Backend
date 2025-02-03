@@ -38,6 +38,7 @@ func (ar ActRouter) RegisterActRouter() error {
 		//more complex
 		act.GET("/time", ar.ech.FindActByTime())
 		act.GET("/name", ar.ech.FindActByName())
+		act.GET("/:date", ar.ech.FindActByDate())
 	}
 	return nil
 }
