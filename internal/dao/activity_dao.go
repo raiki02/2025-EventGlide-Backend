@@ -39,6 +39,8 @@ func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 func (ad ActDao) CreateDraft(c *gin.Context, d *model.ActivityDraft) error {
 	return nil
 }
+
+// TODO: 是否换成按页展示，每页返回固定个数活动
 func (ad ActDao) FindAllActs(c *gin.Context) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Find(as).Error

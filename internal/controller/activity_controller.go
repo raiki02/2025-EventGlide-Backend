@@ -5,7 +5,6 @@ import (
 	"github.com/raiki02/EG/internal/cache"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
-	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
 )
 
@@ -51,7 +50,12 @@ func (ac ActController) NewDraft() gin.HandlerFunc {
 
 func (ac ActController) FindAllActs() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
+		as, err := ac.ad.FindAllActs(ctx)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
 	}
 }
 
