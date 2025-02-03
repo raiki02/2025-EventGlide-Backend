@@ -8,6 +8,7 @@ import (
 	"github.com/raiki02/EG/tools"
 )
 
+// TODO: find函数写成过滤器模式？
 type ActControllerHdl interface {
 	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
@@ -147,6 +148,12 @@ func (ac ActController) FindActByTime() gin.HandlerFunc {
 }
 func (ac ActController) FindActByName() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
+		n := ctx.Query("name")
+		as, err := ac.ad.FindActByName(ctx, n)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
 	}
 }
