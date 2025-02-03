@@ -13,7 +13,6 @@ type ActControllerHdl interface {
 	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
 
-	FindAllActs() gin.HandlerFunc
 	FindActByHost() gin.HandlerFunc
 	FindActByType() gin.HandlerFunc
 	FindActByLocation() gin.HandlerFunc
@@ -46,17 +45,6 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 func (ac ActController) NewDraft() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-	}
-}
-
-func (ac ActController) FindAllActs() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		as, err := ac.ad.FindAllActs(ctx)
-		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
-			return
-		}
-		tools.ReturnMSG(ctx, "success", as)
 	}
 }
 
