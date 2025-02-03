@@ -96,8 +96,12 @@ func (ad ActDao) FindActByIsForeign(c *gin.Context, f string) ([]model.Activity,
 }
 
 func (ad ActDao) FindActByTime(c *gin.Context, start string, end string) ([]model.Activity, error) {
-	return nil
-
+	var as []model.Activity
+	err := ad.db.Where("start_time >= ? and end_time <= ?", start, end).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
 }
 func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
 	var as []model.Activity

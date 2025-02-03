@@ -143,7 +143,16 @@ func (ac ActController) FindActByIsForeign() gin.HandlerFunc {
 
 func (ac ActController) FindActByTime() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		//format: yyyy-mm-dd hh:mm:ss in db
+		start := ctx.Query("start_time") + ":00"
+		end := ctx.Query("end_time") + ":00"
 
+		as, err := ac.ad.FindActByTime(ctx, start, end)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
 	}
 }
 func (ac ActController) FindActByName() gin.HandlerFunc {
