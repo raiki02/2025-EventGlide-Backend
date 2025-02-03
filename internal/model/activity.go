@@ -15,7 +15,6 @@ type Activity struct {
 	StartTime      string `json:"start_time" gorm:"not null;type: datetime;comment:活动开始时间;column:start_time"`
 	EndTime        string `json:"end_time" gorm:"not null;type: datetime;comment:活动结束时间;column:end_time"`
 	Capacity       int    `json:"capacity" gorm:"not null;type: int;comment:活动容量;column:capacity"`
-	Visibility     string `json:"visibility" gorm:"not null;type: varchar(255);comment:活动可见性;column:visibility"`
 	Likes          int    `json:"likes" gorm:"not null;type: int;comment:活动点赞数;column:likes"`
 	Comments       int    `json:"comments" gorm:"not null;type: int;comment:活动评论数;column:comments"`
 

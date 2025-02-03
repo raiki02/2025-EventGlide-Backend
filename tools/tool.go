@@ -28,10 +28,13 @@ func Unmarshal(data []byte, v interface{}) interface{} {
 	return v
 }
 
-func ReturnMSG(c *gin.Context, msg string, res interface{}) resp.Resp {
-	return resp.Resp{
+func ReturnMSG(c *gin.Context, msg string, res interface{}) map[string]interface{} {
+	re := resp.Resp{
 		Code: c.Writer.Status(),
 		Msg:  msg,
 		Data: res,
+	}
+	return gin.H{
+		"response": re,
 	}
 }

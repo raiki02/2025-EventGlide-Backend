@@ -9,16 +9,10 @@ import (
 	"net/http"
 )
 
-var AccessKey = "tgq04Gd9MG-6z9KEM-U9eVTl0zetB_bbIDxTBNQ4"
-var SerectKey = "ijalOIFxBETP6NUjSdM3PEKbN-35OWcisSLOkXHf"
-var Bucket = "raiki-test"
-var ImgUrl = "http://img.inside-me.top"
-
 func main() {
 
 	r := gin.Default()
-
-	r.LoadHTMLGlob("view/index.html")
+	r.LoadHTMLGlob("index.html")
 
 	// index页面显示
 	r.GET("/index", func(c *gin.Context) {
@@ -37,7 +31,6 @@ func main() {
 			return
 		}
 
-		// 上传到七牛云
 		code, url := UploadToQiNiu(f)
 
 		c.JSON(http.StatusOK, gin.H{
@@ -47,11 +40,15 @@ func main() {
 		})
 
 	})
-	// 运行，监听127.0.0.1:8080
 	r.Run()
 }
 
 func UploadToQiNiu(file *multipart.FileHeader) (int, string) {
+	var AccessKey = ""
+	var SerectKey = ""
+	var Bucket = ""
+	var ImgUrl = ""
+
 	src, err := file.Open()
 	if err != nil {
 		return 10011, err.Error()
@@ -70,7 +67,7 @@ func UploadToQiNiu(file *multipart.FileHeader) (int, string) {
 	cfg := storage.Config{
 		Zone:          &storage.ZoneHuanan, // 华南区
 		UseCdnDomains: false,
-		UseHTTPS:      false, // 非https
+		UseHTTPS:      false,
 	}
 	formUploader := storage.NewFormUploader(&cfg)
 
@@ -78,19 +75,8 @@ func UploadToQiNiu(file *multipart.FileHeader) (int, string) {
 	putExtra := storage.PutExtra{} // 额外参数
 
 	// 上传 自定义key，可以指定上传目录及文件名和后缀，
-	key := "image/" + file.Filename // 上传路径，如果当前目录中已存在相同文件，则返回上传失败错误
+	key := "EventGlide/" + file.Filename // 上传路径，如果当前目录中已存在相同文件，则返回上传失败错误
 	err = formUploader.Put(context.Background(), &ret, upToken, key, src, file.Size, &putExtra)
-
-	// 以默认key方式上传
-	// err = formUploader.PutWithoutKey(context.Background(), &ret, upToken, src, fileSize, &putExtra)
-
-	// 自定义key，上传指定路径的文件
-	// localFilePath = "./aa.jpg"
-	// err = formUploader.PutFile(context.Background(), &ret, upToken, key, localFilePath, &putExtra)
-
-	// 默认key，上传指定路径的文件
-	// localFilePath = "./aa.jpg"
-	// err = formUploader.PutFile(context.Background(), &ret, upToken, key, localFilePath, &putExtra)
 
 	if err != nil {
 		code := 501

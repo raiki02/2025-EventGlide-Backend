@@ -1,24 +1,25 @@
 package dao
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
 
 type ActDaoHdl interface {
-	CreateAct(*model.Activity) error
-	CreateDraft(*model.ActivityDraft) error
+	CreateAct(*gin.Context, *model.Activity) error
+	CreateDraft(*gin.Context, *model.ActivityDraft) error
 
-	FindActByHost(string) error
-	FindActByType(string) error
-	FindActByLocation(string) error
-	FindActByIfSignup(string) error
-	FindActByIsForeign(string) error
+	FindActByHost(*gin.Context, string) ([]model.Activity, error)
+	FindActByType(*gin.Context, string) ([]model.Activity, error)
+	FindActByLocation(*gin.Context, string) ([]model.Activity, error)
+	FindActByIfSignup(*gin.Context, string) ([]model.Activity, error)
+	FindActByIsForeign(*gin.Context, string) ([]model.Activity, error)
 
-	FindActByTime(string, string) error
-	FindActByName(string) error
+	FindActByTime(*gin.Context, string, string) ([]model.Activity, error)
+	FindActByName(*gin.Context, string) ([]model.Activity, error)
 
-	CheckExist(*model.Activity) error
+	CheckExist(*gin.Context, *model.Activity) bool
 }
 
 type ActDao struct {
@@ -31,45 +32,69 @@ func NewActDao(db *gorm.DB) ActDaoHdl {
 	}
 }
 
-func (ad ActDao) CreateAct(*model.Activity) error {
+func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 	return nil
 }
-func (ad ActDao) CreateDraft(*model.ActivityDraft) error {
-	return nil
-
-}
-
-func (ad ActDao) FindActByHost(string) error {
-	return nil
-
-}
-func (ad ActDao) FindActByType(string) error {
-	return nil
-
-}
-func (ad ActDao) FindActByLocation(string) error {
-	return nil
-
-}
-func (ad ActDao) FindActByIfSignup(string) error {
-	return nil
-
-}
-func (ad ActDao) FindActByIsForeign(string) error {
+func (ad ActDao) CreateDraft(c *gin.Context, d *model.ActivityDraft) error {
 	return nil
 
 }
 
-func (ad ActDao) FindActByTime(string, string) error {
+func (ad ActDao) FindActByHost(c *gin.Context, h string) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Where("host = ? ", h).Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
+}
+func (ad ActDao) FindActByType(c *gin.Context, t string) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Where("type = ? ", t).Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
+
+}
+func (ad ActDao) FindActByLocation(c *gin.Context, l string) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Where("location = ? ", l).Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
+
+}
+func (ad ActDao) FindActByIfSignup(c *gin.Context, sn string) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Where("if_register = ? ", sn).Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
+
+}
+func (ad ActDao) FindActByIsForeign(c *gin.Context, f string) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Where("visibility = ? ", f).Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
+
+}
+
+func (ad ActDao) FindActByTime(c *gin.Context, start string, end string) ([]model.Activity, error) {
 	return nil
 
 }
-func (ad ActDao) FindActByName(string) error {
+func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
 	return nil
 
 }
 
-func (ad ActDao) CheckExist(*model.Activity) error {
+func (ad ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {
 	return nil
 
 }

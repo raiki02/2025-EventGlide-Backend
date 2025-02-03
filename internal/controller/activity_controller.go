@@ -5,6 +5,7 @@ import (
 	"github.com/raiki02/EG/internal/cache"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/tools"
 )
 
 type ActControllerHdl interface {
@@ -48,27 +49,82 @@ func (ac ActController) NewDraft() gin.HandlerFunc {
 
 func (ac ActController) FindActByHost() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		target := ctx.Query("host")
+		if target == "" {
+			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			return
+		}
 
+		as, err := ac.ad.FindActByHost(ctx, target)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
 	}
 }
 func (ac ActController) FindActByType() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		target := ctx.Query("type")
+		if target == "" {
+			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			return
+		}
 
+		as, err := ac.ad.FindActByType(ctx, target)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
 	}
 }
 func (ac ActController) FindActByLocation() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		target := ctx.Query("type")
+		if target == "" {
+			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			return
+		}
 
+		as, err := ac.ad.FindActByLocation(ctx, target)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
 	}
 }
 func (ac ActController) FindActByIfSignup() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		target := ctx.Query("type")
+		if target == "" {
+			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			return
+		}
 
+		as, err := ac.ad.FindActByIfSignup(ctx, target)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
 	}
 }
 func (ac ActController) FindActByIsForeign() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		target := ctx.Query("type")
+		if target == "" {
+			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			return
+		}
 
+		as, err := ac.ad.FindActByIsForeign(ctx, target)
+		if err != nil {
+			tools.ReturnMSG(ctx, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(ctx, "success", as)
 	}
 }
 

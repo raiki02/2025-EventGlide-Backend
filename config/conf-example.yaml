@@ -11,3 +11,9 @@ kafka:
 
 jwt:
   key: secret-key-for-jwt
+
+imgbed:
+  accessKey: your-access-key
+  secretKey: your-secret-key
+  bucket: bucket-name
+  imgUrl: img-store-url
