@@ -10,6 +10,7 @@ type ActDaoHdl interface {
 	CreateAct(*gin.Context, *model.Activity) error
 	CreateDraft(*gin.Context, *model.ActivityDraft) error
 
+	FindAllActs(*gin.Context) ([]model.Activity, error)
 	FindActByHost(*gin.Context, string) ([]model.Activity, error)
 	FindActByType(*gin.Context, string) ([]model.Activity, error)
 	FindActByLocation(*gin.Context, string) ([]model.Activity, error)
@@ -37,7 +38,14 @@ func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 }
 func (ad ActDao) CreateDraft(c *gin.Context, d *model.ActivityDraft) error {
 	return nil
-
+}
+func (ad ActDao) FindAllActs(c *gin.Context) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Find(as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
 }
 
 func (ad ActDao) FindActByHost(c *gin.Context, h string) ([]model.Activity, error) {

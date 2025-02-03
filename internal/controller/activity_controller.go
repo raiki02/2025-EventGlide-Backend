@@ -5,6 +5,7 @@ import (
 	"github.com/raiki02/EG/internal/cache"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
 )
 
@@ -12,6 +13,7 @@ type ActControllerHdl interface {
 	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
 
+	FindAllActs() gin.HandlerFunc
 	FindActByHost() gin.HandlerFunc
 	FindActByType() gin.HandlerFunc
 	FindActByLocation() gin.HandlerFunc
@@ -42,6 +44,12 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 	}
 }
 func (ac ActController) NewDraft() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+func (ac ActController) FindAllActs() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 	}
