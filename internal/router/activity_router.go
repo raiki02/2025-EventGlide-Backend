@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/raiki02/EG/internal/controller"
+	"github.com/raiki02/EG/internal/controller/activity"
 )
 
 type ActRouterHdl interface {
@@ -11,10 +11,10 @@ type ActRouterHdl interface {
 
 type ActRouter struct {
 	e   *gin.Engine
-	ech controller.ActControllerHdl
+	ech activity.ActControllerHdl
 }
 
-func NewActRouter(e *gin.Engine, ech controller.ActControllerHdl) ActRouterHdl {
+func NewActRouter(e *gin.Engine, ech activity.ActControllerHdl) ActRouterHdl {
 	return &ActRouter{
 		e:   e,
 		ech: ech,

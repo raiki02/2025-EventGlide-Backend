@@ -1,14 +1,15 @@
 package dao
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
 
 type ActDaoHdl interface {
-	CreateAct(*gin.Context, *model.Activity) error
-	CreateDraft(*gin.Context, *model.ActivityDraft) error
+	CreateAct(*gin.Context, model.Activity) error
+	CreateDraft(*gin.Context, model.ActivityDraft) error
 
 	FindActByHost(*gin.Context, string) ([]model.Activity, error)
 	FindActByType(*gin.Context, string) ([]model.Activity, error)
@@ -20,7 +21,7 @@ type ActDaoHdl interface {
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 
-	CheckExist(*gin.Context, *model.Activity) bool
+	CheckExist(*gin.Context, model.Activity) bool
 }
 
 type ActDao struct {
@@ -33,12 +34,16 @@ func NewActDao(db *gorm.DB) ActDaoHdl {
 	}
 }
 
-func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
-	return nil
+func (ad ActDao) CreateAct(c *gin.Context, a model.Activity) error {
+	if ad.CheckExist(c, a) {
+		return errors.New("activity exist")
+	} else {
+		return ad.db.Create(&a).Error
+	}
 }
 
-func (ad ActDao) CreateDraft(c *gin.Context, d *model.ActivityDraft) error {
-	return nil
+func (ad ActDao) CreateDraft(c *gin.Context, d model.ActivityDraft) error {
+	return ad.db.Create(&d).Error
 }
 
 // TODO: 是否换成按页展示，每页返回固定个数活动
@@ -119,7 +124,17 @@ func (ad ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, erro
 	return as, nil
 }
 
-func (ad ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {
-
-	return nil
+func (ad ActDao) CheckExist(c *gin.Context, a model.Activity) bool {
+	ret := ad.db.Where(&model.Activity{
+		Type:       a.Type,
+		Host:       a.Host,
+		Location:   a.Location,
+		IfRegister: a.IfRegister,
+		Capacity:   a.Capacity,
+	}).Find(&model.Activity{}).RowsAffected
+	if ret == 0 {
+		return false
+	} else {
+		return true
+	}
 }
