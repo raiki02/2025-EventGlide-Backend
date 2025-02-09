@@ -1,4 +1,4 @@
-package activity
+package service
 
 import (
 	"context"
@@ -26,7 +26,7 @@ type ImgUploader struct {
 }
 
 func NewImgUploader() ImgUploaderHdl {
-	return ImgUploader{
+	return &ImgUploader{
 		AccessKey: viper.GetString("imgbed.accecssKey"),
 		SerectKey: viper.GetString("imgbed.secretKey"),
 		Bucket:    viper.GetString("imgbed.bucket"),
@@ -34,7 +34,7 @@ func NewImgUploader() ImgUploaderHdl {
 	}
 }
 
-func (iu ImgUploader) ProcessImg(ctx *gin.Context) (string, error) {
+func (iu *ImgUploader) ProcessImg(ctx *gin.Context) (string, error) {
 	fhs := iu.GetFile(ctx)
 	var urls string
 	for _, f := range fhs {
@@ -49,7 +49,7 @@ func (iu ImgUploader) ProcessImg(ctx *gin.Context) (string, error) {
 }
 
 // TODO: 不优雅。感觉跑不起来
-func (iu ImgUploader) GetFile(ctx *gin.Context) []*multipart.FileHeader {
+func (iu *ImgUploader) GetFile(ctx *gin.Context) []*multipart.FileHeader {
 	base := "file"
 	var fhs []*multipart.FileHeader
 	//获取file0 - file8 的用户传入图片（如果存在）
@@ -64,7 +64,7 @@ func (iu ImgUploader) GetFile(ctx *gin.Context) []*multipart.FileHeader {
 	return fhs
 }
 
-func (iu ImgUploader) Upload(ctx *gin.Context, file *multipart.FileHeader) (string, error) {
+func (iu *ImgUploader) Upload(ctx *gin.Context, file *multipart.FileHeader) (string, error) {
 	src, err := file.Open()
 	if err != nil {
 		return "", err

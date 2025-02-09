@@ -1,7 +1,6 @@
 package router
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/controller"
 )
@@ -20,13 +19,14 @@ func NewUserRouter(e *gin.Engine, uc controller.UserControllerHdl) UserRouterHdl
 }
 
 func (ur *UserRouter) RegisterUserRouters() {
-	ctx := context.Background()
 	user := ur.e.Group("/user")
 	{
-		user.POST("/login", ur.uc.Login(ctx))
-		user.POST("/logout", ur.uc.CheckToken(ctx), ur.uc.Logout(ctx))
-		user.GET("/info", ur.uc.CheckToken(ctx), ur.uc.GetUserInfo(ctx))
-		user.POST("/avatar", ur.uc.CheckToken(ctx), ur.uc.UpdateAvatar(ctx))
-		user.POST("/username", ur.uc.CheckToken(ctx), ur.uc.UpdateUsername(ctx))
+		user.POST("/login", ur.uc.Login())
+		user.POST("/logout", ur.uc.Logout())
+		user.GET("/info", ur.uc.GetUserInfo())
+		user.POST("/avatar", ur.uc.UpdateAvatar())
+		user.POST("/username", ur.uc.UpdateUsername())
+		user.GET("/search/act", ur.uc.SearchUserAct())
+		user.GET("/search/post", ur.uc.SearchUserPost())
 	}
 }

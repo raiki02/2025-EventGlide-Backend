@@ -1,4 +1,4 @@
-package activity
+package controller
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,6 +6,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
 )
 
@@ -29,10 +30,10 @@ type ActController struct {
 	ad   dao.ActDaoHdl
 	jwth middleware.ClaimsHdl
 	ch   cache.CacheHdl
-	iu   ImgUploaderHdl
+	iu   service.ImgUploaderHdl
 }
 
-func NewActController(ad dao.ActDaoHdl, jwth middleware.ClaimsHdl, ch cache.CacheHdl, iu ImgUploaderHdl) ActControllerHdl {
+func NewActController(ad dao.ActDaoHdl, jwth middleware.ClaimsHdl, ch cache.CacheHdl, iu service.ImgUploaderHdl) ActControllerHdl {
 	return &ActController{
 		ad:   ad,
 		ch:   ch,
