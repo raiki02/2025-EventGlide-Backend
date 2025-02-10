@@ -21,7 +21,7 @@ type Jwt struct {
 	jwtKey []byte
 }
 
-func NewClaimsHdl(rdb *redis.Client) JwtHdl {
+func NewJwt(rdb *redis.Client) *Jwt {
 	jwtKey := viper.GetString("jwt.key")
 	return &Jwt{
 		jwtKey: []byte(jwtKey),

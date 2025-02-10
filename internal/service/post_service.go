@@ -15,11 +15,11 @@ type PostServiceHdl interface {
 }
 
 type PostService struct {
-	pdh dao.PostDaoHdl
-	iuh ImgUploaderHdl
+	pdh *dao.PostDao
+	iuh *ImgUploader
 }
 
-func NewPostService(pdh dao.PostDaoHdl, iuh ImgUploaderHdl) PostServiceHdl {
+func NewPostService(pdh *dao.PostDao, iuh *ImgUploader) *PostService {
 	return &PostService{
 		pdh: pdh,
 		iuh: iuh,

@@ -12,10 +12,10 @@ type CommentControllerHdl interface {
 }
 
 type CommentController struct {
-	cd dao.CommentDAOHdl
+	cd *dao.CommentDao
 }
 
-func NewCommentController(cd dao.CommentDAOHdl) *CommentController {
+func NewCommentController(cd *dao.CommentDao) *CommentController {
 	return &CommentController{cd}
 }
 

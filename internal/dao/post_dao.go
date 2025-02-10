@@ -18,7 +18,7 @@ type PostDao struct {
 	db *gorm.DB
 }
 
-func NewPostDao(db *gorm.DB) PostDaoHdl {
+func NewPostDao(db *gorm.DB) *PostDao {
 	return &PostDao{
 		db: db,
 	}

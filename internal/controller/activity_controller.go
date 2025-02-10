@@ -27,13 +27,13 @@ type ActControllerHdl interface {
 }
 
 type ActController struct {
-	ad   dao.ActDaoHdl
-	jwth middleware.ClaimsHdl
-	ch   cache.CacheHdl
-	iu   service.ImgUploaderHdl
+	ad   *dao.ActDao
+	jwth *middleware.Jwt
+	ch   *cache.Cache
+	iu   *service.ImgUploader
 }
 
-func NewActController(ad dao.ActDaoHdl, jwth middleware.ClaimsHdl, ch cache.CacheHdl, iu service.ImgUploaderHdl) ActControllerHdl {
+func NewActController(ad *dao.ActDao, jwth *middleware.Jwt, ch *cache.Cache, iu *service.ImgUploader) *ActController {
 	return &ActController{
 		ad:   ad,
 		ch:   ch,

@@ -6,18 +6,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type CommentDAOHdl interface {
+type CommentDaoHdl interface {
 	Create(context.Context, model.Comment) error
 }
 
-type CommentDAO struct {
+type CommentDao struct {
 	db *gorm.DB
 }
 
-func NewCommentDAO(db *gorm.DB) *CommentDAO {
-	return &CommentDAO{db}
+func NewCommentDao(db *gorm.DB) *CommentDao {
+	return &CommentDao{db}
 }
 
-func (dao *CommentDAO) Create(ctx context.Context, comment model.Comment) error {
+func (dao *CommentDao) Create(ctx context.Context, comment model.Comment) error {
 	return dao.db.Create(&comment).Error
 }

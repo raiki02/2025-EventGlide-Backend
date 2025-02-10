@@ -15,10 +15,10 @@ type PostControllerHdl interface {
 }
 
 type PostController struct {
-	ps service.PostServiceHdl
+	ps *service.PostService
 }
 
-func NewPostController(ps service.PostServiceHdl) PostControllerHdl {
+func NewPostController(ps *service.PostService) *PostController {
 	return &PostController{
 		ps: ps,
 	}

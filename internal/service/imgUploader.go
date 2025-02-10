@@ -25,7 +25,7 @@ type ImgUploader struct {
 	ImgUrl    string
 }
 
-func NewImgUploader() ImgUploaderHdl {
+func NewImgUploader() *ImgUploader {
 	return &ImgUploader{
 		AccessKey: viper.GetString("imgbed.accecssKey"),
 		SerectKey: viper.GetString("imgbed.secretKey"),

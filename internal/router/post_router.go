@@ -11,10 +11,10 @@ type PostRouterHdl interface {
 
 type PostRouter struct {
 	e   *gin.Engine
-	pch controller.PostControllerHdl
+	pch *controller.PostController
 }
 
-func NewPostRouter(e *gin.Engine, pch controller.PostControllerHdl) PostRouterHdl {
+func NewPostRouter(e *gin.Engine, pch *controller.PostController) *PostRouter {
 	return &PostRouter{
 		e:   e,
 		pch: pch,

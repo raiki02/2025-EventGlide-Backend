@@ -11,10 +11,10 @@ type UserRouterHdl interface {
 
 type UserRouter struct {
 	e  *gin.Engine
-	uc controller.UserControllerHdl
+	uc *controller.UserController
 }
 
-func NewUserRouter(e *gin.Engine, uc controller.UserControllerHdl) UserRouterHdl {
+func NewUserRouter(e *gin.Engine, uc *controller.UserController) *UserRouter {
 	return &UserRouter{e: e, uc: uc}
 }
 

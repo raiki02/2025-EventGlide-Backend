@@ -6,39 +6,39 @@ import (
 )
 
 type ActRouterHdl interface {
-	RegisterActRouter() error
+	RegisterActRouters() error
 }
 
 type ActRouter struct {
 	e   *gin.Engine
-	ech controller.ActControllerHdl
+	ach *controller.ActController
 }
 
-func NewActRouter(e *gin.Engine, ech controller.ActControllerHdl) ActRouterHdl {
+func NewActRouter(e *gin.Engine, ach *controller.ActController) *ActRouter {
 	return &ActRouter{
 		e:   e,
-		ech: ech,
+		ach: ach,
 	}
 }
 
-func (ar ActRouter) RegisterActRouter() error {
+func (ar ActRouter) RegisterActRouters() error {
 	act := ar.e.Group("act")
 	{
 		//1
-		act.POST("/new", ar.ech.NewAct())
-		act.POST("/draft", ar.ech.NewDraft())
+		act.POST("/new", ar.ach.NewAct())
+		act.POST("/draft", ar.ach.NewDraft())
 
 		//0 or 1
-		act.GET("/host", ar.ech.FindActByHost())
-		act.GET("/type", ar.ech.FindActByType())
-		act.GET("/location", ar.ech.FindActByLocation())
-		act.GET("/signup", ar.ech.FindActByIfSignup())
-		act.GET("/foreign", ar.ech.FindActByIsForeign())
+		act.GET("/host", ar.ach.FindActByHost())
+		act.GET("/type", ar.ach.FindActByType())
+		act.GET("/location", ar.ach.FindActByLocation())
+		act.GET("/signup", ar.ach.FindActByIfSignup())
+		act.GET("/foreign", ar.ach.FindActByIsForeign())
 
 		//more complex
-		act.GET("/time", ar.ech.FindActByTime())
-		act.GET("/name", ar.ech.FindActByName())
-		act.GET("/:date", ar.ech.FindActByDate())
+		act.GET("/time", ar.ach.FindActByTime())
+		act.GET("/name", ar.ach.FindActByName())
+		act.GET("/:date", ar.ach.FindActByDate())
 	}
 	return nil
 }

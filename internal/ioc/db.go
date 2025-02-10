@@ -1,6 +1,7 @@
 package ioc
 
 import (
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
@@ -38,5 +39,6 @@ func migrate(db *gorm.DB) error {
 		&model.Activity{},
 		&model.ActivityDraft{},
 		&model.Comment{},
+		&model.Post{},
 	)
 }

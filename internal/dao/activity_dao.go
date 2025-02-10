@@ -31,7 +31,7 @@ type ActDao struct {
 	db *gorm.DB
 }
 
-func NewActDao(db *gorm.DB) ActDaoHdl {
+func NewActDao(db *gorm.DB) *ActDao {
 	return &ActDao{
 		db: db,
 	}

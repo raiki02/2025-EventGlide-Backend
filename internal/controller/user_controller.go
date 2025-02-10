@@ -19,10 +19,10 @@ type UserControllerHdl interface {
 
 type UserController struct {
 	e   *gin.Engine
-	ush service.UserServiceHdl
+	ush *service.UserService
 }
 
-func NewUserController(e *gin.Engine, ush service.UserServiceHdl) UserControllerHdl {
+func NewUserController(e *gin.Engine, ush *service.UserService) *UserController {
 	return &UserController{
 		e:   e,
 		ush: ush,

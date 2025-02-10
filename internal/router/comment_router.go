@@ -10,12 +10,15 @@ type CommentRouterHdl interface {
 }
 
 type CommentRouter struct {
-	cch controller.CommentControllerHdl
+	cch *controller.CommentController
 	e   *gin.Engine
 }
 
-func NewCommentRouter(cch controller.CommentControllerHdl, e *gin.Engine) *CommentRouter {
-	return &CommentRouter{cch, e}
+func NewCommentRouter(cch *controller.CommentController, e *gin.Engine) *CommentRouter {
+	return &CommentRouter{
+		cch: cch,
+		e:   e,
+	}
 }
 
 func (cr *CommentRouter) RegisterCommentRouter() {

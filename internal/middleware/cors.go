@@ -13,7 +13,7 @@ type Cors struct {
 	e *gin.Engine
 }
 
-func NewCors(e *gin.Engine) CorsHdl {
+func NewCors(e *gin.Engine) *Cors {
 	return &Cors{e: e}
 }
 

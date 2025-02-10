@@ -29,17 +29,19 @@ type UserServiceHdl interface {
 }
 
 type UserService struct {
-	udh  dao.UserDAOHdl
-	adh  dao.ActDaoHdl
-	pdh  dao.PostDaoHdl
-	jwth middleware.JwtHdl
-	cSvc ccnuService
-	iuh  ImgUploaderHdl
+	udh  *dao.UserDao
+	adh  *dao.ActDao
+	pdh  *dao.PostDao
+	jwth *middleware.Jwt
+	cSvc *ccnuService
+	iuh  *ImgUploader
 }
 
-func NewUserService(udh dao.UserDAOHdl, jwth middleware.JwtHdl, cSvc ccnuService, iuh ImgUploaderHdl) UserServiceHdl {
+func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, jwth *middleware.Jwt, cSvc *ccnuService, iuh *ImgUploader) *UserService {
 	return &UserService{
 		udh:  udh,
+		adh:  adh,
+		pdh:  pdh,
 		jwth: jwth,
 		cSvc: cSvc,
 		iuh:  iuh,
@@ -139,9 +141,9 @@ type ccnuService struct {
 	timeout time.Duration
 }
 
-func NewCCNUService(timeout time.Duration) *ccnuService {
+func NewCCNUService() *ccnuService {
 	return &ccnuService{
-		timeout: timeout,
+		timeout: time.Second * 15,
 	}
 }
 
