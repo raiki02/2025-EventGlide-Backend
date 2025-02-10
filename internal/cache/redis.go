@@ -35,7 +35,7 @@ func (c *Cache) Get(ctx context.Context, key string) ([]interface{}, error) {
 }
 
 func (c *Cache) Set(ctx context.Context, key string, val []interface{}) error {
-	return c.rdb.Set(ctx, key, strusTOjson(val), 48*time.Hour).Err()
+	return c.rdb.Set(ctx, key, Tojson(val), 48*time.Hour).Err()
 }
 
 func (c *Cache) Del(ctx context.Context, key string) error {
@@ -43,7 +43,7 @@ func (c *Cache) Del(ctx context.Context, key string) error {
 }
 
 // redis的val不能存结构体，转换成json格式储存
-func strusTOjson(in []interface{}) []byte {
+func Tojson(in []interface{}) []byte {
 	return []byte(tools.Marshal(in))
 }
 

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
@@ -16,26 +18,26 @@ import (
 )
 
 type UserServiceHdl interface {
-	CreateUser(*gin.Context, model.User) error
-	Login(*gin.Context, string, string) error
+	CreateUser(*gin.Context, string) error
+	Login(*gin.Context, string, string) (*model.User, string, error)
 	Logout(*gin.Context) error
 	GetUserInfo(*gin.Context, string) (model.User, error)
-	UpdateAvatar(*gin.Context) (string, error)
-	UpdateUsername(*gin.Context, string) (string, error)
-	SearchUserAct(*gin.Context, string, string) error
-	SearchUserPost(*gin.Context, string, string) error
+	UpdateAvatar(*gin.Context, string) error
+	UpdateUsername(*gin.Context, string, string) error
+	SearchUserAct(*gin.Context, string, string) ([]model.Activity, error)
+	SearchUserPost(*gin.Context, string, string) ([]model.Post, error)
 }
 
 type UserService struct {
 	udh  dao.UserDAOHdl
 	adh  dao.ActDaoHdl
 	pdh  dao.PostDaoHdl
-	jwth middleware.ClaimsHdl
+	jwth middleware.JwtHdl
 	cSvc ccnuService
 	iuh  ImgUploaderHdl
 }
 
-func NewUserService(udh dao.UserDAOHdl, jwth middleware.ClaimsHdl, cSvc ccnuService, iuh ImgUploaderHdl) UserServiceHdl {
+func NewUserService(udh dao.UserDAOHdl, jwth middleware.JwtHdl, cSvc ccnuService, iuh ImgUploaderHdl) UserServiceHdl {
 	return &UserService{
 		udh:  udh,
 		jwth: jwth,
@@ -44,36 +46,91 @@ func NewUserService(udh dao.UserDAOHdl, jwth middleware.ClaimsHdl, cSvc ccnuServ
 	}
 }
 
-func (s *UserService) CreateUser(ctx *gin.Context, user model.User) error {
-
+func (s *UserService) CreateUser(ctx *gin.Context, sid string) error {
+	user := &model.User{
+		StudentId: sid,
+		Name:      sid,
+		Avatar:    model.DefaultAvatar,
+		School:    "华中师范大学",
+	}
+	err := s.udh.Create(ctx, user)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (s *UserService) Login(ctx *gin.Context, studentId string, password string) error {
-
+func (s *UserService) Login(ctx *gin.Context, studentId string, password string) (*model.User, string, error) {
+	client, err := s.cSvc.Login(ctx, studentId, password)
+	if err != nil {
+		return nil, "", err
+	}
+	if !client {
+		return nil, "", errors.New("登录失败")
+	}
+	if !s.udh.CheckUserExist(ctx, studentId) {
+		err := s.CreateUser(ctx, studentId)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	token := s.jwth.GenToken(ctx, studentId)
+	err = s.jwth.StoreInRedis(ctx, studentId, token)
+	if err != nil {
+		return nil, "", err
+	}
+	user, err := s.udh.GetUserInfo(ctx, studentId)
+	return &user, token, nil
 }
 
 func (s *UserService) Logout(ctx *gin.Context) error {
-
+	token := ctx.GetHeader("Authorization")
+	err := s.jwth.ClearToken(ctx, token)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *UserService) GetUserInfo(ctx *gin.Context, studentId string) (model.User, error) {
-
+	user, err := s.udh.GetUserInfo(ctx, studentId)
+	if err != nil {
+		return model.User{}, err
+	}
+	return user, nil
 }
 
-func (s *UserService) UpdateAvatar(ctx *gin.Context) (string, error) {
-
+func (s *UserService) UpdateAvatar(ctx *gin.Context, sid string) error {
+	imgurl, err := s.iuh.ProcessImg(ctx)
+	err = s.udh.UpdateAvatar(ctx, sid, imgurl)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (s *UserService) UpdateUsername(ctx *gin.Context, studentId string) (string, error) {
-
+func (s *UserService) UpdateUsername(ctx *gin.Context, studentId string, name string) error {
+	err := s.udh.UpdateUsername(ctx, studentId, name)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (s *UserService) SearchUserAct(ctx *gin.Context, studentId string, keyword string) error {
-
+func (s *UserService) SearchUserAct(ctx *gin.Context, studentId string, keyword string) ([]model.Activity, error) {
+	acts, err := s.adh.FindActByUser(ctx, studentId, keyword)
+	if err != nil {
+		return nil, err
+	}
+	return acts, nil
 }
 
-func (s *UserService) SearchUserPost(ctx *gin.Context, studentId string, keyword string) error {
-
+func (s *UserService) SearchUserPost(ctx *gin.Context, studentId string, keyword string) ([]model.Post, error) {
+	posts, err := s.pdh.FindPostByUser(ctx, studentId, keyword)
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
 //---一站式账号登录

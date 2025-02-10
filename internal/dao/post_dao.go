@@ -11,6 +11,7 @@ type PostDaoHdl interface {
 	CreatePost(context.Context, *model.Post) error
 	FindPostByName(context.Context, string) ([]model.Post, error)
 	DeletePost(context.Context, *model.Post) error
+	FindPostByUser(context.Context, string, string) ([]model.Post, error)
 }
 
 type PostDao struct {
@@ -55,4 +56,22 @@ func (pd *PostDao) DeletePost(ctx context.Context, post *model.Post) error {
 		return err
 	}
 	return nil
+}
+
+func (pd *PostDao) FindPostByUser(ctx context.Context, sid string, keyword string) ([]model.Post, error) {
+	if keyword == "" {
+		var posts []model.Post
+		err := pd.db.Where("user_id = ?", sid).Find(&posts).Error
+		if err != nil {
+			return nil, err
+		}
+		return posts, nil
+	} else {
+		var posts []model.Post
+		err := pd.db.Where("user_id = ? and name like ?", sid, "%keyword%").Find(&posts).Error
+		if err != nil {
+			return nil, err
+		}
+		return posts, nil
+	}
 }

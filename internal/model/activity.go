@@ -9,7 +9,8 @@ import (
 type Activity struct {
 	// 活动id
 	*gorm.Model
-	Bid string `json:"bid" gorm:"not null;type: varchar(255);comment:绑定id;column:bid"`
+	CreatorId string `json:"creator_id" gorm:"not null;type: varchar(255);comment:创建者id;column:creator_id"`
+	Bid       string `json:"bid" gorm:"not null;type: varchar(255);comment:绑定id;column:bid"`
 	//divided by function
 	//basic
 	Type           string `json:"type" gorm:"not null;type: varchar(255);comment:活动类型;column:type"`

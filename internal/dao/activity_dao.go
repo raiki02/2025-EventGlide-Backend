@@ -10,6 +10,9 @@ import (
 type ActDaoHdl interface {
 	CreateAct(*gin.Context, model.Activity) error
 	CreateDraft(*gin.Context, model.ActivityDraft) error
+	DeleteAct(*gin.Context, model.Activity) error
+
+	FindActByUser(*gin.Context, string, string) ([]model.Activity, error)
 
 	FindActByHost(*gin.Context, string) ([]model.Activity, error)
 	FindActByType(*gin.Context, string) ([]model.Activity, error)
@@ -77,6 +80,23 @@ func (ad ActDao) FindActByLocation(c *gin.Context, l string) ([]model.Activity, 
 
 }
 
+func (ad ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]model.Activity, error) {
+	var as []model.Activity
+	if keyword == "" {
+		err := ad.db.Where("host = ? ", s).Find(&as).Error
+		if err != nil {
+			return nil, err
+		}
+		return as, nil
+	} else {
+		err := ad.db.Where("host = ? and name like ?", s, "%keyword%").Find(&as).Error
+		if err != nil {
+			return nil, err
+		}
+		return as, nil
+	}
+}
+
 func (ad ActDao) FindActByIfSignup(c *gin.Context, sn string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("if_register = ? ", sn).Find(&as).Error
@@ -136,5 +156,20 @@ func (ad ActDao) CheckExist(c *gin.Context, a model.Activity) bool {
 		return false
 	} else {
 		return true
+	}
+}
+
+func (ad ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
+	ret := ad.db.Where(&model.Activity{
+		Type:       a.Type,
+		Host:       a.Host,
+		Location:   a.Location,
+		IfRegister: a.IfRegister,
+		Capacity:   a.Capacity,
+	}).Find(&model.Activity{}).Delete(&model.Activity{}).RowsAffected
+	if ret == 0 {
+		return errors.New("activity not exist")
+	} else {
+		return nil
 	}
 }

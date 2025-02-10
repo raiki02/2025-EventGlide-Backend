@@ -28,7 +28,7 @@ func Unmarshal(data []byte, v interface{}) interface{} {
 	return v
 }
 
-func ReturnMSG(c *gin.Context, msg string, res interface{}) map[string]interface{} {
+func ReturnMSG(c *gin.Context, msg string, res ...interface{}) map[string]interface{} {
 	re := resp.Resp{
 		Code: c.Writer.Status(),
 		Msg:  msg,
