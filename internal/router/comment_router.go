@@ -25,5 +25,7 @@ func (cr *CommentRouter) RegisterCommentRouter() {
 	cmt := cr.e.Group("/comment")
 	{
 		cmt.POST("/create", cr.cch.CreateComment())
+		cmt.POST("/delete", cr.cch.DeleteComment())
+		cmt.POST("/cite", cr.cch.AnswerComment())
 	}
 }

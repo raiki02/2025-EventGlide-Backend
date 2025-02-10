@@ -7,6 +7,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/spf13/viper"
 	"io"
 	"net"
 	"net/http"
@@ -52,7 +53,7 @@ func (s *UserService) CreateUser(ctx *gin.Context, sid string) error {
 	user := &model.User{
 		StudentId: sid,
 		Name:      sid,
-		Avatar:    model.DefaultAvatar,
+		Avatar:    viper.GetString("defaultAvatar"),
 		School:    "华中师范大学",
 	}
 	err := s.udh.Create(ctx, user)

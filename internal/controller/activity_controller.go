@@ -66,7 +66,6 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 			tools.ReturnMSG(ctx, err.Error(), nil)
 			return
 		}
-
 		//防止重复创建活动
 		if ac.ad.CheckExist(ctx, act) {
 			tools.ReturnMSG(ctx, "error exist", nil)

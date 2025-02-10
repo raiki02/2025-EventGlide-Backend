@@ -30,13 +30,12 @@ type Activity struct {
 	Details  string `json:"details" gorm:"not null;type: text;comment:活动详情;column:details"`
 
 	//interactive
-	Likes    int `json:"likes" gorm:"not null;type: int;comment:活动点赞数;column:likes"`
-	Comments int `json:"comments" gorm:"not null;type: int;comment:活动评论数;column:comments"`
+	Likes    int `json:"likes" gorm:"default:0;type: int;comment:活动点赞数;column:likes"`
+	Comments int `json:"comments" gorm:"default:0;type: int;comment:活动评论数;column:comments"`
 
 	//audit
 	Identification string `json:"identification"`
 	Audition       string `json:"audition"`
-	Pending        string `json:"pending"`
 }
 
 func (act Activity) SetBid(ctx *gin.Context) error {
@@ -72,5 +71,4 @@ type ActivityDraft struct {
 
 	Identification string `json:"identification"`
 	Audition       string `json:"audition"`
-	Pending        string `json:"pending"`
 }

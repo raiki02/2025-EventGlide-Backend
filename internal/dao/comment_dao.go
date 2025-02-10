@@ -1,13 +1,15 @@
 package dao
 
 import (
-	"context"
+	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
 
 type CommentDaoHdl interface {
-	Create(context.Context, model.Comment) error
+	CreateComment(*gin.Context, *model.Comment) error
+	DeleteComment(*gin.Context, string) error
+	AnswerComment(*gin.Context, *model.Comment) error
 }
 
 type CommentDao struct {
@@ -15,9 +17,19 @@ type CommentDao struct {
 }
 
 func NewCommentDao(db *gorm.DB) *CommentDao {
-	return &CommentDao{db}
+	return &CommentDao{
+		db: db,
+	}
 }
 
-func (dao *CommentDao) Create(ctx context.Context, comment model.Comment) error {
-	return dao.db.Create(&comment).Error
+func (cd *CommentDao) CreateComment(c *gin.Context, cmt *model.Comment) error {
+	return cd.db.Create(cmt).Error
+}
+
+func (cd *CommentDao) DeleteComment(c *gin.Context, commentID string) error {
+	return cd.db.Where("comment_id = ?", commentID).Delete(&model.Comment{}).Error
+}
+
+func (cd *CommentDao) AnswerComment(c *gin.Context, cmt *model.Comment) error {
+	return cd.db.Create(cmt).Error
 }
