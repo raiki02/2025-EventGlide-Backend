@@ -28,6 +28,7 @@ func InitApp(e *gin.Engine) *server.Server {
 		service.NewPostService,
 		service.NewUserService,
 		service.NewCCNUService,
+		service.NewCommentService,
 		middleware.NewJwt,
 		middleware.NewCors,
 		controller.NewActController,

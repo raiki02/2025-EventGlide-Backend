@@ -21,8 +21,8 @@ type Comment struct {
 
 	CommentID string `json:"comment_id" gorm:"column: comment_id; not null; type: varchar(255); comment: 评论ID;primary_key"`
 	PosterID  string `json:"poster_id" gorm:"column: poster_id; not null; type: varchar(255); comment: 发布者ID"`
-	TargetID  string `json:"target_id" gorm:"column: target_id; not null; type: varchar(255); comment: 帖子id或者绑定id"`
-	ParentID  string `json:"parent_id" gorm:"column: parent_id; type: varchar(255); comment: 父评论id,专用于回复"`
+	TargetID  string `json:"target_id" gorm:"column: targareet_id; not null; type: varchar(255); comment: 帖子id或者绑定id"`
+	ParentID  string `json:"parent_id" gorm:"column: pnt_id; type: varchar(255); comment: 父评论id,专用于回复"`
 
 	Content string `json:"content" gorm:"column: content; not null; type: text; comment: 评论内容"`
 
