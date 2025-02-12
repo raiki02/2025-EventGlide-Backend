@@ -42,8 +42,11 @@ func InitApp(e *gin.Engine) *server.Server {
 	commentService := service.NewCommentService(commentDao)
 	commentController := controller.NewCommentController(commentService)
 	commentRouter := router.NewCommentRouter(commentController, e)
+	numberService := service.NewNumberService(client)
+	numberController := controller.NewNumberController(numberService)
+	numberRouter := router.NewNumberRouter(numberController, e)
 	cors := middleware.NewCors(e)
-	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, cors)
+	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, numberRouter, cors)
 	serverServer := server.NewServer(routerRouter)
 	return serverServer
 }

@@ -6,6 +6,9 @@ import (
 	"log"
 )
 
+// @Title EventGlide API
+// @Description 校灵通 API 文档
+// @verstion 1.0
 func main() {
 	config.Init()
 	e := gin.Default()

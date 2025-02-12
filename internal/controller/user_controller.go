@@ -6,7 +6,6 @@ import (
 	"github.com/raiki02/EG/tools"
 )
 
-// user这边操作数据库不频繁
 type UserControllerHdl interface {
 	Login() gin.HandlerFunc
 	Logout() gin.HandlerFunc
@@ -29,6 +28,13 @@ func NewUserController(e *gin.Engine, ush *service.UserService) *UserController 
 	}
 }
 
+// @Tags User
+// @Summary 登录
+// @Produce json
+// @Param studentid formData string true "学号"
+// @Param password formData string true "密码"
+// @Success 200 {object} resp.Resp
+// @Router /user/login [post]
 func (uc *UserController) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		studentid := c.PostForm("studentid")
@@ -46,9 +52,16 @@ func (uc *UserController) Login() gin.HandlerFunc {
 	}
 }
 
+// @Tags User
+// @Summary 登出
+// @Produce json
+// @Param Authorization header string true "token"
+// @Success 200 {object} resp.Resp
+// @Router /user/logout [post]
 func (uc *UserController) Logout() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		err := uc.ush.Logout(c)
+		token := c.GetHeader("Authorization")
+		err := uc.ush.Logout(c, token)
 		if err != nil {
 			tools.ReturnMSG(c, "logout fail", nil)
 			return
@@ -57,6 +70,12 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 	}
 }
 
+// @Tags User
+// @Summary 获取用户信息
+// @Produce json
+// @Param sid query string true "学号"
+// @Success 200 {object} resp.Resp
+// @Router /user/info [get]
 func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := c.Query("sid")
@@ -73,6 +92,14 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 	}
 }
 
+// @Tags User
+// @Summary 更新头像
+// @Description not finished
+// @Produce json
+// @Param sid formData string true "学号"
+// @Param file0 formData file true "图片0"
+// @Success 200 {object} resp.Resp
+// @Router /user/avatar [post]
 func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := c.PostForm("sid")
@@ -85,6 +112,13 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 	}
 }
 
+// @Tags User
+// @Summary 更新用户名
+// @Produce json
+// @Param sid formData string true "学号"
+// @Param newname formData string true "新用户名"
+// @Success 200 {object} resp.Resp
+// @Router /user/username [post]
 func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := c.PostForm("sid")
@@ -103,6 +137,13 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 
 }
 
+// @Tags User
+// @Summary 搜索用户活动
+// @Produce json
+// @Param sid query string true "学号"
+// @Param keyword query string true "关键字"
+// @Success 200 {object} resp.Resp
+// @Router /user/search/act [get]
 func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := c.Query("sid")
@@ -120,6 +161,13 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 	}
 }
 
+// @Tags User
+// @Summary 搜索用户帖子
+// @Produce json
+// @Param sid query string true "学号"
+// @Param keyword query string true "关键字"
+// @Success 200 {object} resp.Resp
+// @Router /user/search/post [get]
 func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := c.Query("sid")

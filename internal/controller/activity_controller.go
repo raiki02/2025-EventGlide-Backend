@@ -10,7 +10,7 @@ import (
 	"github.com/raiki02/EG/tools"
 )
 
-// TODO: find函数写成过滤器模式
+// @TODO: find函数写成过滤器模式
 type ActControllerHdl interface {
 	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
@@ -42,6 +42,13 @@ func NewActController(ad *dao.ActDao, jwth *middleware.Jwt, ch *cache.Cache, iu 
 	}
 }
 
+// @Tags Activity
+// @Summary 创建活动
+// @Produce json
+// @Accept json
+// @Param activity body model.Activity true "活动"
+// @Success 200 {object} resp.Resp
+// @Router /act/create [post]
 func (ac ActController) NewAct() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var act model.Activity
@@ -81,9 +88,17 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 	}
 }
 
-// 草稿逻辑：保存未完成上传的活动填写信息，绑定用户id（只能调用自己草稿），在上传后应该销毁，无法再次被调用到
-// 将draft传给前端，前端获取字段信息，自动填入表中
-// 需要用户单独调用（加载草稿）
+// @草稿逻辑：保存未完成上传的活动填写信息，绑定用户id（只能调用自己草稿），在上传后应该销毁，无法再次被调用到
+// @将draft传给前端，前端获取字段信息，自动填入表中
+// @需要用户单独调用（加载草稿）
+// @Tags Activity
+// @Summary 创建活动草稿
+// @Description not finished
+// @Produce json
+// @Accept json
+// @Param draft body model.ActivityDraft true "活动草稿"
+// @Success 200 {object} resp.Resp
+// @Router /act/draft [post]
 func (ac ActController) NewDraft() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var d model.ActivityDraft
@@ -105,6 +120,12 @@ func (ac ActController) NewDraft() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 通过主办方查找活动
+// @Produce json
+// @Param host query string true "主办方"
+// @Success 200 {object} resp.Resp
+// @Router /act/host [get]
 func (ac ActController) FindActByHost() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("host")
@@ -122,6 +143,12 @@ func (ac ActController) FindActByHost() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 通过类型查找活动
+// @Produce json
+// @Param type query string true "类型"
+// @Success 200 {object} resp.Resp
+// @Router /act/type [get]
 func (ac ActController) FindActByType() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("type")
@@ -139,6 +166,12 @@ func (ac ActController) FindActByType() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 通过地点查找活动
+// @Produce json
+// @Param location query string true "地点"
+// @Success 200 {object} resp.Resp
+// @Router /act/location [get]
 func (ac ActController) FindActByLocation() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("type")
@@ -156,6 +189,12 @@ func (ac ActController) FindActByLocation() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 通过是否需要报名查找活动
+// @Produce json
+// @Param type query string true "类型"
+// @Success 200 {object} resp.Resp
+// @Router /act/signup [get]
 func (ac ActController) FindActByIfSignup() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("type")
@@ -173,6 +212,12 @@ func (ac ActController) FindActByIfSignup() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 通过是否为外部活动查找活动
+// @Produce json
+// @Param type query string true "类型"
+// @Success 200 {object} resp.Resp
+// @Router /act/foreign [get]
 func (ac ActController) FindActByIsForeign() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		target := ctx.Query("type")
@@ -190,6 +235,13 @@ func (ac ActController) FindActByIsForeign() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 通过时间查找活动
+// @Produce json
+// @Param start_time query string true "开始时间"
+// @Param end_time query string true "结束时间"
+// @Success 200 {object} resp.Resp
+// @Router /act/time [get]
 func (ac ActController) FindActByTime() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		//format: yyyy-mm-dd hh:mm:ss in db
@@ -205,6 +257,12 @@ func (ac ActController) FindActByTime() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 通过名称查找活动
+// @Produce json
+// @Param name query string true "名称"
+// @Success 200 {object} resp.Resp
+// @Router /act/name [get]
 func (ac ActController) FindActByName() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		n := ctx.Query("name")
@@ -217,9 +275,15 @@ func (ac ActController) FindActByName() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 通过日期查找活动
+// @Produce json
+// @Param date path string true "日期"
+// @Success 200 {object} resp.Resp
+// @Router /act/date/{date} [get]
 func (ac ActController) FindActByDate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// ../act/01-02 -> 01-02
+		// @../act/01-02 -> 01-02
 		date := ctx.Param("date")
 		as, err := ac.ad.FindActByDate(ctx, date)
 		if err != nil {

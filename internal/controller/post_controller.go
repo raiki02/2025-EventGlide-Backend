@@ -24,6 +24,11 @@ func NewPostController(ps *service.PostService) *PostController {
 	}
 }
 
+// @Tags Post
+// @Summary 获取所有帖子
+// @Produce json
+// @Success 200 {object} resp.Resp
+// @Router /post/all [get]
 func (pc *PostController) GetAllPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		posts, err := pc.ps.GetAllPost(c)
@@ -35,6 +40,13 @@ func (pc *PostController) GetAllPost() gin.HandlerFunc {
 	}
 }
 
+// @Tags Post
+// @Summary 创建帖子
+// @Produce json
+// @Accept json
+// @Param post body model.Post true "帖子"
+// @Success 200 {object} resp.Resp
+// @Router /post/create [post]
 func (pc *PostController) CreatePost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var post model.Post
@@ -52,6 +64,12 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 	}
 }
 
+// @Tags Post
+// @Summary 通过帖子名查找帖子
+// @Produce json
+// @Param name query string true "帖子名"
+// @Success 200 {object} resp.Resp
+// @Router /post/find [get]
 func (pc *PostController) FindPostByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Query("name")
@@ -64,6 +82,13 @@ func (pc *PostController) FindPostByName() gin.HandlerFunc {
 	}
 }
 
+// @Tags Post
+// @Summary 删除帖子
+// @Produce json
+// @Accept json
+// @Param post body model.Post true "帖子"
+// @Success 200 {object} resp.Resp
+// @Router /post/delete [post]
 func (pc *PostController) DeletePost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var post model.Post

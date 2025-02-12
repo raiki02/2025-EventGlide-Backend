@@ -23,6 +23,13 @@ func NewCommentController(cs *service.CommentService) *CommentController {
 	}
 }
 
+// @Tags Comment
+// @Summary 创建评论
+// @Produce json
+// @Accept json
+// @Param comment body model.Comment true "评论"
+// @Success 200 {object} resp.Resp
+// @Router /comment/create [post]
 func (cc *CommentController) CreateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var cmt model.Comment
@@ -39,6 +46,12 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 	}
 }
 
+// @Tags Comment
+// @Summary 删除评论
+// @Produce json
+// @Param comment_id formData string true "评论ID"
+// @Success 200 {object} resp.Resp
+// @Router /comment/delete [post]
 func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cid := c.PostForm("comment_id")
@@ -54,6 +67,13 @@ func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 	}
 }
 
+// @Tags Comment
+// @Summary 回复评论
+// @Produce json
+// @Accept json
+// @Param comment body model.Comment true "评论"
+// @Success 200 {object} resp.Resp
+// @Router /comment/answer [post]
 func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var cmt model.Comment

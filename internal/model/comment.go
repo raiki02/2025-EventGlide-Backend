@@ -1,7 +1,6 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
@@ -17,7 +16,7 @@ act-post -> comment -> subcomment 共享
 */
 type Comment struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column: created_at; not null; type: datetime; comment: 创建时间"`
-	DeletedAt gorm.DeletedAt
+	DeletedAt time.Time `json:"deleted_at" gorm:"column: deleted_at; type: datetime; comment: 删除时间"`
 
 	CommentID string `json:"comment_id" gorm:"column: comment_id; not null; type: varchar(255); comment: 评论ID;primary_key"`
 	PosterID  string `json:"poster_id" gorm:"column: poster_id; not null; type: varchar(255); comment: 发布者ID"`

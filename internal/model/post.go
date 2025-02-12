@@ -1,14 +1,13 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type Post struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间"`
-	DeletedAt gorm.DeletedAt
-	
+	DeletedAt time.Time `json:"deleted_at" gorm:"column:deleted_at; type:datetime; comment:删除时间"`
+
 	BId      int    `json:"bid" gorm:"column:bid; type:int; comment:绑定id"`
 	Title    string `json:"title" gorm:"column:title; type:varchar(255); comment:标题; not null"`
 	Content  string `json:"content" gorm:"column:content; type:text; comment:详细内容; not null"`

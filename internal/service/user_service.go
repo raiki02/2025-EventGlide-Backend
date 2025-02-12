@@ -21,7 +21,7 @@ import (
 type UserServiceHdl interface {
 	CreateUser(*gin.Context, string) error
 	Login(*gin.Context, string, string) (*model.User, string, error)
-	Logout(*gin.Context) error
+	Logout(*gin.Context, string) error
 	GetUserInfo(*gin.Context, string) (model.User, error)
 	UpdateAvatar(*gin.Context, string) error
 	UpdateUsername(*gin.Context, string, string) error
@@ -86,8 +86,7 @@ func (s *UserService) Login(ctx *gin.Context, studentId string, password string)
 	return &user, token, nil
 }
 
-func (s *UserService) Logout(ctx *gin.Context) error {
-	token := ctx.GetHeader("Authorization")
+func (s *UserService) Logout(ctx *gin.Context, token string) error {
 	err := s.jwth.ClearToken(ctx, token)
 	if err != nil {
 		return err

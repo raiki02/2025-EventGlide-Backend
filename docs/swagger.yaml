@@ -1,4 +1,670 @@
+definitions:
+  model.Activity:
+    properties:
+      audition:
+        type: string
+      bid:
+        type: string
+      capacity:
+        description: descriptive
+        type: integer
+      comments:
+        type: integer
+      created_at:
+        description: 活动id
+        type: string
+      creator_id:
+        type: string
+      deleted_at:
+        type: string
+      details:
+        type: string
+      end_time:
+        type: string
+      host:
+        type: string
+      identification:
+        description: audit
+        type: string
+      if_register:
+        type: string
+      images:
+        type: string
+      likes:
+        description: interactive
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      register_method:
+        type: string
+      start_time:
+        description: complex
+        type: string
+      type:
+        description: |-
+          divided by function
+          basic
+        type: string
+    type: object
+  model.ActivityDraft:
+    properties:
+      capacity:
+        description: descriptive
+        type: integer
+      created_at:
+        description: 活动id
+        type: string
+      creator_id:
+        type: string
+      deleted_at:
+        type: string
+      details:
+        type: string
+      end_time:
+        type: string
+      host:
+        type: string
+      if_register:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      register_method:
+        type: string
+      start_time:
+        description: complex
+        type: string
+      type:
+        description: |-
+          divided by function
+          basic
+        type: string
+    type: object
+  model.Comment:
+    properties:
+      answers:
+        type: integer
+      comment_id:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      likes:
+        type: integer
+      parent_id:
+        type: string
+      poster_id:
+        type: string
+      target_id:
+        type: string
+    type: object
+  model.Post:
+    properties:
+      bid:
+        type: integer
+      comments:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      img_urls:
+        type: string
+      likes:
+        type: integer
+      poster_id:
+        type: string
+      title:
+        type: string
+    type: object
+  req.NumberReq:
+    properties:
+      excuter_id:
+        type: string
+      msg:
+        type: string
+      topic:
+        type: string
+    type: object
+  resp.Resp:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+  description: 校灵通 API 文档
+  title: EventGlide API
+paths:
+  /act/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 活动
+        in: body
+        name: activity
+        required: true
+        schema:
+          $ref: '#/definitions/model.Activity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 创建活动
+      tags:
+      - Activity
+  /act/date/{date}:
+    get:
+      parameters:
+      - description: 日期
+        in: path
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过日期查找活动
+      tags:
+      - Activity
+  /act/draft:
+    post:
+      consumes:
+      - application/json
+      description: not finished
+      parameters:
+      - description: 活动草稿
+        in: body
+        name: draft
+        required: true
+        schema:
+          $ref: '#/definitions/model.ActivityDraft'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 创建活动草稿
+      tags:
+      - Activity
+  /act/foreign:
+    get:
+      parameters:
+      - description: 类型
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过是否为外部活动查找活动
+      tags:
+      - Activity
+  /act/host:
+    get:
+      parameters:
+      - description: 主办方
+        in: query
+        name: host
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过主办方查找活动
+      tags:
+      - Activity
+  /act/location:
+    get:
+      parameters:
+      - description: 地点
+        in: query
+        name: location
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过地点查找活动
+      tags:
+      - Activity
+  /act/name:
+    get:
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过名称查找活动
+      tags:
+      - Activity
+  /act/signup:
+    get:
+      parameters:
+      - description: 类型
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过是否需要报名查找活动
+      tags:
+      - Activity
+  /act/time:
+    get:
+      parameters:
+      - description: 开始时间
+        in: query
+        name: start_time
+        required: true
+        type: string
+      - description: 结束时间
+        in: query
+        name: end_time
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过时间查找活动
+      tags:
+      - Activity
+  /act/type:
+    get:
+      parameters:
+      - description: 类型
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过类型查找活动
+      tags:
+      - Activity
+  /comment/answer:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 评论
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/model.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 回复评论
+      tags:
+      - Comment
+  /comment/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 评论
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/model.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 创建评论
+      tags:
+      - Comment
+  /comment/delete:
+    post:
+      parameters:
+      - description: 评论ID
+        in: formData
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 删除评论
+      tags:
+      - Comment
+  /number/comments:
+    post:
+      consumes:
+      - application/json
+      description: not finished
+      parameters:
+      - description: 评论数
+        in: body
+        name: comments_num
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumberReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 评论数控制
+      tags:
+      - Number
+  /number/likes:
+    post:
+      consumes:
+      - application/json
+      description: not finished
+      parameters:
+      - description: 点赞数
+        in: body
+        name: likes_num
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumberReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 点赞数控制
+      tags:
+      - Number
+  /post/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 获取所有帖子
+      tags:
+      - Post
+  /post/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 帖子
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/model.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 创建帖子
+      tags:
+      - Post
+  /post/delete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 帖子
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/model.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 删除帖子
+      tags:
+      - Post
+  /post/find:
+    get:
+      parameters:
+      - description: 帖子名
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过帖子名查找帖子
+      tags:
+      - Post
+  /user/avatar:
+    post:
+      description: not finished
+      parameters:
+      - description: 学号
+        in: formData
+        name: sid
+        required: true
+        type: string
+      - description: 图片0
+        in: formData
+        name: file0
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 更新头像
+      tags:
+      - User
+  /user/info:
+    get:
+      parameters:
+      - description: 学号
+        in: query
+        name: sid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 获取用户信息
+      tags:
+      - User
+  /user/login:
+    post:
+      parameters:
+      - description: 学号
+        in: formData
+        name: studentid
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 登录
+      tags:
+      - User
+  /user/logout:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 登出
+      tags:
+      - User
+  /user/search/act:
+    get:
+      parameters:
+      - description: 学号
+        in: query
+        name: sid
+        required: true
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 搜索用户活动
+      tags:
+      - User
+  /user/search/post:
+    get:
+      parameters:
+      - description: 学号
+        in: query
+        name: sid
+        required: true
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 搜索用户帖子
+      tags:
+      - User
+  /user/username:
+    post:
+      parameters:
+      - description: 学号
+        in: formData
+        name: sid
+        required: true
+        type: string
+      - description: 新用户名
+        in: formData
+        name: newname
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 更新用户名
+      tags:
+      - User
 swagger: "2.0"

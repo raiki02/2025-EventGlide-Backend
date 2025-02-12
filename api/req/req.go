@@ -10,3 +10,9 @@ type EditAvatar struct {
 	StudentId string `json:"student_id"`
 	NewAvatar string `json:"new_avatar"`
 }
+
+type NumberReq struct {
+	Topic     string `json:"topic"`
+	Msg       string `json:"msg"`
+	ExcuterID string `json:"excuter_id"`
+}
