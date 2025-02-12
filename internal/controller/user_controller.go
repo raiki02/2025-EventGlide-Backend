@@ -40,15 +40,15 @@ func (uc *UserController) Login() gin.HandlerFunc {
 		studentid := c.PostForm("studentid")
 		password := c.PostForm("password")
 		if studentid == "" || password == "" {
-			tools.ReturnMSG(c, "studentid or password is empty", nil)
+			c.JSON(200, tools.ReturnMSG(c, "studentid or password is empty", nil))
 			return
 		}
 		user, token, err := uc.ush.Login(c, studentid, password)
 		if err != nil {
-			tools.ReturnMSG(c, "login fail", nil)
+			c.JSON(200, tools.ReturnMSG(c, "login fail", nil))
 			return
 		}
-		tools.ReturnMSG(c, "login success", user, token)
+		c.JSON(200, tools.ReturnMSG(c, "login success", user, token))
 	}
 }
 
@@ -63,10 +63,10 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 		token := c.GetHeader("Authorization")
 		err := uc.ush.Logout(c, token)
 		if err != nil {
-			tools.ReturnMSG(c, "logout fail", nil)
+			c.JSON(200, tools.ReturnMSG(c, "logout fail", nil))
 			return
 		}
-		tools.ReturnMSG(c, "logout success", nil)
+		c.JSON(200, tools.ReturnMSG(c, "logout success", nil))
 	}
 }
 
@@ -80,15 +80,15 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := c.Query("sid")
 		if sid == "" {
-			tools.ReturnMSG(c, "sid is empty", nil)
+			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
 		user, err := uc.ush.GetUserInfo(c, sid)
 		if err != nil {
-			tools.ReturnMSG(c, "get user info fail", nil)
+			c.JSON(200, tools.ReturnMSG(c, "get user info fail", nil))
 			return
 		}
-		tools.ReturnMSG(c, "get user info success", user)
+		c.JSON(200, tools.ReturnMSG(c, "get user info success", user))
 	}
 }
 
@@ -97,7 +97,7 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 // @Description not finished
 // @Produce json
 // @Param sid formData string true "学号"
-// @Param file0 formData file true "图片0"
+// @Param file formData file true "图片"
 // @Success 200 {object} resp.Resp
 // @Router /user/avatar [post]
 func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
@@ -105,10 +105,10 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 		sid := c.PostForm("sid")
 		err := uc.ush.UpdateAvatar(c, sid)
 		if err != nil {
-			tools.ReturnMSG(c, "update avatar fail", nil)
+			c.JSON(200, tools.ReturnMSG(c, "update avatar fail", nil))
 			return
 		}
-		tools.ReturnMSG(c, "update avatar success", nil)
+		c.JSON(200, tools.ReturnMSG(c, "update avatar success", nil))
 	}
 }
 
@@ -124,15 +124,15 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 		sid := c.PostForm("sid")
 		name := c.PostForm("newname")
 		if name == "" {
-			tools.ReturnMSG(c, "name is empty", nil)
+			c.JSON(200, tools.ReturnMSG(c, "name is empty", nil))
 			return
 		}
 		err := uc.ush.UpdateUsername(c, sid, name)
 		if err != nil {
-			tools.ReturnMSG(c, "update username fail", nil)
+			c.JSON(200, tools.ReturnMSG(c, "update username fail", nil))
 			return
 		}
-		tools.ReturnMSG(c, "update username success", nil)
+		c.JSON(200, tools.ReturnMSG(c, "update username success", nil))
 	}
 
 }
@@ -149,15 +149,15 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 		sid := c.Query("sid")
 		keyword := c.Query("keyword")
 		if sid == "" {
-			tools.ReturnMSG(c, "sid is empty", nil)
+			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
 		acts, err := uc.ush.SearchUserAct(c, sid, keyword)
 		if err != nil {
-			tools.ReturnMSG(c, "search user act fail", nil)
+			c.JSON(200, tools.ReturnMSG(c, "search user act fail", nil))
 			return
 		}
-		tools.ReturnMSG(c, "search user act success", acts)
+		c.JSON(200, tools.ReturnMSG(c, "search user act success", acts))
 	}
 }
 
@@ -173,14 +173,14 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 		sid := c.Query("sid")
 		keyword := c.Query("keyword")
 		if sid == "" {
-			tools.ReturnMSG(c, "sid is empty", nil)
+			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
 		posts, err := uc.ush.SearchUserPost(c, sid, keyword)
 		if err != nil {
-			tools.ReturnMSG(c, "search user post fail", nil)
+			c.JSON(200, tools.ReturnMSG(c, "search user post fail", nil))
 			return
 		}
-		tools.ReturnMSG(c, "search user post success", posts)
+		c.JSON(200, tools.ReturnMSG(c, "search user post success", posts))
 	}
 }

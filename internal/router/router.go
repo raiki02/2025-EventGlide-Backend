@@ -36,6 +36,7 @@ func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr 
 }
 
 func (r *Router) RegisterRouters() {
+	r.cors.HandleCors()
 	r.ur.RegisterUserRouters()
 	r.ar.RegisterActRouters()
 	r.pr.RegisterPostRouters()
@@ -45,8 +46,6 @@ func (r *Router) RegisterRouters() {
 }
 
 func (r *Router) Run() error {
-	r.cors.HandleCors()
-	r.RegisterRouters()
 	return r.e.Run()
 }
 

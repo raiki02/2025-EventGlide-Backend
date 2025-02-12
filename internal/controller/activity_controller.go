@@ -50,40 +50,40 @@ func NewActController(ad *dao.ActDao, jwth *middleware.Jwt, ch *cache.Cache, iu 
 // @Success 200 {object} resp.Resp
 // @Router /act/create [post]
 func (ac ActController) NewAct() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 		var act model.Activity
 		//获取用户填写信息
-		err := ctx.ShouldBindJSON(&act)
+		err := c.ShouldBindJSON(&act)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			tools.ReturnMSG(c, err.Error(), nil)
 			return
 		}
 
 		//处理用户上传图像给图床，返回储存url
-		urls, err := ac.iu.ProcessImg(ctx)
+		urls, err := ac.iu.ProcessImg(c)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			tools.ReturnMSG(c, err.Error(), nil)
 			return
 		}
 		act.Images = urls
 
 		//创建首帖关联id
-		err = act.SetBid(ctx)
+		err = act.SetBid(c)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			tools.ReturnMSG(c, err.Error(), nil)
 			return
 		}
 		//防止重复创建活动
-		if ac.ad.CheckExist(ctx, act) {
-			tools.ReturnMSG(ctx, "error exist", nil)
+		if ac.ad.CheckExist(c, act) {
+			tools.ReturnMSG(c, "error exist", nil)
 			return
 		} else {
-			err := ac.ad.CreateAct(ctx, act)
+			err := ac.ad.CreateAct(c, act)
 			if err != nil {
-				tools.ReturnMSG(ctx, err.Error(), nil)
+				tools.ReturnMSG(c, err.Error(), nil)
 				return
 			}
-			tools.ReturnMSG(ctx, "success", act)
+			tools.ReturnMSG(c, "success", act)
 		}
 	}
 }
@@ -100,21 +100,21 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/draft [post]
 func (ac ActController) NewDraft() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 		var d model.ActivityDraft
 		//获取用户填写信息
-		err := ctx.ShouldBindJSON(&d)
+		err := c.ShouldBindJSON(&d)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 
 		//直接创建，不管有没有类似的
 		//不保存上传图片，考虑图床空间
 		//不设置绑定id，不一定会发布
-		err = ac.ad.CreateDraft(ctx, d)
+		err = ac.ad.CreateDraft(c, d)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 	}
@@ -127,19 +127,19 @@ func (ac ActController) NewDraft() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/host [get]
 func (ac ActController) FindActByHost() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		target := ctx.Query("host")
+	return func(c *gin.Context) {
+		target := c.Query("host")
 		if target == "" {
-			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
 
-		as, err := ac.ad.FindActByHost(ctx, target)
+		as, err := ac.ad.FindActByHost(c, target)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(ctx, "success", as)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
@@ -150,19 +150,19 @@ func (ac ActController) FindActByHost() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/type [get]
 func (ac ActController) FindActByType() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		target := ctx.Query("type")
+	return func(c *gin.Context) {
+		target := c.Query("type")
 		if target == "" {
-			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
 
-		as, err := ac.ad.FindActByType(ctx, target)
+		as, err := ac.ad.FindActByType(c, target)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(ctx, "success", as)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
@@ -173,19 +173,19 @@ func (ac ActController) FindActByType() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/location [get]
 func (ac ActController) FindActByLocation() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		target := ctx.Query("type")
+	return func(c *gin.Context) {
+		target := c.Query("type")
 		if target == "" {
-			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
 
-		as, err := ac.ad.FindActByLocation(ctx, target)
+		as, err := ac.ad.FindActByLocation(c, target)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(ctx, "success", as)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
@@ -196,19 +196,19 @@ func (ac ActController) FindActByLocation() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/signup [get]
 func (ac ActController) FindActByIfSignup() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		target := ctx.Query("type")
+	return func(c *gin.Context) {
+		target := c.Query("type")
 		if target == "" {
-			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
 
-		as, err := ac.ad.FindActByIfSignup(ctx, target)
+		as, err := ac.ad.FindActByIfSignup(c, target)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(ctx, "success", as)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
@@ -219,19 +219,19 @@ func (ac ActController) FindActByIfSignup() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/foreign [get]
 func (ac ActController) FindActByIsForeign() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		target := ctx.Query("type")
+	return func(c *gin.Context) {
+		target := c.Query("type")
 		if target == "" {
-			tools.ReturnMSG(ctx, "query cannot be nil", nil)
+			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
 
-		as, err := ac.ad.FindActByIsForeign(ctx, target)
+		as, err := ac.ad.FindActByIsForeign(c, target)
 		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(ctx, "success", as)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
@@ -243,17 +243,21 @@ func (ac ActController) FindActByIsForeign() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/time [get]
 func (ac ActController) FindActByTime() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 		//format: yyyy-mm-dd hh:mm:ss in db
-		start := ctx.Query("start_time") + ":00"
-		end := ctx.Query("end_time") + ":00"
-
-		as, err := ac.ad.FindActByTime(ctx, start, end)
-		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+		start := c.Query("start_time") + ":00"
+		end := c.Query("end_time") + ":00"
+		if start == "" || end == "" {
+			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
-		tools.ReturnMSG(ctx, "success", as)
+
+		as, err := ac.ad.FindActByTime(c, start, end)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
@@ -264,14 +268,18 @@ func (ac ActController) FindActByTime() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/name [get]
 func (ac ActController) FindActByName() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		n := ctx.Query("name")
-		as, err := ac.ad.FindActByName(ctx, n)
-		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+	return func(c *gin.Context) {
+		n := c.Query("name")
+		if n == "" {
+			tools.ReturnMSG(c, "query cannot be nil", nil)
 			return
 		}
-		tools.ReturnMSG(ctx, "success", as)
+		as, err := ac.ad.FindActByName(c, n)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
@@ -282,14 +290,18 @@ func (ac ActController) FindActByName() gin.HandlerFunc {
 // @Success 200 {object} resp.Resp
 // @Router /act/date/{date} [get]
 func (ac ActController) FindActByDate() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 		// @../act/01-02 -> 01-02
-		date := ctx.Param("date")
-		as, err := ac.ad.FindActByDate(ctx, date)
-		if err != nil {
-			tools.ReturnMSG(ctx, err.Error(), nil)
+		date := c.Param("date")
+		if date == "" {
+			tools.ReturnMSG(c, "query cannot be nil", nil)
 			return
 		}
-		tools.ReturnMSG(ctx, "success", as)
+		as, err := ac.ad.FindActByDate(c, date)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }

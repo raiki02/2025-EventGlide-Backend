@@ -524,9 +524,9 @@ paths:
         name: sid
         required: true
         type: string
-      - description: 图片0
+      - description: 图片
         in: formData
-        name: file0
+        name: file
         required: true
         type: file
       produces:

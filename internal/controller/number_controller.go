@@ -34,9 +34,10 @@ func (nc *NumberController) SendLikesNum() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var nq req.NumberReq
 		if err := c.ShouldBindJSON(&nq); err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 		}
 		nc.ns.SendLikesNum(c, &nq)
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
@@ -52,8 +53,9 @@ func (nc *NumberController) SendCommentsNum() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var nq req.NumberReq
 		if err := c.ShouldBindJSON(&nq); err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 		}
 		nc.ns.SendCommentsNum(c, &nq)
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }

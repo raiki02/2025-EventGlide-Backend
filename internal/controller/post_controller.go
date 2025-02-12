@@ -33,10 +33,10 @@ func (pc *PostController) GetAllPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		posts, err := pc.ps.GetAllPost(c)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "success", posts)
+		c.JSON(200, tools.ReturnMSG(c, "success", posts))
 	}
 }
 
@@ -52,15 +52,15 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 		var post model.Post
 		err := c.ShouldBindJSON(&post)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 		err = pc.ps.CreatePost(c, &post)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "success", post)
+		c.JSON(200, tools.ReturnMSG(c, "success", post))
 	}
 }
 
@@ -75,10 +75,10 @@ func (pc *PostController) FindPostByName() gin.HandlerFunc {
 		name := c.Query("name")
 		posts, err := pc.ps.FindPostByName(c, name)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "success", posts)
+		c.JSON(200, tools.ReturnMSG(c, "success", posts))
 	}
 }
 
@@ -94,14 +94,14 @@ func (pc *PostController) DeletePost() gin.HandlerFunc {
 		var post model.Post
 		err := c.ShouldBindJSON(&post)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 		err = pc.ps.DeletePost(c, &post)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "success", nil)
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }

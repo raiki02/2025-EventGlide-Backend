@@ -609,8 +609,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "file",
-                        "description": "图片0",
-                        "name": "file0",
+                        "description": "图片",
+                        "name": "file",
                         "in": "formData",
                         "required": true
                     }

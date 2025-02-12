@@ -35,14 +35,14 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 		var cmt model.Comment
 		//content, posterID, TargetID
 		if err := c.ShouldBindJSON(&cmt); err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 		if err := cc.cs.CreateComment(c, &cmt); err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "comment success", nil)
+		c.JSON(200, tools.ReturnMSG(c, "comment success", nil))
 	}
 }
 
@@ -56,14 +56,14 @@ func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cid := c.PostForm("comment_id")
 		if cid == "" {
-			tools.ReturnMSG(c, "comment not exist", nil)
+			c.JSON(200, tools.ReturnMSG(c, "comment not exist", nil))
 			return
 		}
 		if err := cc.cs.DeleteComment(c, cid); err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "delete success", nil)
+		c.JSON(200, tools.ReturnMSG(c, "delete success", nil))
 	}
 }
 
@@ -79,13 +79,13 @@ func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 		var cmt model.Comment
 		//content, posterID, TargetID, ParentID
 		if err := c.ShouldBindJSON(&cmt); err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 		if err := cc.cs.AnswerComment(c, &cmt); err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "answer success", nil)
+		c.JSON(200, tools.ReturnMSG(c, "answer success", nil))
 	}
 }
