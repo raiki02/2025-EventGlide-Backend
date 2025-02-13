@@ -12,7 +12,6 @@ type ActDaoHdl interface {
 	CreateDraft(*gin.Context, model.ActivityDraft) error
 	DeleteAct(*gin.Context, model.Activity) error
 
-	FindActByBid(*gin.Context, string) (model.Activity, error)
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 
@@ -117,13 +116,4 @@ func (ad ActDao) FindActBySearches(c *gin.Context, a *model.Activity) ([]model.A
 		return nil, err
 	}
 	return as, nil
-}
-
-func (ad ActDao) FindActByBid(c *gin.Context, bid string) (model.Activity, error) {
-	var a model.Activity
-	err := ad.db.Where("bid = ?", bid).Find(&a).Error
-	if err != nil {
-		return model.Activity{}, err
-	}
-	return a, nil
 }

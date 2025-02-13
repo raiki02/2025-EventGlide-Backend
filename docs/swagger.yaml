@@ -183,6 +183,24 @@ paths:
       summary: 创建活动
       tags:
       - Activity
+  /act/date:
+    get:
+      parameters:
+      - description: 日期
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 通过日期查找活动
+      tags:
+      - Activity
   /act/details:
     post:
       parameters:

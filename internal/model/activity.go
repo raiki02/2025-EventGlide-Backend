@@ -37,6 +37,8 @@ type Activity struct {
 	//audit
 	Identification string `json:"identification"`
 	Audition       string `json:"audition"`
+
+	Description string `json:"description" gorm:"null;type: text;comment:活动描述;column:description"`
 }
 
 func (act Activity) SetBid(ctx *gin.Context) error {

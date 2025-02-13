@@ -49,6 +49,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/act/date": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Activity"
+                ],
+                "summary": "通过日期查找活动",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "日期",
+                        "name": "date",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
         "/act/details": {
             "post": {
                 "produces": [

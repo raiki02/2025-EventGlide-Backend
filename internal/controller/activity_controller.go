@@ -11,14 +11,12 @@ import (
 	"github.com/raiki02/EG/tools"
 )
 
-// @TODO: find函数写成过滤器模式
 type ActControllerHdl interface {
 	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
 
 	FindActBySearches() gin.HandlerFunc
 	FindActByName() gin.HandlerFunc
-	ShowActDetails() gin.HandlerFunc
 	FindActByDate() gin.HandlerFunc
 }
 
@@ -50,6 +48,7 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var act model.Activity
 		//获取用户填写信息
+		//host,location,startTime,endTime,ifRegister,images,name
 		err := c.ShouldBindJSON(&act)
 		if err != nil {
 			tools.ReturnMSG(c, err.Error(), nil)
@@ -136,28 +135,6 @@ func (ac ActController) FindActByName() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", as))
-	}
-}
-
-// @Tags Activity
-// @Summary 通过bid查找活动
-// @Produce json
-// @Param bid formData string true "绑定id"
-// @Success 200 {object} resp.Resp
-// @Router /act/details [post]
-func (ac ActController) ShowActDetails() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		bid := c.PostForm("bid")
-		if bid == "" {
-			tools.ReturnMSG(c, "query cannot be nil", nil)
-			return
-		}
-		as, err := ac.as.ShowActDetails(c, bid)
-		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
-			return
-		}
-		tools.ReturnMSG(c, "success", as)
 	}
 }
 
