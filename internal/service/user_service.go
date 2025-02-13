@@ -53,8 +53,8 @@ func (s *UserService) CreateUser(ctx *gin.Context, sid string) error {
 	user := &model.User{
 		StudentId: sid,
 		Name:      sid,
-		Avatar:    viper.GetString("defaultAvatar"),
-		School:    "华中师范大学",
+		Avatar:    viper.GetString("imgbed.defaultAvatar"),
+		School:    "Central China Normal University",
 	}
 	err := s.udh.Create(ctx, user)
 	if err != nil {

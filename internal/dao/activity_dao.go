@@ -12,19 +12,13 @@ type ActDaoHdl interface {
 	CreateDraft(*gin.Context, model.ActivityDraft) error
 	DeleteAct(*gin.Context, model.Activity) error
 
-	FindActByUser(*gin.Context, string, string) ([]model.Activity, error)
-
-	FindActByHost(*gin.Context, string) ([]model.Activity, error)
-	FindActByType(*gin.Context, string) ([]model.Activity, error)
-	FindActByLocation(*gin.Context, string) ([]model.Activity, error)
-	FindActByIfSignup(*gin.Context, string) ([]model.Activity, error)
-	FindActByIsForeign(*gin.Context, string) ([]model.Activity, error)
-
-	FindActByTime(*gin.Context, string, string) ([]model.Activity, error)
+	FindActByBid(*gin.Context, string) (model.Activity, error)
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 
 	CheckExist(*gin.Context, model.Activity) bool
+
+	FindActBySearches(*gin.Context, *model.Activity) ([]model.Activity, error)
 }
 
 type ActDao struct {
@@ -51,35 +45,6 @@ func (ad ActDao) CreateDraft(c *gin.Context, d model.ActivityDraft) error {
 
 // TODO: 是否换成按页展示，每页返回固定个数活动
 
-func (ad ActDao) FindActByHost(c *gin.Context, h string) ([]model.Activity, error) {
-	var as []model.Activity
-	err := ad.db.Where("host = ? ", h).Find(&as).Error
-	if err != nil {
-		return nil, err
-	}
-	return as, nil
-}
-
-func (ad ActDao) FindActByType(c *gin.Context, t string) ([]model.Activity, error) {
-	var as []model.Activity
-	err := ad.db.Where("type = ? ", t).Find(&as).Error
-	if err != nil {
-		return nil, err
-	}
-	return as, nil
-
-}
-
-func (ad ActDao) FindActByLocation(c *gin.Context, l string) ([]model.Activity, error) {
-	var as []model.Activity
-	err := ad.db.Where("location = ? ", l).Find(&as).Error
-	if err != nil {
-		return nil, err
-	}
-	return as, nil
-
-}
-
 func (ad ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]model.Activity, error) {
 	var as []model.Activity
 	if keyword == "" {
@@ -95,35 +60,6 @@ func (ad ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]mode
 		}
 		return as, nil
 	}
-}
-
-func (ad ActDao) FindActByIfSignup(c *gin.Context, sn string) ([]model.Activity, error) {
-	var as []model.Activity
-	err := ad.db.Where("if_register = ? ", sn).Find(&as).Error
-	if err != nil {
-		return nil, err
-	}
-	return as, nil
-
-}
-
-func (ad ActDao) FindActByIsForeign(c *gin.Context, f string) ([]model.Activity, error) {
-	var as []model.Activity
-	err := ad.db.Where("visibility = ? ", f).Find(&as).Error
-	if err != nil {
-		return nil, err
-	}
-	return as, nil
-
-}
-
-func (ad ActDao) FindActByTime(c *gin.Context, start string, end string) ([]model.Activity, error) {
-	var as []model.Activity
-	err := ad.db.Where("start_time >= ? and end_time <= ?", start, end).Error
-	if err != nil {
-		return nil, err
-	}
-	return as, nil
 }
 
 func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
@@ -172,4 +108,22 @@ func (ad ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 	} else {
 		return nil
 	}
+}
+
+func (ad ActDao) FindActBySearches(c *gin.Context, a *model.Activity) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Where(&a).Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
+}
+
+func (ad ActDao) FindActByBid(c *gin.Context, bid string) (model.Activity, error) {
+	var a model.Activity
+	err := ad.db.Where("bid = ?", bid).Find(&a).Error
+	if err != nil {
+		return model.Activity{}, err
+	}
+	return a, nil
 }

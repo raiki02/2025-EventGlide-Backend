@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/cache"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
@@ -15,15 +16,9 @@ type ActControllerHdl interface {
 	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
 
-	FindActByHost() gin.HandlerFunc
-	FindActByType() gin.HandlerFunc
-	FindActByLocation() gin.HandlerFunc
-	FindActByIfSignup() gin.HandlerFunc
-	FindActByIsForeign() gin.HandlerFunc
-
-	FindActByTime() gin.HandlerFunc
+	FindActBySearches() gin.HandlerFunc
 	FindActByName() gin.HandlerFunc
-	FindActByDate() gin.HandlerFunc
+	ShowActDetails() gin.HandlerFunc
 }
 
 type ActController struct {
@@ -31,6 +26,7 @@ type ActController struct {
 	jwth *middleware.Jwt
 	ch   *cache.Cache
 	iu   *service.ImgUploader
+	as   *service.ActivityService
 }
 
 func NewActController(ad *dao.ActDao, jwth *middleware.Jwt, ch *cache.Cache, iu *service.ImgUploader) *ActController {
@@ -121,147 +117,6 @@ func (ac ActController) NewDraft() gin.HandlerFunc {
 }
 
 // @Tags Activity
-// @Summary 通过主办方查找活动
-// @Produce json
-// @Param host query string true "主办方"
-// @Success 200 {object} resp.Resp
-// @Router /act/host [get]
-func (ac ActController) FindActByHost() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		target := c.Query("host")
-		if target == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
-			return
-		}
-
-		as, err := ac.ad.FindActByHost(c, target)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", as))
-	}
-}
-
-// @Tags Activity
-// @Summary 通过类型查找活动
-// @Produce json
-// @Param type query string true "类型"
-// @Success 200 {object} resp.Resp
-// @Router /act/type [get]
-func (ac ActController) FindActByType() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		target := c.Query("type")
-		if target == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
-			return
-		}
-
-		as, err := ac.ad.FindActByType(c, target)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", as))
-	}
-}
-
-// @Tags Activity
-// @Summary 通过地点查找活动
-// @Produce json
-// @Param location query string true "地点"
-// @Success 200 {object} resp.Resp
-// @Router /act/location [get]
-func (ac ActController) FindActByLocation() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		target := c.Query("type")
-		if target == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
-			return
-		}
-
-		as, err := ac.ad.FindActByLocation(c, target)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", as))
-	}
-}
-
-// @Tags Activity
-// @Summary 通过是否需要报名查找活动
-// @Produce json
-// @Param type query string true "类型"
-// @Success 200 {object} resp.Resp
-// @Router /act/signup [get]
-func (ac ActController) FindActByIfSignup() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		target := c.Query("type")
-		if target == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
-			return
-		}
-
-		as, err := ac.ad.FindActByIfSignup(c, target)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", as))
-	}
-}
-
-// @Tags Activity
-// @Summary 通过是否为外部活动查找活动
-// @Produce json
-// @Param type query string true "类型"
-// @Success 200 {object} resp.Resp
-// @Router /act/foreign [get]
-func (ac ActController) FindActByIsForeign() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		target := c.Query("type")
-		if target == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
-			return
-		}
-
-		as, err := ac.ad.FindActByIsForeign(c, target)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", as))
-	}
-}
-
-// @Tags Activity
-// @Summary 通过时间查找活动
-// @Produce json
-// @Param start_time query string true "开始时间"
-// @Param end_time query string true "结束时间"
-// @Success 200 {object} resp.Resp
-// @Router /act/time [get]
-func (ac ActController) FindActByTime() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		//format: yyyy-mm-dd hh:mm:ss in db
-		start := c.Query("start_time") + ":00"
-		end := c.Query("end_time") + ":00"
-		if start == "" || end == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
-			return
-		}
-
-		as, err := ac.ad.FindActByTime(c, start, end)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", as))
-	}
-}
-
-// @Tags Activity
 // @Summary 通过名称查找活动
 // @Produce json
 // @Param name query string true "名称"
@@ -284,24 +139,46 @@ func (ac ActController) FindActByName() gin.HandlerFunc {
 }
 
 // @Tags Activity
-// @Summary 通过日期查找活动
+// @Summary 通过bid查找活动
 // @Produce json
-// @Param date path string true "日期"
+// @Param bid formData string true "绑定id"
 // @Success 200 {object} resp.Resp
-// @Router /act/date/{date} [get]
-func (ac ActController) FindActByDate() gin.HandlerFunc {
+// @Router /act/details [post]
+func (ac ActController) ShowActDetails() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// @../act/01-02 -> 01-02
-		date := c.Param("date")
-		if date == "" {
+		bid := c.PostForm("bid")
+		if bid == "" {
 			tools.ReturnMSG(c, "query cannot be nil", nil)
 			return
 		}
-		as, err := ac.ad.FindActByDate(c, date)
+		as, err := ac.as.ShowActDetails(c, bid)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			tools.ReturnMSG(c, err.Error(), nil)
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "success", as))
+		tools.ReturnMSG(c, "success", as)
+	}
+}
+
+// @Tags Activity
+// @Summary 通过搜索条件查找活动
+// @Produce json
+// @Param actSearchReq body req.ActSearchReq true "搜索条件"
+// @Success 200 {object} resp.Resp
+// @Router /act/search [post]
+func (ac ActController) FindActBySearches() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var actReq req.ActSearchReq
+		err := c.ShouldBindJSON(&actReq)
+		if err != nil {
+			tools.ReturnMSG(c, err.Error(), nil)
+			return
+		}
+		as, err := ac.as.FindActBySearches(c, &actReq)
+		if err != nil {
+			tools.ReturnMSG(c, err.Error(), nil)
+			return
+		}
+		tools.ReturnMSG(c, "success", as)
 	}
 }

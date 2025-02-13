@@ -24,21 +24,12 @@ func NewActRouter(e *gin.Engine, ach *controller.ActController) *ActRouter {
 func (ar ActRouter) RegisterActRouters() error {
 	act := ar.e.Group("act")
 	{
-		//1
 		act.POST("/new", ar.ach.NewAct())
 		act.POST("/draft", ar.ach.NewDraft())
 
-		//0 or 1
-		act.GET("/host", ar.ach.FindActByHost())
-		act.GET("/type", ar.ach.FindActByType())
-		act.GET("/location", ar.ach.FindActByLocation())
-		act.GET("/signup", ar.ach.FindActByIfSignup())
-		act.GET("/foreign", ar.ach.FindActByIsForeign())
-
-		//more complex
-		act.GET("/time", ar.ach.FindActByTime())
 		act.GET("/name", ar.ach.FindActByName())
-		act.GET("/:date", ar.ach.FindActByDate())
+		act.POST("/search", ar.ach.FindActBySearches())
+		act.POST("/details", ar.ach.ShowActDetails())
 	}
 	return nil
 }
