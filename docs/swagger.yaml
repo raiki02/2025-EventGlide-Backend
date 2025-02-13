@@ -125,6 +125,21 @@ definitions:
       title:
         type: string
     type: object
+  req.ActSearchReq:
+    properties:
+      end_time:
+        type: string
+      host:
+        type: string
+      if_register:
+        type: string
+      location:
+        type: string
+      start_time:
+        type: string
+      type:
+        type: string
+    type: object
   req.NumberReq:
     properties:
       excuter_id:
@@ -168,12 +183,12 @@ paths:
       summary: 创建活动
       tags:
       - Activity
-  /act/date/{date}:
-    get:
+  /act/details:
+    post:
       parameters:
-      - description: 日期
-        in: path
-        name: date
+      - description: 绑定id
+        in: formData
+        name: bid
         required: true
         type: string
       produces:
@@ -183,7 +198,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/resp.Resp'
-      summary: 通过日期查找活动
+      summary: 通过bid查找活动
       tags:
       - Activity
   /act/draft:
@@ -208,60 +223,6 @@ paths:
       summary: 创建活动草稿
       tags:
       - Activity
-  /act/foreign:
-    get:
-      parameters:
-      - description: 类型
-        in: query
-        name: type
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/resp.Resp'
-      summary: 通过是否为外部活动查找活动
-      tags:
-      - Activity
-  /act/host:
-    get:
-      parameters:
-      - description: 主办方
-        in: query
-        name: host
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/resp.Resp'
-      summary: 通过主办方查找活动
-      tags:
-      - Activity
-  /act/location:
-    get:
-      parameters:
-      - description: 地点
-        in: query
-        name: location
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/resp.Resp'
-      summary: 通过地点查找活动
-      tags:
-      - Activity
   /act/name:
     get:
       parameters:
@@ -280,14 +241,15 @@ paths:
       summary: 通过名称查找活动
       tags:
       - Activity
-  /act/signup:
-    get:
+  /act/search:
+    post:
       parameters:
-      - description: 类型
-        in: query
-        name: type
+      - description: 搜索条件
+        in: body
+        name: actSearchReq
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.ActSearchReq'
       produces:
       - application/json
       responses:
@@ -295,48 +257,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/resp.Resp'
-      summary: 通过是否需要报名查找活动
-      tags:
-      - Activity
-  /act/time:
-    get:
-      parameters:
-      - description: 开始时间
-        in: query
-        name: start_time
-        required: true
-        type: string
-      - description: 结束时间
-        in: query
-        name: end_time
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/resp.Resp'
-      summary: 通过时间查找活动
-      tags:
-      - Activity
-  /act/type:
-    get:
-      parameters:
-      - description: 类型
-        in: query
-        name: type
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/resp.Resp'
-      summary: 通过类型查找活动
+      summary: 通过搜索条件查找活动
       tags:
       - Activity
   /comment/answer:

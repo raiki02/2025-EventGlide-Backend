@@ -19,6 +19,7 @@ type ActControllerHdl interface {
 	FindActBySearches() gin.HandlerFunc
 	FindActByName() gin.HandlerFunc
 	ShowActDetails() gin.HandlerFunc
+	FindActByDate() gin.HandlerFunc
 }
 
 type ActController struct {
@@ -180,5 +181,28 @@ func (ac ActController) FindActBySearches() gin.HandlerFunc {
 			return
 		}
 		tools.ReturnMSG(c, "success", as)
+	}
+}
+
+// @Tags Activity
+// @Summary 通过日期查找活动
+// @Produce json
+// @Param date query string true "日期"
+// @Success 200 {object} resp.Resp
+// @Router /act/date [get]
+func (ac ActController) FindActByDate() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 02-01
+		d := c.Query("date")
+		if d == "" {
+			tools.ReturnMSG(c, "query cannot be nil", nil)
+			return
+		}
+		as, err := ac.ad.FindActByDate(c, d)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }

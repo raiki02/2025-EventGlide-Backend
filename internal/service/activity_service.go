@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
 )
@@ -13,6 +14,7 @@ type ActivityServiceHdl interface {
 
 	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
 	ShowActDetails(*gin.Context, string) (model.Activity, error)
+	FindActByDate(*gin.Context, string) ([]resp.BriefAct, error)
 }
 
 type ActivityService struct {
@@ -48,4 +50,27 @@ func (as *ActivityService) ShowActDetails(c *gin.Context, bid string) (model.Act
 	}
 	return act, nil
 
+}
+
+func (as *ActivityService) FindActByDate(c *gin.Context, date string) ([]resp.BriefAct, error) {
+	acts, err := as.ad.FindActByDate(c, date)
+	if err != nil {
+		return nil, err
+	}
+	return daoTOresp(acts), nil
+}
+
+func daoTOresp(acts []model.Activity) []resp.BriefAct {
+	var resps []resp.BriefAct
+	for _, act := range acts {
+		resp := resp.BriefAct{
+			Bid:       act.Bid,
+			Location:  act.Location,
+			StartTime: act.StartTime,
+			EndTime:   act.EndTime,
+			Title:     act.Name,
+		}
+		resps = append(resps, resp)
+	}
+	return resps
 }

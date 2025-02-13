@@ -39,21 +39,21 @@
                 }
             }
         },
-        "/act/date/{date}": {
-            "get": {
+        "/act/details": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Activity"
                 ],
-                "summary": "通过日期查找活动",
+                "summary": "通过bid查找活动",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "日期",
-                        "name": "date",
-                        "in": "path",
+                        "description": "绑定id",
+                        "name": "bid",
+                        "in": "formData",
                         "required": true
                     }
                 ],
@@ -101,90 +101,6 @@
                 }
             }
         },
-        "/act/foreign": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Activity"
-                ],
-                "summary": "通过是否为外部活动查找活动",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "类型",
-                        "name": "type",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
-        "/act/host": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Activity"
-                ],
-                "summary": "通过主办方查找活动",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "主办方",
-                        "name": "host",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
-        "/act/location": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Activity"
-                ],
-                "summary": "通过地点查找活动",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "地点",
-                        "name": "location",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
         "/act/name": {
             "get": {
                 "produces": [
@@ -213,85 +129,24 @@
                 }
             }
         },
-        "/act/signup": {
-            "get": {
+        "/act/search": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Activity"
                 ],
-                "summary": "通过是否需要报名查找活动",
+                "summary": "通过搜索条件查找活动",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "类型",
-                        "name": "type",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                        "description": "搜索条件",
+                        "name": "actSearchReq",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "$ref": "#/definitions/req.ActSearchReq"
                         }
-                    }
-                }
-            }
-        },
-        "/act/time": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Activity"
-                ],
-                "summary": "通过时间查找活动",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "开始时间",
-                        "name": "start_time",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "结束时间",
-                        "name": "end_time",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
-        "/act/type": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Activity"
-                ],
-                "summary": "通过类型查找活动",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "类型",
-                        "name": "type",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -989,6 +844,29 @@
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.ActSearchReq": {
+            "type": "object",
+            "properties": {
+                "end_time": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "if_register": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }
