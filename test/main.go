@@ -1,74 +1,70 @@
 package main
 
-import "github.com/IBM/sarama"
+import (
+	"github.com/IBM/sarama"
+	"log"
+	"time"
+)
 
-type Kafka struct {
-	P *sarama.AsyncProducer
-	C *sarama.Consumer
-}
-
-func NewProducer() *sarama.AsyncProducer {
+func main() {
 	conf := sarama.NewConfig()
+
 	conf.Producer.Return.Successes = true
-	conf.Producer.Return.Errors = true
+	conf.Producer.Partitioner = sarama.NewRandomPartitioner
 	conf.Producer.RequiredAcks = sarama.WaitForAll
-	p, _ := sarama.NewAsyncProducer([]string{"localhost:9092"}, conf)
-	return &p
-}
-
-func NewConsumer() *sarama.Consumer {
-	conf := sarama.NewConfig()
 	conf.Consumer.Return.Errors = true
-	c, _ := sarama.NewConsumer([]string{"localhost:9092"}, conf)
-	return &c
+
+	producer, err := sarama.NewSyncProducer([]string{"localhost:9092"}, conf)
+	log.Println("Producer created")
+	if err != nil {
+		panic(err)
+	}
+	defer producer.Close()
+	produceMessage(producer)
+	produceMessage(producer)
+	produceMessage(producer)
+	produceMessage(producer)
+	produceMessage(producer)
+	log.Println("Messages sent")
+
+	consumer, err := sarama.NewConsumer([]string{"localhost:9092"}, nil)
+	log.Println("Consumer created")
+	if err != nil {
+		panic(err)
+	}
+	defer consumer.Close()
+
+	partitionConsumer, err := consumer.ConsumePartition("test", 0, sarama.OffsetNewest)
+	log.Println("Partition consumer created")
+	if err != nil {
+		panic(err)
+	}
+	defer partitionConsumer.Close()
+	for {
+		select {
+		case msg := <-partitionConsumer.Messages():
+			log.Println("Received messages", string(msg.Key), string(msg.Value))
+		case err := <-partitionConsumer.Errors():
+			log.Println("Received error", err.Error())
+		default:
+			time.Sleep(1 * time.Second)
+			log.Println("No message received, waiting for message")
+		}
+	}
+
 }
 
-var K *Kafka
+func produceMessage(producer sarama.SyncProducer) {
 
-func NewKafka() *Kafka {
-	return &Kafka{
-		P: NewProducer(),
-		C: NewConsumer(),
+	msg := &sarama.ProducerMessage{
+		Topic: "test",
+		Key:   sarama.StringEncoder("key"),
+		Value: sarama.StringEncoder("value"),
+	}
+	partition, offset, err := producer.SendMessage(msg)
+	if err != nil {
+		log.Println("Failed to send message", err)
+	} else {
+		log.Println("Message sent to partition", partition, "offset", offset)
 	}
 }
-
-type Number struct {
-	Sid string
-	Bid string
-}
-
-// produce
-func (k *Kafka) AddLikesNum() {
-	n := Number{
-		Sid: "123",
-		Bid: "456",
-	}
-	(*k.P).Input() <- &sarama.ProducerMessage{
-		Topic: "likes",
-		Value: sarama.StringEncoder(n.Sid + ":" + n.Bid),
-	}
-}
-
-func CutLikesNum() {
-	n := Number{
-		Sid: "123",
-		Bid: "456",
-	}
-	(*K.P).Input() <- &sarama.ProducerMessage{
-		Topic: "likes",
-		Value: sarama.StringEncoder(n.Sid + ":" + n.Bid),
-	}
-}
-
-func AddCommentsNum() {
-	n := Number{
-		Sid: "123",
-		Bid: "456",
-	}
-	(*K.P).Input() <- &sarama.ProducerMessage{
-		Topic: "comments",
-		Value: sarama.StringEncoder(n.Sid + ":" + n.Bid),
-	}
-}
-
-// consume

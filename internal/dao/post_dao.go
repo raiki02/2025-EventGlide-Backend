@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
@@ -86,4 +87,8 @@ func (pd *PostDao) LoadDraft(ctx context.Context, bid string, sid string) (*mode
 		return nil, err
 	}
 	return &draft, nil
+}
+
+func (pd *PostDao) UpdateNumbers(c *gin.Context, sid, bid string, like, comment int) error {
+	return pd.db.Model(&model.Post{}).Where("creator_id = ? AND bid = ?", sid, bid).Update("like", like).Update("comment", comment).Error
 }

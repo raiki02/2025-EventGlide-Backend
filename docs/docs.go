@@ -125,7 +125,7 @@ const docTemplate = `{
                 "summary": "加载活动草稿",
                 "parameters": [
                     {
-                        "description": "草稿请求",
+                        "description": "加载草稿",
                         "name": "draft",
                         "in": "body",
                         "required": true,
@@ -156,7 +156,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "名称",
+                        "description": "名称查找",
                         "name": "name",
                         "in": "query",
                         "required": true
@@ -297,27 +297,23 @@ const docTemplate = `{
                 }
             }
         },
-        "/number/comments": {
+        "/number/comment": {
             "post": {
-                "description": "not finished",
                 "consumes": [
                     "application/json"
                 ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
-                    "Number"
+                    "number"
                 ],
-                "summary": "评论数控制",
+                "summary": "增加评论数",
                 "parameters": [
                     {
-                        "description": "评论数",
-                        "name": "comments_num",
+                        "description": "评论入参",
+                        "name": "number",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.NumberReq"
+                            "$ref": "#/definitions/model.Number"
                         }
                     }
                 ],
@@ -331,27 +327,83 @@ const docTemplate = `{
                 }
             }
         },
-        "/number/likes": {
+        "/number/like": {
             "post": {
-                "description": "not finished",
                 "consumes": [
                     "application/json"
                 ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
-                    "Number"
+                    "number"
                 ],
-                "summary": "点赞数控制",
+                "summary": "增加点赞数",
                 "parameters": [
                     {
-                        "description": "点赞数",
-                        "name": "likes_num",
+                        "description": "点赞入参",
+                        "name": "number",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.NumberReq"
+                            "$ref": "#/definitions/model.Number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/number/unlike": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "number"
+                ],
+                "summary": "减少点赞数",
+                "parameters": [
+                    {
+                        "description": "点赞入参",
+                        "name": "number",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/number/update": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "number"
+                ],
+                "summary": "更新点赞数和评论数",
+                "parameters": [
+                    {
+                        "description": "更新入参",
+                        "name": "number",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Number"
                         }
                     }
                 ],
@@ -556,18 +608,13 @@ const docTemplate = `{
                 "summary": "更新头像",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "学号",
-                        "name": "sid",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "图片",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
+                        "description": "用户头像更改",
+                        "name": "userAvatarReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UserAvatarReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -731,6 +778,25 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/token/qiniu": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "获取七牛云token",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
         "/user/username": {
             "post": {
                 "produces": [
@@ -874,6 +940,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Number": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sid": {
+                    "type": "string"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Post": {
             "type": "object",
             "properties": {
@@ -971,16 +1054,13 @@ const docTemplate = `{
                 }
             }
         },
-        "req.NumberReq": {
+        "req.UserAvatarReq": {
             "type": "object",
             "properties": {
-                "excuter_id": {
+                "avatar_url": {
                     "type": "string"
                 },
-                "msg": {
-                    "type": "string"
-                },
-                "topic": {
+                "sid": {
                     "type": "string"
                 }
             }

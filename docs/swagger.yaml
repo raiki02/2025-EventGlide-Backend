@@ -73,6 +73,17 @@ definitions:
       type:
         type: string
     type: object
+  model.Number:
+    properties:
+      bid:
+        type: string
+      id:
+        type: integer
+      sid:
+        type: string
+      topic:
+        type: string
+    type: object
   model.Post:
     properties:
       bid:
@@ -136,13 +147,11 @@ definitions:
       sid:
         type: string
     type: object
-  req.NumberReq:
+  req.UserAvatarReq:
     properties:
-      excuter_id:
+      avatar_url:
         type: string
-      msg:
-        type: string
-      topic:
+      sid:
         type: string
     type: object
   req.UserSearchReq:
@@ -231,7 +240,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: 草稿请求
+      - description: 加载草稿
         in: body
         name: draft
         required: true
@@ -250,7 +259,7 @@ paths:
   /act/name:
     get:
       parameters:
-      - description: 名称
+      - description: 名称查找
         in: query
         name: name
         required: true
@@ -345,50 +354,82 @@ paths:
       summary: 删除评论
       tags:
       - Comment
-  /number/comments:
+  /number/comment:
     post:
       consumes:
       - application/json
-      description: not finished
       parameters:
-      - description: 评论数
+      - description: 评论入参
         in: body
-        name: comments_num
+        name: number
         required: true
         schema:
-          $ref: '#/definitions/req.NumberReq'
-      produces:
-      - application/json
+          $ref: '#/definitions/model.Number'
       responses:
         "200":
           description: OK
           schema:
             $ref: '#/definitions/resp.Resp'
-      summary: 评论数控制
+      summary: 增加评论数
       tags:
-      - Number
-  /number/likes:
+      - number
+  /number/like:
     post:
       consumes:
       - application/json
-      description: not finished
       parameters:
-      - description: 点赞数
+      - description: 点赞入参
         in: body
-        name: likes_num
+        name: number
         required: true
         schema:
-          $ref: '#/definitions/req.NumberReq'
-      produces:
-      - application/json
+          $ref: '#/definitions/model.Number'
       responses:
         "200":
           description: OK
           schema:
             $ref: '#/definitions/resp.Resp'
-      summary: 点赞数控制
+      summary: 增加点赞数
       tags:
-      - Number
+      - number
+  /number/unlike:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 点赞入参
+        in: body
+        name: number
+        required: true
+        schema:
+          $ref: '#/definitions/model.Number'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 减少点赞数
+      tags:
+      - number
+  /number/update:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新入参
+        in: body
+        name: number
+        required: true
+        schema:
+          $ref: '#/definitions/model.Number'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 更新点赞数和评论数
+      tags:
+      - number
   /post/all:
     get:
       produces:
@@ -507,16 +548,12 @@ paths:
     post:
       description: not finished
       parameters:
-      - description: 学号
-        in: formData
-        name: sid
+      - description: 用户头像更改
+        in: body
+        name: userAvatarReq
         required: true
-        type: string
-      - description: 图片
-        in: formData
-        name: file
-        required: true
-        type: file
+        schema:
+          $ref: '#/definitions/req.UserAvatarReq'
       produces:
       - application/json
       responses:
@@ -622,6 +659,18 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 搜索用户帖子
+      tags:
+      - User
+  /user/token/qiniu:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 获取七牛云token
       tags:
       - User
   /user/username:

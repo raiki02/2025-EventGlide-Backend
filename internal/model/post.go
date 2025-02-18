@@ -22,5 +22,4 @@ type PostDraft struct {
 	Bid       string    `json:"bid" gorm:"column:bid; type:string; comment:绑定id"`
 	Title     string    `json:"title" gorm:"column:title; type:varchar(255); comment:标题; not null"`
 	Content   string    `json:"content" gorm:"column:content; type:text; comment:详细内容; not null"`
-	//todo db img column delete
 }

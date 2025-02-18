@@ -31,7 +31,7 @@ func NewActDao(db *gorm.DB) *ActDao {
 	}
 }
 
-func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
+func (ad *ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 	if ad.CheckExist(c, a) {
 		return errors.New("activity exist")
 	} else {
@@ -39,11 +39,11 @@ func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 	}
 }
 
-func (ad ActDao) CreateDraft(c *gin.Context, d model.ActivityDraft) error {
+func (ad *ActDao) CreateDraft(c *gin.Context, d model.ActivityDraft) error {
 	return ad.db.Create(&d).Error
 }
 
-func (ad ActDao) LoadDraft(c *gin.Context, s string, b string) (*model.ActivityDraft, error) {
+func (ad *ActDao) LoadDraft(c *gin.Context, s string, b string) (*model.ActivityDraft, error) {
 	var d model.ActivityDraft
 	err := ad.db.Where("creator_id = ? and bid = ?", s, b).Find(&d).Error
 	if err != nil {
@@ -54,7 +54,7 @@ func (ad ActDao) LoadDraft(c *gin.Context, s string, b string) (*model.ActivityD
 
 // TODO: 是否换成按页展示，每页返回固定个数活动
 
-func (ad ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]model.Activity, error) {
+func (ad *ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]model.Activity, error) {
 	var as []model.Activity
 	if keyword == "" {
 		err := ad.db.Where("creator_id = ? ", s).Find(&as).Error
@@ -71,7 +71,7 @@ func (ad ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]mode
 	}
 }
 
-func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
+func (ad *ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("name like ?", fmt.Sprintf("%%%s%%", n)).Find(&as).Error
 	if err != nil {
@@ -80,7 +80,7 @@ func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, erro
 	return as, nil
 }
 
-func (ad ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, error) {
+func (ad *ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("start_time like ?", fmt.Sprintf("%%%s%%", d)).Find(&as).Error
 	if err != nil {
@@ -89,7 +89,7 @@ func (ad ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, erro
 	return as, nil
 }
 
-func (ad ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {
+func (ad *ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {
 	ret := ad.db.Where(&model.Activity{
 		Type:       a.Type,
 		Host:       a.Host,
@@ -104,7 +104,7 @@ func (ad ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {
 	}
 }
 
-func (ad ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
+func (ad *ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 	ret := ad.db.Where(&model.Activity{
 		Type:       a.Type,
 		Host:       a.Host,
@@ -120,7 +120,7 @@ func (ad ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 }
 
 // todo 过滤器
-func (ad ActDao) FindActBySearches(c *gin.Context, a *model.Activity) ([]model.Activity, error) {
+func (ad *ActDao) FindActBySearches(c *gin.Context, a *model.Activity) ([]model.Activity, error) {
 	var as []model.Activity
 	h := fmt.Sprintf("%%%s%%", a.Host)
 	l := fmt.Sprintf("%%%s%%", a.Location)
@@ -131,4 +131,8 @@ func (ad ActDao) FindActBySearches(c *gin.Context, a *model.Activity) ([]model.A
 	err := ad.db.Where("host like ? and location like ? and type like ? and start_time like ? and end_time like ? and if_register like ?", h, l, t, st, et, ir).Find(&as).Error
 	//err := ad.db.Where(&a).Find(&as).Error
 	return as, err
+}
+
+func (ad *ActDao) UpdateNumbers(c *gin.Context, Sid, Bid string, likes, comments int) error {
+	return ad.db.Model(&model.Activity{}).Where("creator_id = ? and bid = ?", Sid, Bid).Update("likes", likes).Update("comments", comments).Error
 }

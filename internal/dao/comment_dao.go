@@ -34,3 +34,11 @@ func (cd *CommentDao) DeleteComment(c *gin.Context, sid string, targetID string)
 func (cd *CommentDao) AnswerComment(c *gin.Context, cmt *model.SubComment) error {
 	return cd.db.Create(cmt).Error
 }
+
+func (cd *CommentDao) UpdateNumbersForComments(c *gin.Context, sid, bid string, like, comment int) error {
+	return cd.db.Model(&model.Comment{}).Where("creator_id = ? AND bid = ?", sid, bid).Update("like", like).Update("comment", comment).Error
+}
+
+func (cd *CommentDao) UpdateNumbersForAnswers(c *gin.Context, sid, bid string, like int) error {
+	return cd.db.Model(&model.SubComment{}).Where("creator_id = ? AND bid = ?", sid, bid).Update("like", like).Error
+}

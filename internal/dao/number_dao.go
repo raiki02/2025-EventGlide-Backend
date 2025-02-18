@@ -33,3 +33,15 @@ func (nd *NumberDao) CutLikesNum(c *gin.Context, sid string, bid string) error {
 func (nd *NumberDao) AddCommentsNum(c *gin.Context, n *model.Number) error {
 	return nd.db.Create(n).Error
 }
+
+func (nd *NumberDao) GetLikesNum(c *gin.Context, sid string, bid string) int {
+	var num int64
+	nd.db.Model(&model.Number{}).Where("sid = ? AND bid = ? AND topic = ?", sid, bid, "like").Count(&num)
+	return int(num)
+}
+
+func (nd *NumberDao) GetCommentsNum(c *gin.Context, sid string, bid string) int {
+	var num int64
+	nd.db.Model(&model.Number{}).Where("sid = ? AND bid = ? AND topic = ?", sid, bid, "comment").Count(&num)
+	return int(num)
+}

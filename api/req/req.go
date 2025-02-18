@@ -3,9 +3,9 @@ package req
 // todo 写在api的res/req中
 
 type NumberReq struct {
-	Topic     string
-	Msg       string `json:"msg"`
-	ExcuterID string `json:"excuter_id"`
+	Topic string
+	Sid   string `json:"sid"`
+	Bid   string `json:"bid"`
 }
 
 type ActSearchReq struct {

@@ -26,6 +26,7 @@ func (nr *NumberRouter) RegisterNumberRouters() {
 	{
 		number.POST("/like", nr.nc.AddLikesNum())
 		number.POST("/comment", nr.nc.AddCommentsNum())
-		number.POST("/dislike", nr.nc.CutLikesNum())
+		number.POST("/unlike", nr.nc.CutLikesNum())
+		number.POST("/update", nr.nc.UpdateNumbers())
 	}
 }

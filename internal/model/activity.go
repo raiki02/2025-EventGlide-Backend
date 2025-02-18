@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/gin-gonic/gin"
 	"time"
 )
 
@@ -35,10 +34,6 @@ type Activity struct {
 	Audition       string `json:"audition"`
 
 	Description string `json:"description" gorm:"null;type: text;comment:活动描述;column:description"`
-}
-
-func (act Activity) GetImgUrl(ctx *gin.Context) error {
-	return nil
 }
 
 type ActivityDraft struct {

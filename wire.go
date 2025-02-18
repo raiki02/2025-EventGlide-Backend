@@ -24,6 +24,7 @@ func InitApp(e *gin.Engine) *server.Server {
 		dao.NewUserDao,
 		dao.NewPostDao,
 		dao.NewCommentDao,
+		dao.NewNumberDao,
 		service.NewImgUploader,
 		service.NewPostService,
 		service.NewUserService,
