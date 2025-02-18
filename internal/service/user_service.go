@@ -9,6 +9,7 @@ import (
 	"github.com/raiki02/EG/internal/model"
 	"github.com/spf13/viper"
 	"io"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
@@ -53,8 +54,8 @@ func (s *UserService) CreateUser(ctx *gin.Context, sid string) error {
 	user := &model.User{
 		StudentId: sid,
 		Name:      sid,
-		Avatar:    viper.GetString("imgbed.defaultAvatar"),
-		School:    "Central China Normal University",
+		Avatar:    genRandomAvatar(ctx),
+		School:    "华中师范大学",
 	}
 	err := s.udh.Create(ctx, user)
 	if err != nil {
@@ -133,6 +134,19 @@ func (s *UserService) SearchUserPost(ctx *gin.Context, studentId string, keyword
 		return nil, err
 	}
 	return posts, nil
+}
+
+func genRandomAvatar(c *gin.Context) string {
+	avatars := []string{
+		viper.GetString("imgbed.defaultAvatar1"),
+		viper.GetString("imgbed.defaultAvatar2"),
+	}
+	n := rand.Intn(10)
+	if n == 9 {
+		return avatars[1]
+	} else {
+		return avatars[0]
+	}
 }
 
 //---一站式账号登录
