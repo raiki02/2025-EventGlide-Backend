@@ -3,9 +3,6 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
-	"github.com/raiki02/EG/internal/cache"
-	"github.com/raiki02/EG/internal/dao"
-	"github.com/raiki02/EG/internal/middleware"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
@@ -21,19 +18,14 @@ type ActControllerHdl interface {
 }
 
 type ActController struct {
-	ad   *dao.ActDao
-	jwth *middleware.Jwt
-	ch   *cache.Cache
-	iu   *service.ImgUploader
-	as   *service.ActivityService
+	as *service.ActivityService
+	iu *service.ImgUploader
 }
 
-func NewActController(ad *dao.ActDao, jwth *middleware.Jwt, ch *cache.Cache, iu *service.ImgUploader) *ActController {
+func NewActController(as *service.ActivityService, iu *service.ImgUploader) *ActController {
 	return &ActController{
-		ad:   ad,
-		ch:   ch,
-		jwth: jwth,
-		iu:   iu,
+		as: as,
+		iu: iu,
 	}
 }
 
@@ -51,36 +43,25 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 		//host,location,startTime,endTime,ifRegister,images,name
 		err := c.ShouldBindJSON(&act)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 
 		//处理用户上传图像给图床，返回储存url
 		urls, err := ac.iu.ProcessImg(c)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 		act.Images = urls
 
-		//创建首帖关联id
-		err = act.SetBid(c)
+		err = ac.as.NewAct(c, &act)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		//防止重复创建活动
-		if ac.ad.CheckExist(c, act) {
-			tools.ReturnMSG(c, "error exist", nil)
-			return
-		} else {
-			err := ac.ad.CreateAct(c, act)
-			if err != nil {
-				tools.ReturnMSG(c, err.Error(), nil)
-				return
-			}
-			tools.ReturnMSG(c, "success", act)
-		}
+
+		c.JSON(200, tools.ReturnMSG(c, "success", act))
 	}
 }
 
@@ -108,7 +89,7 @@ func (ac ActController) NewDraft() gin.HandlerFunc {
 		//直接创建，不管有没有类似的
 		//不保存上传图片，考虑图床空间
 		//不设置绑定id，不一定会发布
-		err = ac.ad.CreateDraft(c, d)
+		err = ac.as.NewDraft(c, d)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -126,10 +107,10 @@ func (ac ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		n := c.Query("name")
 		if n == "" {
-			tools.ReturnMSG(c, "query cannot be nil", nil)
+			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
-		as, err := ac.ad.FindActByName(c, n)
+		as, err := ac.as.FindActByName(c, n)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -149,15 +130,15 @@ func (ac ActController) FindActBySearches() gin.HandlerFunc {
 		var actReq req.ActSearchReq
 		err := c.ShouldBindJSON(&actReq)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 		as, err := ac.as.FindActBySearches(c, &actReq)
 		if err != nil {
-			tools.ReturnMSG(c, err.Error(), nil)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "success", as)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
@@ -172,10 +153,10 @@ func (ac ActController) FindActByDate() gin.HandlerFunc {
 		// 02-01
 		d := c.Query("date")
 		if d == "" {
-			tools.ReturnMSG(c, "query cannot be nil", nil)
+			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
 			return
 		}
-		as, err := ac.ad.FindActByDate(c, d)
+		as, err := ac.as.FindActByDate(c, d)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return

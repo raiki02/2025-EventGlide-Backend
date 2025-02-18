@@ -30,6 +30,7 @@ func InitApp(e *gin.Engine) *server.Server {
 		service.NewCCNUService,
 		service.NewCommentService,
 		service.NewNumberService,
+		service.NewActivityService,
 		middleware.NewJwt,
 		middleware.NewCors,
 		controller.NewActController,

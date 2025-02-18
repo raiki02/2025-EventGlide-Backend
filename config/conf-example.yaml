@@ -1,7 +1,7 @@
 mysql:
   dsn: username:password@tcp(addr)/dbname?options
-  maxIdleConns: max-idle-connections
-  maxOpenConns: max-open-connections
+  maxIdleConns: 20 # max-idle-connections
+  maxOpenConns: 10 # max-open-connections
 
 redis:
   addr: addr
@@ -11,9 +11,10 @@ kafka:
 
 jwt:
   key: secret-key-for-jwt
+  ttl: 259200 # time to live
 
 imgbed:
   accessKey: your-access-key
   secretKey: your-secret-key
   bucket: bucket-name
-  imgUrl: img-store-url
+  imgUrl:   # img-store-url

@@ -1,8 +1,6 @@
 package model
 
-import (
-	"time"
-)
+import "time"
 
 /*
 	post -> comment -> subcomment 独立
@@ -14,17 +12,21 @@ act-post -> comment -> subcomment 共享
 获取bid，制作评论发布：评论id，发布者id，评论内容
 回复评论，获取bid，评论id，制作回复：回复id，回复者id，回复内容
 */
+//for post/act
 type Comment struct {
-	CreatedAt time.Time `json:"created_at" gorm:"column: created_at; not null; type: datetime; comment: 创建时间"`
-	DeletedAt time.Time `json:"deleted_at" gorm:"column: deleted_at; type: datetime; comment: 删除时间"`
+	CreatedAt   time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间"`
+	CommentID   uint      `json:"comment_id" gorm:"primary_key;column:comment_id; type:int(10) unsigned; not null; auto_increment; comment:评论id"`
+	CreatorID   string    `json:"creator_id" gorm:"column:creator_id; type:string; comment:创建者id"`
+	Bid         string    `json:"bid" gorm:"column:bid; type:string; comment:绑定id"`
+	Likes       int       `json:"likes" gorm:"column:likes; type:int; comment:点赞数;default:0"`
+	SubComments int       `json:"sub_comments" gorm:"column:sub_comments; type:int; comment:回复数;default:0"`
+}
 
-	CommentID string `json:"comment_id" gorm:"column: comment_id; not null; type: varchar(255); comment: 评论ID;primary_key"`
-	PosterID  string `json:"poster_id" gorm:"column: poster_id; not null; type: varchar(255); comment: 发布者ID"`
-	TargetID  string `json:"target_id" gorm:"column: targareet_id; not null; type: varchar(255); comment: 帖子id或者绑定id"`
-	ParentID  string `json:"parent_id" gorm:"column: pnt_id; type: varchar(255); comment: 父评论id,专用于回复"`
-
-	Content string `json:"content" gorm:"column: content; not null; type: text; comment: 评论内容"`
-
-	Likes   int `json:"likes" gorm:"column: likes; default:0; type: int; comment: 点赞数"`
-	Answers int `json:"answers" gorm:"column: answers; default:0; type: int; comment: 回复数"`
+// for comment
+type SubComment struct {
+	CreatedAt    time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间"`
+	SubCommentID uint      `json:"sub_comment_id" gorm:"primary_key;column:sub_comment_id; type:int(10) unsigned; not null; auto_increment; comment:回复id"`
+	CreatorID    string    `json:"creator_id" gorm:"column:creator_id; type:string; comment:创建者id"`
+	CommentID    string    `json:"comment_id" gorm:"column:comment_id; type:string; comment:评论id"`
+	Likes        int       `json:"likes" gorm:"column:likes; type:int; comment:点赞数;default:0"`
 }

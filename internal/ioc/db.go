@@ -31,14 +31,15 @@ func InitDB() *gorm.DB {
 	return db
 }
 
-// 用户，活动，活动草稿
-
 func migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&model.User{},
 		&model.Activity{},
 		&model.ActivityDraft{},
 		&model.Comment{},
+		&model.SubComment{},
 		&model.Post{},
+		&model.PostDraft{},
+		&model.MQ{},
 	)
 }

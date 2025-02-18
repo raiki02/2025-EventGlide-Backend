@@ -26,7 +26,7 @@ func (ur *UserRouter) RegisterUserRouters() {
 		user.GET("/info", ur.uc.GetUserInfo())
 		user.POST("/avatar", ur.uc.UpdateAvatar())
 		user.POST("/username", ur.uc.UpdateUsername())
-		user.GET("/search/act", ur.uc.SearchUserAct())
-		user.GET("/search/post", ur.uc.SearchUserPost())
+		user.POST("/search/act", ur.uc.SearchUserAct())
+		user.POST("/search/post", ur.uc.SearchUserPost())
 	}
 }

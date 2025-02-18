@@ -77,34 +77,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/act/details": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Activity"
-                ],
-                "summary": "通过bid查找活动",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "绑定id",
-                        "name": "bid",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
         "/act/draft": {
             "post": {
                 "description": "not finished",
@@ -600,7 +572,7 @@ const docTemplate = `{
             }
         },
         "/user/search/act": {
-            "get": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -610,18 +582,13 @@ const docTemplate = `{
                 "summary": "搜索用户活动",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "学号",
-                        "name": "sid",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键字",
-                        "name": "keyword",
-                        "in": "query",
-                        "required": true
+                        "description": "搜索请求",
+                        "name": "ureq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UserSearchReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -635,7 +602,7 @@ const docTemplate = `{
             }
         },
         "/user/search/post": {
-            "get": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -645,18 +612,13 @@ const docTemplate = `{
                 "summary": "搜索用户帖子",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "学号",
-                        "name": "sid",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键字",
-                        "name": "keyword",
-                        "in": "query",
-                        "required": true
+                        "description": "搜索请求",
+                        "name": "ureq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UserSearchReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -729,10 +691,7 @@ const docTemplate = `{
                 "creator_id": {
                     "type": "string"
                 },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "details": {
+                "description": {
                     "type": "string"
                 },
                 "end_time": {
@@ -858,7 +817,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bid": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "comments": {
                     "type": "integer"
@@ -869,7 +828,7 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "deleted_at": {
+                "creator_id": {
                     "type": "string"
                 },
                 "img_urls": {
@@ -877,9 +836,6 @@ const docTemplate = `{
                 },
                 "likes": {
                     "type": "integer"
-                },
-                "poster_id": {
-                    "type": "string"
                 },
                 "title": {
                     "type": "string"
@@ -919,6 +875,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.UserSearchReq": {
+            "type": "object",
+            "properties": {
+                "keyword": {
+                    "type": "string"
+                },
+                "sid": {
                     "type": "string"
                 }
             }

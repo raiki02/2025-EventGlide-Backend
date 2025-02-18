@@ -16,3 +16,19 @@ type ActSearchReq struct {
 	Location   string `json:"location"`
 	IfRegister string `json:"if_register"`
 }
+
+func (asr *ActSearchReq) ToMap() map[string]string {
+	m := make(map[string]string)
+	m["type"] = asr.Type
+	m["start_time"] = asr.StartTime
+	m["end_time"] = asr.EndTime
+	m["host"] = asr.Host
+	m["location"] = asr.Location
+	m["if_register"] = asr.IfRegister
+	return m
+}
+
+type UserSearchReq struct {
+	Sid     string `json:"sid"`
+	Keyword string `json:"keyword"`
+}

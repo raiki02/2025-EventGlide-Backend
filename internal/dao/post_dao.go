@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+	"fmt"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
@@ -34,16 +35,12 @@ func (pd *PostDao) GetAllPost(ctx context.Context) ([]model.Post, error) {
 }
 
 func (pd *PostDao) CreatePost(ctx context.Context, post *model.Post) error {
-	err := pd.db.Create(post).Error
-	if err != nil {
-		return err
-	}
-	return nil
+	return pd.db.Create(post).Error
 }
 
 func (pd *PostDao) FindPostByName(ctx context.Context, name string) ([]model.Post, error) {
 	var posts []model.Post
-	err := pd.db.Where("name = ?", "%name%").Find(&posts).Error
+	err := pd.db.Where("name = ?", fmt.Sprintf("%%%s%%", name)).Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}
@@ -61,14 +58,14 @@ func (pd *PostDao) DeletePost(ctx context.Context, post *model.Post) error {
 func (pd *PostDao) FindPostByUser(ctx context.Context, sid string, keyword string) ([]model.Post, error) {
 	if keyword == "" {
 		var posts []model.Post
-		err := pd.db.Where("user_id = ?", sid).Find(&posts).Error
+		err := pd.db.Where("creator_id = ?", sid).Find(&posts).Error
 		if err != nil {
 			return nil, err
 		}
 		return posts, nil
 	} else {
 		var posts []model.Post
-		err := pd.db.Where("user_id = ? and name like ?", sid, "%keyword%").Find(&posts).Error
+		err := pd.db.Where("creator_id = ? and title like ?", sid, fmt.Sprintf("%%%s%%", keyword)).Find(&posts).Error
 		if err != nil {
 			return nil, err
 		}

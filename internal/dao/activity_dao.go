@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
@@ -30,11 +31,11 @@ func NewActDao(db *gorm.DB) *ActDao {
 	}
 }
 
-func (ad ActDao) CreateAct(c *gin.Context, a model.Activity) error {
+func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 	if ad.CheckExist(c, a) {
 		return errors.New("activity exist")
 	} else {
-		return ad.db.Create(&a).Error
+		return ad.db.Create(a).Error
 	}
 }
 
@@ -47,13 +48,13 @@ func (ad ActDao) CreateDraft(c *gin.Context, d model.ActivityDraft) error {
 func (ad ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]model.Activity, error) {
 	var as []model.Activity
 	if keyword == "" {
-		err := ad.db.Where("host = ? ", s).Find(&as).Error
+		err := ad.db.Where("creator_id = ? ", s).Find(&as).Error
 		if err != nil {
 			return nil, err
 		}
 		return as, nil
 	} else {
-		err := ad.db.Where("host = ? and name like ?", s, "%keyword%").Find(&as).Error
+		err := ad.db.Where("creator_id = ? and name like ?", s, fmt.Sprintf("%%%s%%", keyword)).Find(&as).Error
 		if err != nil {
 			return nil, err
 		}
@@ -63,7 +64,7 @@ func (ad ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]mode
 
 func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.Where("name like ?", "%n%").Find(&as).Error
+	err := ad.db.Where("name like ?", fmt.Sprintf("%%%s%%", n)).Find(&as).Error
 	if err != nil {
 		return nil, err
 	}
@@ -72,14 +73,14 @@ func (ad ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, erro
 
 func (ad ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.Where("start_time like ?", "%d%").Find(&as).Error
+	err := ad.db.Where("start_time like ?", fmt.Sprintf("%%%s%%", d)).Find(&as).Error
 	if err != nil {
 		return nil, err
 	}
 	return as, nil
 }
 
-func (ad ActDao) CheckExist(c *gin.Context, a model.Activity) bool {
+func (ad ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {
 	ret := ad.db.Where(&model.Activity{
 		Type:       a.Type,
 		Host:       a.Host,
@@ -111,9 +112,13 @@ func (ad ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 
 func (ad ActDao) FindActBySearches(c *gin.Context, a *model.Activity) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.Where(&a).Find(&as).Error
-	if err != nil {
-		return nil, err
-	}
-	return as, nil
+	h := fmt.Sprintf("%%%s%%", a.Host)
+	l := fmt.Sprintf("%%%s%%", a.Location)
+	t := fmt.Sprintf("%%%s%%", a.Type)
+	st := fmt.Sprintf("%%%s%%", a.StartTime)
+	et := fmt.Sprintf("%%%s%%", a.EndTime)
+	ir := fmt.Sprintf("%%%s%%", a.IfRegister)
+	err := ad.db.Where("host like ? and location like ? and type like ? and start_time like ? and end_time like ? and if_register like ?", h, l, t, st, et, ir).Find(&as).Error
+	//err := ad.db.Where(&a).Find(&as).Error
+	return as, err
 }

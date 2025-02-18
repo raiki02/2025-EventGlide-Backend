@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
 )
@@ -140,19 +141,22 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 // @Tags User
 // @Summary 搜索用户活动
 // @Produce json
-// @Param sid query string true "学号"
-// @Param keyword query string true "关键字"
+// @Param ureq body req.UserSearchReq true "搜索请求"
 // @Success 200 {object} resp.Resp
-// @Router /user/search/act [get]
+// @Router /user/search/act [post]
 func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sid := c.Query("sid")
-		keyword := c.Query("keyword")
-		if sid == "" {
+		var ureq req.UserSearchReq
+		err := c.ShouldBindJSON(&ureq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if ureq.Sid == "" {
 			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
-		acts, err := uc.ush.SearchUserAct(c, sid, keyword)
+		acts, err := uc.ush.SearchUserAct(c, ureq.Sid, ureq.Keyword)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "search user act fail", nil))
 			return
@@ -164,19 +168,22 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 // @Tags User
 // @Summary 搜索用户帖子
 // @Produce json
-// @Param sid query string true "学号"
-// @Param keyword query string true "关键字"
+// @Param ureq body req.UserSearchReq true "搜索请求"
 // @Success 200 {object} resp.Resp
-// @Router /user/search/post [get]
+// @Router /user/search/post [post]
 func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sid := c.Query("sid")
-		keyword := c.Query("keyword")
-		if sid == "" {
+		var ureq req.UserSearchReq
+		err := c.ShouldBindJSON(&ureq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if ureq.Sid == "" {
 			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
-		posts, err := uc.ush.SearchUserPost(c, sid, keyword)
+		posts, err := uc.ush.SearchUserPost(c, ureq.Sid, ureq.Keyword)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "search user post fail", nil))
 			return

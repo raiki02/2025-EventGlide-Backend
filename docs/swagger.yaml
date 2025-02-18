@@ -15,9 +15,7 @@ definitions:
         type: string
       creator_id:
         type: string
-      deleted_at:
-        type: string
-      details:
+      description:
         type: string
       end_time:
         type: string
@@ -107,21 +105,19 @@ definitions:
   model.Post:
     properties:
       bid:
-        type: integer
+        type: string
       comments:
         type: integer
       content:
         type: string
       created_at:
         type: string
-      deleted_at:
+      creator_id:
         type: string
       img_urls:
         type: string
       likes:
         type: integer
-      poster_id:
-        type: string
       title:
         type: string
     type: object
@@ -147,6 +143,13 @@ definitions:
       msg:
         type: string
       topic:
+        type: string
+    type: object
+  req.UserSearchReq:
+    properties:
+      keyword:
+        type: string
+      sid:
         type: string
     type: object
   resp.Resp:
@@ -199,24 +202,6 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 通过日期查找活动
-      tags:
-      - Activity
-  /act/details:
-    post:
-      parameters:
-      - description: 绑定id
-        in: formData
-        name: bid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/resp.Resp'
-      summary: 通过bid查找活动
       tags:
       - Activity
   /act/draft:
@@ -538,18 +523,14 @@ paths:
       tags:
       - User
   /user/search/act:
-    get:
+    post:
       parameters:
-      - description: 学号
-        in: query
-        name: sid
+      - description: 搜索请求
+        in: body
+        name: ureq
         required: true
-        type: string
-      - description: 关键字
-        in: query
-        name: keyword
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.UserSearchReq'
       produces:
       - application/json
       responses:
@@ -561,18 +542,14 @@ paths:
       tags:
       - User
   /user/search/post:
-    get:
+    post:
       parameters:
-      - description: 学号
-        in: query
-        name: sid
+      - description: 搜索请求
+        in: body
+        name: ureq
         required: true
-        type: string
-      - description: 关键字
-        in: query
-        name: keyword
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.UserSearchReq'
       produces:
       - application/json
       responses:
