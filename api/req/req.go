@@ -37,3 +37,9 @@ type DraftReq struct {
 	Sid string `json:"sid"`
 	Bid string `json:"bid"`
 }
+
+type CommentReq struct {
+	CreatorID string `json:"creator_id"`
+	TargetID  string `json:"target_id"`
+	Content   string `json:"content"`
+}

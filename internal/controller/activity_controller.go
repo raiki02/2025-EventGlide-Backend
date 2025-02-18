@@ -98,6 +98,13 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 	}
 }
 
+// @Tags Activity
+// @Summary 加载活动草稿
+// @Produce json
+// @Accept json
+// @Param draft body req.DraftReq true "草稿请求"
+// @Success 200 {object} resp.Resp
+// @Router /act/load [post]
 func (ac ActController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dReq req.DraftReq

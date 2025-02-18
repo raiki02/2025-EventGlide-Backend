@@ -111,6 +111,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/act/load": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Activity"
+                ],
+                "summary": "加载活动草稿",
+                "parameters": [
+                    {
+                        "description": "草稿请求",
+                        "name": "draft",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.DraftReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
         "/act/name": {
             "get": {
                 "produces": [
@@ -171,9 +204,6 @@ const docTemplate = `{
         },
         "/comment/answer": {
             "post": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -183,12 +213,12 @@ const docTemplate = `{
                 "summary": "回复评论",
                 "parameters": [
                     {
-                        "description": "评论",
-                        "name": "comment",
+                        "description": "回复",
+                        "name": "CommentReq",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Comment"
+                            "$ref": "#/definitions/req.CommentReq"
                         }
                     }
                 ],
@@ -204,9 +234,6 @@ const docTemplate = `{
         },
         "/comment/create": {
             "post": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -217,11 +244,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "评论",
-                        "name": "comment",
+                        "name": "CommentReq",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Comment"
+                            "$ref": "#/definitions/req.CommentReq"
                         }
                     }
                 ],
@@ -247,8 +274,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "评论ID",
-                        "name": "comment_id",
+                        "description": "学号",
+                        "name": "sid",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "目标id",
+                        "name": "target_id",
                         "in": "formData",
                         "required": true
                     }
@@ -416,6 +450,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/post/draft": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Post"
+                ],
+                "summary": "创建草稿",
+                "parameters": [
+                    {
+                        "description": "草稿",
+                        "name": "post",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PostDraft"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
         "/post/find": {
             "get": {
                 "produces": [
@@ -432,6 +499,39 @@ const docTemplate = `{
                         "name": "name",
                         "in": "query",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/load": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Post"
+                ],
+                "summary": "加载草稿",
+                "parameters": [
+                    {
+                        "description": "草稿请求",
+                        "name": "draft",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.DraftReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -707,7 +807,7 @@ const docTemplate = `{
                 "if_register": {
                     "type": "string"
                 },
-                "images": {
+                "img_urls": {
                     "type": "string"
                 },
                 "likes": {
@@ -736,21 +836,16 @@ const docTemplate = `{
         "model.ActivityDraft": {
             "type": "object",
             "properties": {
-                "capacity": {
-                    "description": "descriptive",
-                    "type": "integer"
-                },
-                "created_at": {
-                    "description": "活动id",
+                "bid": {
                     "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
                 },
                 "creator_id": {
                     "type": "string"
                 },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "details": {
+                "description": {
                     "type": "string"
                 },
                 "end_time": {
@@ -772,43 +867,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "start_time": {
-                    "description": "complex",
                     "type": "string"
                 },
                 "type": {
-                    "description": "divided by function\nbasic",
-                    "type": "string"
-                }
-            }
-        },
-        "model.Comment": {
-            "type": "object",
-            "properties": {
-                "answers": {
-                    "type": "integer"
-                },
-                "comment_id": {
-                    "type": "string"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "likes": {
-                    "type": "integer"
-                },
-                "parent_id": {
-                    "type": "string"
-                },
-                "poster_id": {
-                    "type": "string"
-                },
-                "target_id": {
                     "type": "string"
                 }
             }
@@ -842,6 +903,26 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PostDraft": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "creator_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "req.ActSearchReq": {
             "type": "object",
             "properties": {
@@ -861,6 +942,31 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.CommentReq": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "creator_id": {
+                    "type": "string"
+                },
+                "target_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.DraftReq": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "sid": {
                     "type": "string"
                 }
             }

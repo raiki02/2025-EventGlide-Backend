@@ -26,7 +26,7 @@ definitions:
         type: string
       if_register:
         type: string
-      images:
+      img_urls:
         type: string
       likes:
         description: interactive
@@ -48,17 +48,13 @@ definitions:
     type: object
   model.ActivityDraft:
     properties:
-      capacity:
-        description: descriptive
-        type: integer
-      created_at:
-        description: 活动id
+      bid:
         type: string
+      capacity:
+        type: integer
       creator_id:
         type: string
-      deleted_at:
-        type: string
-      details:
+      description:
         type: string
       end_time:
         type: string
@@ -73,33 +69,8 @@ definitions:
       register_method:
         type: string
       start_time:
-        description: complex
         type: string
       type:
-        description: |-
-          divided by function
-          basic
-        type: string
-    type: object
-  model.Comment:
-    properties:
-      answers:
-        type: integer
-      comment_id:
-        type: string
-      content:
-        type: string
-      created_at:
-        type: string
-      deleted_at:
-        type: string
-      likes:
-        type: integer
-      parent_id:
-        type: string
-      poster_id:
-        type: string
-      target_id:
         type: string
     type: object
   model.Post:
@@ -121,6 +92,19 @@ definitions:
       title:
         type: string
     type: object
+  model.PostDraft:
+    properties:
+      bid:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      creator_id:
+        type: string
+      title:
+        type: string
+    type: object
   req.ActSearchReq:
     properties:
       end_time:
@@ -134,6 +118,22 @@ definitions:
       start_time:
         type: string
       type:
+        type: string
+    type: object
+  req.CommentReq:
+    properties:
+      content:
+        type: string
+      creator_id:
+        type: string
+      target_id:
+        type: string
+    type: object
+  req.DraftReq:
+    properties:
+      bid:
+        type: string
+      sid:
         type: string
     type: object
   req.NumberReq:
@@ -226,6 +226,27 @@ paths:
       summary: 创建活动草稿
       tags:
       - Activity
+  /act/load:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 草稿请求
+        in: body
+        name: draft
+        required: true
+        schema:
+          $ref: '#/definitions/req.DraftReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 加载活动草稿
+      tags:
+      - Activity
   /act/name:
     get:
       parameters:
@@ -265,15 +286,13 @@ paths:
       - Activity
   /comment/answer:
     post:
-      consumes:
-      - application/json
       parameters:
-      - description: 评论
+      - description: 回复
         in: body
-        name: comment
+        name: CommentReq
         required: true
         schema:
-          $ref: '#/definitions/model.Comment'
+          $ref: '#/definitions/req.CommentReq'
       produces:
       - application/json
       responses:
@@ -286,15 +305,13 @@ paths:
       - Comment
   /comment/create:
     post:
-      consumes:
-      - application/json
       parameters:
       - description: 评论
         in: body
-        name: comment
+        name: CommentReq
         required: true
         schema:
-          $ref: '#/definitions/model.Comment'
+          $ref: '#/definitions/req.CommentReq'
       produces:
       - application/json
       responses:
@@ -308,9 +325,14 @@ paths:
   /comment/delete:
     post:
       parameters:
-      - description: 评论ID
+      - description: 学号
         in: formData
-        name: comment_id
+        name: sid
+        required: true
+        type: string
+      - description: 目标id
+        in: formData
+        name: target_id
         required: true
         type: string
       produces:
@@ -421,6 +443,27 @@ paths:
       summary: 删除帖子
       tags:
       - Post
+  /post/draft:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 草稿
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/model.PostDraft'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 创建草稿
+      tags:
+      - Post
   /post/find:
     get:
       parameters:
@@ -437,6 +480,27 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 通过帖子名查找帖子
+      tags:
+      - Post
+  /post/load:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 草稿请求
+        in: body
+        name: draft
+        required: true
+        schema:
+          $ref: '#/definitions/req.DraftReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 加载草稿
       tags:
       - Post
   /user/avatar:
