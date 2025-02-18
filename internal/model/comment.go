@@ -15,7 +15,7 @@ act-post -> comment -> subcomment 共享
 //for post/act
 type Comment struct {
 	CreatedAt   time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间"`
-	CommentID   uint      `json:"comment_id" gorm:"primary_key;column:comment_id; type:int(10) unsigned; not null; auto_increment; comment:评论id"`
+	CommentID   string    `json:"comment_id" gorm:"primary_key;column:comment_id; type:varchar(255); not null; auto_increment; comment:评论id"`
 	CreatorID   string    `json:"creator_id" gorm:"column:creator_id; type:string; comment:创建者id"`
 	Bid         string    `json:"bid" gorm:"column:bid; type:string; comment:绑定id"`
 	Likes       int       `json:"likes" gorm:"column:likes; type:int; comment:点赞数;default:0"`
@@ -25,7 +25,7 @@ type Comment struct {
 // for comment
 type SubComment struct {
 	CreatedAt    time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间"`
-	SubCommentID uint      `json:"sub_comment_id" gorm:"primary_key;column:sub_comment_id; type:int(10) unsigned; not null; auto_increment; comment:回复id"`
+	SubCommentID string    `json:"sub_comment_id" gorm:"primary_key;column:sub_comment_id; type:varchar(255); not null; auto_increment; comment:回复id"`
 	CreatorID    string    `json:"creator_id" gorm:"column:creator_id; type:string; comment:创建者id"`
 	CommentID    string    `json:"comment_id" gorm:"column:comment_id; type:string; comment:评论id"`
 	Likes        int       `json:"likes" gorm:"column:likes; type:int; comment:点赞数;default:0"`

@@ -45,9 +45,9 @@ func (as *ActivityService) NewAct(c *gin.Context, act *model.Activity) error {
 	}
 	post := &model.Post{
 		Bid:       act.Bid,
-		CreatorId: act.CreatorId,
+		CreatorID: act.CreatorId,
 		Content:   act.Description,
-		ImgUrls:   act.Images,
+		ImgUrls:   act.ImgUrls,
 		Title:     act.Name,
 		CreatedAt: createdAt,
 	}

@@ -53,7 +53,7 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		act.Images = urls
+		act.ImgUrls = urls
 
 		err = ac.as.NewAct(c, &act)
 		if err != nil {
