@@ -133,6 +133,13 @@ func (pr *PostController) CreateDraft() gin.HandlerFunc {
 	}
 }
 
+// @Tags Post
+// @Summary 加载草稿
+// @Produce json
+// @Accept json
+// @Param draft body req.DraftReq true "草稿请求"
+// @Success 200 {object} resp.Resp
+// @Router /post/load [post]
 func (pr *PostController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var draftReq req.DraftReq

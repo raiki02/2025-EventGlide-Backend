@@ -26,7 +26,7 @@ func (ar ActRouter) RegisterActRouters() error {
 	{
 		act.POST("/new", ar.ach.NewAct())
 		act.POST("/draft", ar.ach.NewDraft())
-
+		act.POST("/load", ar.ach.LoadDraft())
 		act.GET("/name", ar.ach.FindActByName())
 		act.GET("/date", ar.ach.FindActByDate())
 		act.POST("/search", ar.ach.FindActBySearches())

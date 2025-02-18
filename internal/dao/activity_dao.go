@@ -12,7 +12,7 @@ type ActDaoHdl interface {
 	CreateAct(*gin.Context, model.Activity) error
 	CreateDraft(*gin.Context, model.ActivityDraft) error
 	DeleteAct(*gin.Context, model.Activity) error
-
+	LoadDraft(*gin.Context, string, string) (*model.ActivityDraft, error)
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 
@@ -41,6 +41,15 @@ func (ad ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 
 func (ad ActDao) CreateDraft(c *gin.Context, d model.ActivityDraft) error {
 	return ad.db.Create(&d).Error
+}
+
+func (ad ActDao) LoadDraft(c *gin.Context, s string, b string) (*model.ActivityDraft, error) {
+	var d model.ActivityDraft
+	err := ad.db.Where("creator_id = ? and bid = ?", s, b).Find(&d).Error
+	if err != nil {
+		return nil, err
+	}
+	return &d, nil
 }
 
 // TODO: 是否换成按页展示，每页返回固定个数活动
@@ -110,6 +119,7 @@ func (ad ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 	}
 }
 
+// todo 过滤器
 func (ad ActDao) FindActBySearches(c *gin.Context, a *model.Activity) ([]model.Activity, error) {
 	var as []model.Activity
 	h := fmt.Sprintf("%%%s%%", a.Host)

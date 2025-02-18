@@ -11,7 +11,7 @@ import (
 type ActControllerHdl interface {
 	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
-
+	LoadDraft() gin.HandlerFunc
 	FindActBySearches() gin.HandlerFunc
 	FindActByName() gin.HandlerFunc
 	FindActByDate() gin.HandlerFunc
@@ -36,7 +36,7 @@ func NewActController(as *service.ActivityService, iu *service.ImgUploader) *Act
 // @Param activity body model.Activity true "活动"
 // @Success 200 {object} resp.Resp
 // @Router /act/create [post]
-func (ac ActController) NewAct() gin.HandlerFunc {
+func (ac *ActController) NewAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var act model.Activity
 		//获取用户填写信息
@@ -76,7 +76,7 @@ func (ac ActController) NewAct() gin.HandlerFunc {
 // @Param draft body model.ActivityDraft true "活动草稿"
 // @Success 200 {object} resp.Resp
 // @Router /act/draft [post]
-func (ac ActController) NewDraft() gin.HandlerFunc {
+func (ac *ActController) NewDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var d model.ActivityDraft
 		//获取用户填写信息
@@ -94,6 +94,24 @@ func (ac ActController) NewDraft() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
+		c.JSON(200, tools.ReturnMSG(c, "success", d.Bid))
+	}
+}
+
+func (ac ActController) LoadDraft() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var dReq req.DraftReq
+		err := c.ShouldBindJSON(&dReq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		d, err := ac.as.LoadDraft(c, dReq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", d))
 	}
 }
 
@@ -103,7 +121,7 @@ func (ac ActController) NewDraft() gin.HandlerFunc {
 // @Param name query string true "名称"
 // @Success 200 {object} resp.Resp
 // @Router /act/name [get]
-func (ac ActController) FindActByName() gin.HandlerFunc {
+func (ac *ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		n := c.Query("name")
 		if n == "" {
@@ -125,7 +143,7 @@ func (ac ActController) FindActByName() gin.HandlerFunc {
 // @Param actSearchReq body req.ActSearchReq true "搜索条件"
 // @Success 200 {object} resp.Resp
 // @Router /act/search [post]
-func (ac ActController) FindActBySearches() gin.HandlerFunc {
+func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var actReq req.ActSearchReq
 		err := c.ShouldBindJSON(&actReq)
@@ -148,7 +166,7 @@ func (ac ActController) FindActBySearches() gin.HandlerFunc {
 // @Param date query string true "日期"
 // @Success 200 {object} resp.Resp
 // @Router /act/date [get]
-func (ac ActController) FindActByDate() gin.HandlerFunc {
+func (ac *ActController) FindActByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 02-01
 		d := c.Query("date")

@@ -14,7 +14,7 @@ import (
 type ActivityServiceHdl interface {
 	NewAct(*gin.Context, *model.Activity) error
 	NewDraft(*gin.Context, model.ActivityDraft) error
-
+	LoadDraft(*gin.Context, req.DraftReq) (*model.ActivityDraft, error)
 	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
@@ -60,12 +60,20 @@ func (as *ActivityService) NewAct(c *gin.Context, act *model.Activity) error {
 }
 
 func (as *ActivityService) NewDraft(c *gin.Context, d model.ActivityDraft) error {
+	d.Bid = tools.GenUUID(c)
 	err := as.ad.CreateDraft(c, d)
 	if err != nil {
 		return err
 	}
 	return nil
+}
 
+func (as *ActivityService) LoadDraft(c *gin.Context, dReq req.DraftReq) (*model.ActivityDraft, error) {
+	d, err := as.ad.LoadDraft(c, dReq.Bid, dReq.Sid)
+	if err != nil {
+		return nil, err
+	}
+	return d, nil
 }
 
 func (as *ActivityService) FindActBySearches(ctx *gin.Context, req *req.ActSearchReq) ([]model.Activity, error) {
