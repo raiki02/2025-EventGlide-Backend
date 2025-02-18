@@ -13,6 +13,8 @@ type PostDaoHdl interface {
 	FindPostByName(context.Context, string) ([]model.Post, error)
 	DeletePost(context.Context, *model.Post) error
 	FindPostByUser(context.Context, string, string) ([]model.Post, error)
+	CreateDraft(context.Context, *model.PostDraft) error
+	LoadDraft(context.Context, string, string) (*model.PostDraft, error)
 }
 
 type PostDao struct {
@@ -71,4 +73,17 @@ func (pd *PostDao) FindPostByUser(ctx context.Context, sid string, keyword strin
 		}
 		return posts, nil
 	}
+}
+
+func (pd *PostDao) CreateDraft(ctx context.Context, draft *model.PostDraft) error {
+	return pd.db.Create(draft).Error
+}
+
+func (pd *PostDao) LoadDraft(ctx context.Context, bid string, sid string) (*model.PostDraft, error) {
+	var draft model.PostDraft
+	err := pd.db.Where("bid = ? and creator_id = ?", bid, sid).First(&draft).Error
+	if err != nil {
+		return nil, err
+	}
+	return &draft, nil
 }

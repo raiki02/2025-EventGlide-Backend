@@ -32,3 +32,8 @@ type UserSearchReq struct {
 	Sid     string `json:"sid"`
 	Keyword string `json:"keyword"`
 }
+
+type DraftReq struct {
+	Sid string `json:"sid"`
+	Bid string `json:"bid"`
+}

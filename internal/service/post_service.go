@@ -3,8 +3,10 @@ package service
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/tools"
 )
 
 type PostServiceHdl interface {
@@ -12,6 +14,8 @@ type PostServiceHdl interface {
 	CreatePost(*gin.Context, *model.Post) error
 	FindPostByName(*gin.Context, string) ([]model.Post, error)
 	DeletePost(*gin.Context, *model.Post) error
+	CreateDraft(*gin.Context, *model.PostDraft) error
+	LoadDraft(*gin.Context, req.DraftReq) (*model.PostDraft, error)
 }
 
 type PostService struct {
@@ -60,4 +64,21 @@ func (ps *PostService) DeletePost(c *gin.Context, post *model.Post) error {
 		return err
 	}
 	return nil
+}
+
+func (ps *PostService) CreateDraft(c *gin.Context, draft *model.PostDraft) error {
+	draft.Bid = tools.GenUUID(c)
+	err := ps.pdh.CreateDraft(c, draft)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ps *PostService) LoadDraft(c *gin.Context, req req.DraftReq) (*model.PostDraft, error) {
+	draft, err := ps.pdh.LoadDraft(c, req.Bid, req.Sid)
+	if err != nil {
+		return nil, err
+	}
+	return draft, nil
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
@@ -12,6 +13,8 @@ type PostControllerHdl interface {
 	CreatePost() gin.HandlerFunc
 	FindPostByName() gin.HandlerFunc
 	DeletePost() gin.HandlerFunc
+	CreateDraft() gin.HandlerFunc
+	LoadDraft() gin.HandlerFunc
 }
 
 type PostController struct {
@@ -103,5 +106,46 @@ func (pc *PostController) DeletePost() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+	}
+}
+
+// @Tags Post
+// @Summary 创建草稿
+// @Produce json
+// @Accept json
+// @Param post body model.PostDraft true "草稿"
+// @Success 200 {object} resp.Resp
+// @Router /post/draft [post]
+func (pr *PostController) CreateDraft() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var postDraft model.PostDraft
+		err := c.ShouldBindJSON(&postDraft)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		err = pr.ps.CreateDraft(c, &postDraft)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", postDraft.Bid))
+	}
+}
+
+func (pr *PostController) LoadDraft() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var draftReq req.DraftReq
+		err := c.ShouldBindJSON(&draftReq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		draft, err := pr.ps.LoadDraft(c, draftReq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", draft))
 	}
 }

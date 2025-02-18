@@ -27,6 +27,8 @@ func (pr *PostRouter) RegisterPostRouters() {
 		post.GET("/list", pr.pch.GetAllPost())
 		post.POST("/create", pr.pch.CreatePost())
 		post.GET("/find", pr.pch.FindPostByName())
+		post.POST("/draft", pr.pch.CreateDraft())
 		post.DELETE("/delete", pr.pch.DeletePost())
+		post.POST("/load", pr.pch.LoadDraft())
 	}
 }
