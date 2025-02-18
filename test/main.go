@@ -1,38 +1,74 @@
 package main
 
-import "fmt"
+import "github.com/IBM/sarama"
 
-type Message string
-
-func NewMessage() Message {
-	return Message("Hi there!")
+type Kafka struct {
+	P *sarama.AsyncProducer
+	C *sarama.Consumer
 }
 
-type Greeter struct {
-	Message Message
+func NewProducer() *sarama.AsyncProducer {
+	conf := sarama.NewConfig()
+	conf.Producer.Return.Successes = true
+	conf.Producer.Return.Errors = true
+	conf.Producer.RequiredAcks = sarama.WaitForAll
+	p, _ := sarama.NewAsyncProducer([]string{"localhost:9092"}, conf)
+	return &p
 }
 
-func NewGreeter(m Message) Greeter {
-	return Greeter{Message: m}
+func NewConsumer() *sarama.Consumer {
+	conf := sarama.NewConfig()
+	conf.Consumer.Return.Errors = true
+	c, _ := sarama.NewConsumer([]string{"localhost:9092"}, conf)
+	return &c
 }
 
-func (g Greeter) Greet() Message {
-	return g.Message
+var K *Kafka
+
+func NewKafka() *Kafka {
+	return &Kafka{
+		P: NewProducer(),
+		C: NewConsumer(),
+	}
 }
 
-type Event struct {
-	Greeter Greeter
+type Number struct {
+	Sid string
+	Bid string
 }
 
-func NewEvent(g Greeter) Event {
-	return Event{Greeter: g}
+// produce
+func (k *Kafka) AddLikesNum() {
+	n := Number{
+		Sid: "123",
+		Bid: "456",
+	}
+	(*k.P).Input() <- &sarama.ProducerMessage{
+		Topic: "likes",
+		Value: sarama.StringEncoder(n.Sid + ":" + n.Bid),
+	}
 }
 
-func (e Event) Start() {
-	msg := e.Greeter.Greet()
-	fmt.Println(msg)
+func CutLikesNum() {
+	n := Number{
+		Sid: "123",
+		Bid: "456",
+	}
+	(*K.P).Input() <- &sarama.ProducerMessage{
+		Topic: "likes",
+		Value: sarama.StringEncoder(n.Sid + ":" + n.Bid),
+	}
 }
 
-func main() {
-	
+func AddCommentsNum() {
+	n := Number{
+		Sid: "123",
+		Bid: "456",
+	}
+	(*K.P).Input() <- &sarama.ProducerMessage{
+		Topic: "comments",
+		Value: sarama.StringEncoder(n.Sid + ":" + n.Bid),
+	}
 }
+
+// consume

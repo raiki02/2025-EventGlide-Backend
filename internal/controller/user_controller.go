@@ -15,6 +15,7 @@ type UserControllerHdl interface {
 	UpdateUsername() gin.HandlerFunc
 	SearchUserAct() gin.HandlerFunc
 	SearchUserPost() gin.HandlerFunc
+	GenQINIUToken() gin.HandlerFunc
 }
 
 type UserController struct {
@@ -97,14 +98,18 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 // @Summary 更新头像
 // @Description not finished
 // @Produce json
-// @Param sid formData string true "学号"
-// @Param file formData file true "图片"
+// @Param userAvatarReq body req.UserAvatarReq true "用户头像更改"
 // @Success 200 {object} resp.Resp
 // @Router /user/avatar [post]
 func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sid := c.PostForm("sid")
-		err := uc.ush.UpdateAvatar(c, sid)
+		var userAvatarReq req.UserAvatarReq
+		err := c.ShouldBind(&userAvatarReq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		err = uc.ush.UpdateAvatar(c, userAvatarReq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "update avatar fail", nil))
 			return
@@ -189,5 +194,17 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "search user post success", posts))
+	}
+}
+
+// @Tags User
+// @Summary 获取七牛云token
+// @Produce json
+// @Success 200 {object} resp.Resp
+// @Router /user/token/qiniu [get]
+func (uc *UserController) GenQINIUToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := uc.ush.GenQINIUToken(c)
+		c.JSON(200, tools.ReturnMSG(c, "gen qiniu token success", token))
 	}
 }

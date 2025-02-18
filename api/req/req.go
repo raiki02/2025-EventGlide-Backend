@@ -3,7 +3,7 @@ package req
 // todo 写在api的res/req中
 
 type NumberReq struct {
-	Topic     string `json:"topic"`
+	Topic     string
 	Msg       string `json:"msg"`
 	ExcuterID string `json:"excuter_id"`
 }
@@ -42,4 +42,9 @@ type CommentReq struct {
 	CreatorID string `json:"creator_id"`
 	TargetID  string `json:"target_id"`
 	Content   string `json:"content"`
+}
+
+type UserAvatarReq struct {
+	Sid       string `json:"sid"`
+	AvatarUrl string `json:"avatar_url"`
 }

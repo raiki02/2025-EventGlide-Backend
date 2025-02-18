@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/dao"
@@ -20,13 +19,11 @@ type PostServiceHdl interface {
 
 type PostService struct {
 	pdh *dao.PostDao
-	iuh *ImgUploader
 }
 
-func NewPostService(pdh *dao.PostDao, iuh *ImgUploader) *PostService {
+func NewPostService(pdh *dao.PostDao) *PostService {
 	return &PostService{
 		pdh: pdh,
-		iuh: iuh,
 	}
 }
 
@@ -39,12 +36,7 @@ func (ps *PostService) GetAllPost(c *gin.Context) ([]model.Post, error) {
 }
 
 func (ps *PostService) CreatePost(c *gin.Context, post *model.Post) error {
-	urls, err := ps.iuh.ProcessImg(c)
-	if err != nil {
-		return errors.New("img upload failed")
-	}
-	post.ImgUrls = urls
-	err = ps.pdh.CreatePost(c, post)
+	err := ps.pdh.CreatePost(c, post)
 	if err != nil {
 		return err
 	}

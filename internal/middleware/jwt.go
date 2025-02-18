@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -32,7 +34,7 @@ func NewJwt(rdb *redis.Client) *Jwt {
 func (c *Jwt) GenToken(ctx *gin.Context, sid string) string {
 	claims := jwt.RegisteredClaims{
 		ID:        uuid.New().String(),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(setTTL())),
 		Subject:   sid,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -46,7 +48,7 @@ func (c *Jwt) StoreInRedis(ctx *gin.Context, sid string, token string) error {
 	id := c.parseTokenId(token)
 	key := "token:" + id
 	//id -> sid
-	err := c.rdb.Set(ctx, key, sid, time.Hour*72).Err()
+	err := c.rdb.Set(ctx, key, sid, setTTL()).Err()
 	if err != nil {
 		return err
 	}
@@ -78,7 +80,8 @@ func (c *Jwt) ClearToken(ctx *gin.Context, token string) error {
 }
 
 func (c *Jwt) parseTokenId(token string) string {
-	token = token[7:] //去掉bearer
+	// "Bearer token" to token
+	_, token, _ = strings.Cut(token, " ")
 	t, _ := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return c.jwtKey, nil
 	})
@@ -86,4 +89,9 @@ func (c *Jwt) parseTokenId(token string) string {
 		return c.ID
 	}
 	return ""
+}
+
+func setTTL() time.Duration {
+	ttl, _ := strconv.Atoi(viper.GetString("jwt.ttl"))
+	return time.Second * time.Duration(ttl)
 }

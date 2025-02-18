@@ -40,20 +40,12 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var act model.Activity
 		//获取用户填写信息
-		//host,location,startTime,endTime,ifRegister,images,name
+		//host,location,startTime,endTime,ifRegister,image_urls ,name
 		err := c.ShouldBindJSON(&act)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-
-		//处理用户上传图像给图床，返回储存url
-		urls, err := ac.iu.ProcessImg(c)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		act.ImgUrls = urls
 
 		err = ac.as.NewAct(c, &act)
 		if err != nil {
@@ -65,9 +57,6 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 	}
 }
 
-// @草稿逻辑：保存未完成上传的活动填写信息，绑定用户id（只能调用自己草稿），在上传后应该销毁，无法再次被调用到
-// @将draft传给前端，前端获取字段信息，自动填入表中
-// @需要用户单独调用（加载草稿）
 // @Tags Activity
 // @Summary 创建活动草稿
 // @Description not finished
@@ -102,7 +91,7 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 // @Summary 加载活动草稿
 // @Produce json
 // @Accept json
-// @Param draft body req.DraftReq true "草稿请求"
+// @Param draft body req.DraftReq true "加载草稿"
 // @Success 200 {object} resp.Resp
 // @Router /act/load [post]
 func (ac ActController) LoadDraft() gin.HandlerFunc {
@@ -125,7 +114,7 @@ func (ac ActController) LoadDraft() gin.HandlerFunc {
 // @Tags Activity
 // @Summary 通过名称查找活动
 // @Produce json
-// @Param name query string true "名称"
+// @Param name query string true "名称查找"
 // @Success 200 {object} resp.Resp
 // @Router /act/name [get]
 func (ac *ActController) FindActByName() gin.HandlerFunc {

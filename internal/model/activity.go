@@ -25,7 +25,7 @@ type Activity struct {
 
 	//descriptive
 	Capacity int    `json:"capacity" gorm:"not null;type: int;comment:活动容量;column:capacity"`
-	ImgUrls  string `json:"img_urls" gorm:"column:img_urls; type:text; comment:图片链接; not null"`
+	ImgUrls  string `json:"img_urls" gorm:"column:img_urls; type:text; comment:图片链接，可选;null"`
 	//interactive
 	Likes    int `json:"likes" gorm:"default:0;type: int;comment:活动点赞数;column:likes"`
 	Comments int `json:"comments" gorm:"default:0;type: int;comment:活动评论数;column:comments"`

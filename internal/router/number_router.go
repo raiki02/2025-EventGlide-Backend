@@ -24,7 +24,8 @@ func NewNumberRouter(nc *controller.NumberController, e *gin.Engine) *NumberRout
 func (nr *NumberRouter) RegisterNumberRouters() {
 	number := nr.e.Group("/number")
 	{
-		number.POST("/likes", nr.nc.SendLikesNum())
-		number.POST("/comments", nr.nc.SendCommentsNum())
+		number.POST("/like", nr.nc.AddLikesNum())
+		number.POST("/comment", nr.nc.AddCommentsNum())
+		number.POST("/dislike", nr.nc.CutLikesNum())
 	}
 }

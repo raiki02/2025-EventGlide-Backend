@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
 	"github.com/raiki02/EG/internal/model"
@@ -24,10 +25,11 @@ type UserServiceHdl interface {
 	Login(*gin.Context, string, string) (*model.User, string, error)
 	Logout(*gin.Context, string) error
 	GetUserInfo(*gin.Context, string) (model.User, error)
-	UpdateAvatar(*gin.Context, string) error
+	UpdateAvatar(*gin.Context, req.UserAvatarReq) error
 	UpdateUsername(*gin.Context, string, string) error
 	SearchUserAct(*gin.Context, string, string) ([]model.Activity, error)
 	SearchUserPost(*gin.Context, string, string) ([]model.Post, error)
+	GenQINIUToken(*gin.Context) string
 }
 
 type UserService struct {
@@ -103,9 +105,8 @@ func (s *UserService) GetUserInfo(ctx *gin.Context, studentId string) (model.Use
 	return user, nil
 }
 
-func (s *UserService) UpdateAvatar(ctx *gin.Context, sid string) error {
-	imgurl, err := s.iuh.ProcessImg(ctx)
-	err = s.udh.UpdateAvatar(ctx, sid, imgurl)
+func (s *UserService) UpdateAvatar(ctx *gin.Context, req req.UserAvatarReq) error {
+	err := s.udh.UpdateAvatar(ctx, req.Sid, req.AvatarUrl)
 	if err != nil {
 		return err
 	}
@@ -147,6 +148,10 @@ func genRandomAvatar(c *gin.Context) string {
 	} else {
 		return avatars[0]
 	}
+}
+
+func (s *UserService) GenQINIUToken(ctx *gin.Context) string {
+	return s.iuh.GenQINIUToken(ctx)
 }
 
 //---一站式账号登录

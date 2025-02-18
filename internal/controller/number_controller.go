@@ -2,14 +2,14 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	req "github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/service"
-	"github.com/raiki02/EG/tools"
 )
 
 type NumberControllerHdl interface {
-	SendLikesNum() gin.HandlerFunc
-	SendCommentsNum() gin.HandlerFunc
+	AddLikesNum() gin.HandlerFunc
+	CutLikesNum() gin.HandlerFunc
+	AddCommentsNum() gin.HandlerFunc
 }
 
 type NumberController struct {
@@ -22,40 +22,35 @@ func NewNumberController(ns *service.NumberService) *NumberController {
 	}
 }
 
-// @Tags Number
-// @Summary 点赞数控制
-// @Description not finished
-// @Accept json
-// @Produce json
-// @Param likes_num body req.NumberReq true "点赞数"
-// @Success 200 {object} resp.Resp
-// @Router /number/likes [post]
-func (nc *NumberController) SendLikesNum() gin.HandlerFunc {
+func (nc *NumberController) AddLikesNum() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var nq req.NumberReq
-		if err := c.ShouldBindJSON(&nq); err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+		var nr req.NumberReq
+		if err := c.ShouldBindJSON(&nr); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
 		}
-		nc.ns.SendLikesNum(c, &nq)
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+		err = nc.ns.AddLikesNum(c, &nr)
 	}
 }
 
-// @Tags Number
-// @Summary 评论数控制
-// @Description not finished
-// @Accept json
-// @Produce json
-// @Param comments_num body req.NumberReq true "评论数"
-// @Success 200 {object} resp.Resp
-// @Router /number/comments [post]
-func (nc *NumberController) SendCommentsNum() gin.HandlerFunc {
+func (nc *NumberController) CutLikesNum() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var nq req.NumberReq
-		if err := c.ShouldBindJSON(&nq); err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+		var nr req.NumberReq
+		if err := c.ShouldBindJSON(&nr); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
 		}
-		nc.ns.SendCommentsNum(c, &nq)
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+		err = nc.ns.CutLikesNum(c, &nr)
+	}
+}
+
+func (nc *NumberController) AddCommentsNum() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var nr req.NumberReq
+		if err := c.ShouldBindJSON(&nr); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+		err = nc.ns.AddCommentsNum(c, &nr)
 	}
 }

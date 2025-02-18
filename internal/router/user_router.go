@@ -23,6 +23,7 @@ func (ur *UserRouter) RegisterUserRouters() {
 	{
 		user.POST("/login", ur.uc.Login())
 		user.POST("/logout", ur.uc.Logout())
+		user.GET("/token/qiniu", ur.uc.GenQINIUToken())
 		user.GET("/info", ur.uc.GetUserInfo())
 		user.POST("/avatar", ur.uc.UpdateAvatar())
 		user.POST("/username", ur.uc.UpdateUsername())
