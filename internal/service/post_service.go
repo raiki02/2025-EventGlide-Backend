@@ -36,6 +36,7 @@ func (ps *PostService) GetAllPost(c *gin.Context) ([]model.Post, error) {
 }
 
 func (ps *PostService) CreatePost(c *gin.Context, post *model.Post) error {
+	post.Bid = tools.GenUUID(c)
 	err := ps.pdh.CreatePost(c, post)
 	if err != nil {
 		return err

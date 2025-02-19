@@ -6,6 +6,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
+	"time"
 )
 
 type CommentServiceHdl interface {
@@ -25,14 +26,14 @@ func NewCommentService(cd *dao.CommentDao) *CommentService {
 }
 
 func (cs *CommentService) CreateComment(c *gin.Context, req *req.CommentReq) error {
-	cmt := toComment(req)
-	cmt.CommentID = tools.GenUUID(c)
+	cmt := toComment(c, req)
+	cmt.Bid = tools.GenUUID(c)
 	return cs.cd.CreateComment(c, cmt)
 }
 
 func (cs *CommentService) AnswerComment(c *gin.Context, req *req.CommentReq) error {
-	answer := toAnswer(req)
-	answer.SubCommentID = tools.GenUUID(c)
+	answer := toAnswer(c, req)
+	answer.Bid = tools.GenUUID(c)
 	return cs.cd.AnswerComment(c, answer)
 }
 
@@ -40,16 +41,20 @@ func (cs *CommentService) DeleteComment(c *gin.Context, sid string, targetId str
 	return cs.cd.DeleteComment(c, sid, targetId)
 }
 
-func toComment(req *req.CommentReq) *model.Comment {
+func toComment(c *gin.Context, req *req.CommentReq) *model.Comment {
 	var cmt model.Comment
+	cmt.CreatedAt = time.Now()
+	cmt.Bid = tools.GenUUID(c)
 	cmt.Content = req.Content
 	cmt.CreatorID = req.CreatorID
 	cmt.TargetID = req.TargetID
 	return &cmt
 }
 
-func toAnswer(req *req.CommentReq) *model.SubComment {
+func toAnswer(c *gin.Context, req *req.CommentReq) *model.SubComment {
 	var cmt model.SubComment
+	cmt.CreatedAt = time.Now()
+	cmt.Bid = tools.GenUUID(c)
 	cmt.Content = req.Content
 	cmt.CreatorID = req.CreatorID
 	cmt.TargetID = req.TargetID

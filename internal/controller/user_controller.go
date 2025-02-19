@@ -202,7 +202,7 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 // @Produce json
 // @Success 200 {object} resp.Resp
 // @Router /user/token/qiniu [get]
-func (uc *UserController) GenQINIUToken() gin.HandlerFunc {
+func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := uc.ush.GenQINIUToken(c)
 		c.JSON(200, tools.ReturnMSG(c, "gen qiniu token success", token))

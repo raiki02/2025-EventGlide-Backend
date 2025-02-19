@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	"github.com/raiki02/EG/tools"
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"strconv"
@@ -94,4 +95,17 @@ func (c *Jwt) parseTokenId(token string) string {
 func setTTL() time.Duration {
 	ttl, _ := strconv.Atoi(viper.GetString("jwt.ttl"))
 	return time.Second * time.Duration(ttl)
+}
+
+func (c *Jwt) WrapCheckToken() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		token := ctx.GetHeader("Authorization")
+		err := c.CheckToken(ctx, token)
+		if err != nil {
+			ctx.JSON(401, tools.ReturnMSG(ctx, "token is invalid", nil))
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
+	}
 }

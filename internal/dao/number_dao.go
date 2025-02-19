@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
@@ -23,6 +24,10 @@ func NewNumberDao(db *gorm.DB) *NumberDao {
 }
 
 func (nd *NumberDao) AddLikesNum(c *gin.Context, n *model.Number) error {
+	var num model.Number
+	if nd.db.Where("sid = ? AND bid = ? AND topic = ?", n.Sid, n.Bid, "like").First(&num).RowsAffected > 0 {
+		return errors.New("already liked")
+	}
 	return nd.db.Create(n).Error
 }
 
@@ -45,3 +50,5 @@ func (nd *NumberDao) GetCommentsNum(c *gin.Context, sid string, bid string) int 
 	nd.db.Model(&model.Number{}).Where("sid = ? AND bid = ? AND topic = ?", sid, bid, "comment").Count(&num)
 	return int(num)
 }
+
+//todo check bid exist

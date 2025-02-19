@@ -57,9 +57,15 @@ func (ns *NumberService) GetCommentsNum(c *gin.Context, sid string, bid string) 
 func (ns *NumberService) UpdateNumbers(c *gin.Context, sid string, bid string) error {
 	likes := ns.GetLikesNum(c, sid, bid)
 	comments := ns.GetCommentsNum(c, sid, bid)
-	ns.cd.UpdateNumbersForAnswers(c, sid, bid, likes)
-	ns.cd.UpdateNumbersForComments(c, sid, bid, likes, comments)
-	ns.ad.UpdateNumbers(c, sid, bid, likes, comments)
-	ns.pd.UpdateNumbers(c, sid, bid, likes, comments)
+	errs := []error{}
+	errs[0] = ns.cd.UpdateNumbersForAnswers(c, sid, bid, likes)
+	errs[1] = ns.cd.UpdateNumbersForComments(c, sid, bid, likes, comments)
+	errs[2] = ns.ad.UpdateNumbers(c, sid, bid, likes, comments)
+	errs[3] = ns.pd.UpdateNumbers(c, sid, bid, likes, comments)
+	for _, v := range errs {
+		if v != nil {
+			return v
+		}
+	}
 	return nil
 }
