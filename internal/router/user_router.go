@@ -1,9 +1,9 @@
 package router
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/controller"
+	"github.com/raiki02/EG/internal/middleware"
 )
 
 type UserRouterHdl interface {
@@ -12,21 +12,24 @@ type UserRouterHdl interface {
 
 type UserRouter struct {
 	e  *gin.Engine
-	uc controller.UserControllerHdl
+	j  *middleware.Jwt
+	uc *controller.UserController
 }
 
-func NewUserRouter(e *gin.Engine, uc controller.UserControllerHdl) UserRouterHdl {
-	return &UserRouter{e: e, uc: uc}
+func NewUserRouter(e *gin.Engine, uc *controller.UserController, j *middleware.Jwt) *UserRouter {
+	return &UserRouter{e: e, uc: uc, j: j}
 }
 
 func (ur *UserRouter) RegisterUserRouters() {
-	ctx := context.Background()
 	user := ur.e.Group("/user")
 	{
-		user.POST("/login", ur.uc.Login(ctx))
-		user.POST("/logout", ur.uc.CheckToken(ctx), ur.uc.Logout(ctx))
-		user.GET("/info", ur.uc.CheckToken(ctx), ur.uc.GetUserInfo(ctx))
-		user.POST("/avatar", ur.uc.CheckToken(ctx), ur.uc.UpdateAvatar(ctx))
-		user.POST("/username", ur.uc.CheckToken(ctx), ur.uc.UpdateUsername(ctx))
+		user.POST("/login", ur.uc.Login())
+		user.POST("/logout", ur.j.WrapCheckToken(), ur.uc.Logout())
+		user.GET("/token/qiniu", ur.j.WrapCheckToken(), ur.uc.GenQiniuToken())
+		user.GET("/info", ur.j.WrapCheckToken(), ur.uc.GetUserInfo())
+		user.POST("/avatar", ur.j.WrapCheckToken(), ur.uc.UpdateAvatar())
+		user.POST("/username", ur.j.WrapCheckToken(), ur.uc.UpdateUsername())
+		user.POST("/search/act", ur.j.WrapCheckToken(), ur.uc.SearchUserAct())
+		user.POST("/search/post", ur.j.WrapCheckToken(), ur.uc.SearchUserPost())
 	}
 }

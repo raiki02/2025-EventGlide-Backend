@@ -1,6 +1,7 @@
 package ioc
 
 import (
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
@@ -30,14 +31,15 @@ func InitDB() *gorm.DB {
 	return db
 }
 
-// 用户，活动，活动草稿
-
 func migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&model.User{},
 		&model.Activity{},
 		&model.ActivityDraft{},
-		&model.ActivityDraft{},
 		&model.Comment{},
+		&model.SubComment{},
+		&model.Post{},
+		&model.PostDraft{},
+		&model.Number{},
 	)
 }

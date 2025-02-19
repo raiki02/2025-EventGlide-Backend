@@ -6,18 +6,18 @@ import (
 )
 
 type CorsHdl interface {
-	HandleCors() error
+	HandleCors()
 }
 
 type Cors struct {
 	e *gin.Engine
 }
 
-func NewCors(e *gin.Engine) CorsHdl {
+func NewCors(e *gin.Engine) *Cors {
 	return &Cors{e: e}
 }
 
-func (c *Cors) HandleCors() error {
+func (c *Cors) HandleCors() {
 	corsConf := cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -25,5 +25,4 @@ func (c *Cors) HandleCors() error {
 		AllowCredentials: true,
 	}
 	c.e.Use(cors.New(corsConf))
-	return nil
 }

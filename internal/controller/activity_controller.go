@@ -2,189 +2,179 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/raiki02/EG/internal/cache"
-	"github.com/raiki02/EG/internal/dao"
+	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
 )
 
-type ActivityControllerHdl interface {
-	NewActivity() gin.HandlerFunc
+type ActControllerHdl interface {
+	NewAct() gin.HandlerFunc
 	NewDraft() gin.HandlerFunc
-	ListAllActivity() gin.HandlerFunc
-	ListActivityByType() gin.HandlerFunc
-	ListActivityByTime() gin.HandlerFunc
-	ListActivityByHost() gin.HandlerFunc
-	ListActivityByLocation() gin.HandlerFunc
-	ListActivityByName() gin.HandlerFunc
+	LoadDraft() gin.HandlerFunc
+	FindActBySearches() gin.HandlerFunc
+	FindActByName() gin.HandlerFunc
+	FindActByDate() gin.HandlerFunc
 }
 
-type ActivityController struct {
-	c   cache.CacheHdl
-	adh dao.ActivityDaoHdl
+type ActController struct {
+	as *service.ActivityService
+	iu *service.ImgUploader
 }
 
-func NewActivityController(c cache.CacheHdl, adh dao.ActivityDaoHdl) ActivityControllerHdl {
-	return &ActivityController{c: c, adh: adh}
-}
-
-func (a *ActivityController) NewActivity() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var activity model.Activity
-		err := c.ShouldBindJSON(&activity)
-		if err != nil {
-			tools.ReturnMSG(c, "error", err)
-			return
-		}
-		err = a.adh.NewActivity(c, activity)
-		if err != nil {
-			tools.ReturnMSG(c, "error", err)
-			return
-		}
-		tools.ReturnMSG(c, "activity created", nil)
+func NewActController(as *service.ActivityService, iu *service.ImgUploader) *ActController {
+	return &ActController{
+		as: as,
+		iu: iu,
 	}
 }
 
-func (a *ActivityController) NewDraft() gin.HandlerFunc {
+// @Tags Activity
+// @Summary 创建活动
+// @Produce json
+// @Accept json
+// @Param activity body model.Activity true "活动"
+// @Success 200 {object} resp.Resp
+// @Router /act/create [post]
+func (ac *ActController) NewAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var activityDraft model.ActivityDraft
-		err := c.ShouldBindJSON(&activityDraft)
+		var act model.Activity
+		//获取用户填写信息
+		//host,location,startTime,endTime,ifRegister,image_urls ,name
+		err := c.ShouldBindJSON(&act)
 		if err != nil {
-			tools.ReturnMSG(c, "error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = a.adh.NewDraft(c, activityDraft)
+
+		err = ac.as.NewAct(c, &act)
 		if err != nil {
-			tools.ReturnMSG(c, "error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "draft created", nil)
+
+		c.JSON(200, tools.ReturnMSG(c, "success", act))
 	}
 }
 
-// todo 排序方式 持续几天的(结束更早的排在上面)和当天进行的(开始更早的排在上面)
-func (a *ActivityController) ListAllActivity() gin.HandlerFunc {
+// @Tags Activity
+// @Summary 创建活动草稿
+// @Description not finished
+// @Produce json
+// @Accept json
+// @Param draft body model.ActivityDraft true "活动草稿"
+// @Success 200 {object} resp.Resp
+// @Router /act/draft [post]
+func (ac *ActController) NewDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		activities, err := a.adh.ListAllActivity(c)
+		var d model.ActivityDraft
+		//获取用户填写信息
+		err := c.ShouldBindJSON(&d)
 		if err != nil {
-			tools.ReturnMSG(c, "error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "success", activities)
+
+		//直接创建，不管有没有类似的
+		//不保存上传图片，考虑图床空间
+		//不设置绑定id，不一定会发布
+		err = ac.as.NewDraft(c, d)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", d.Bid))
 	}
 }
 
-func (a *ActivityController) ListActivityByType() gin.HandlerFunc {
+// @Tags Activity
+// @Summary 加载活动草稿
+// @Produce json
+// @Accept json
+// @Param draft body req.DraftReq true "加载草稿"
+// @Success 200 {object} resp.Resp
+// @Router /act/load [post]
+func (ac ActController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tp := c.Query("type")
-		activities, err := a.c.Get(c, tp)
-		if err == nil {
-			tools.ReturnMSG(c, "get cache success", activities)
-			return
-		}
-		activities, err = a.adh.ListActivityByType(c, tp)
+		var dReq req.DraftReq
+		err := c.ShouldBindJSON(&dReq)
 		if err != nil {
-			tools.ReturnMSG(c, "get dao error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = a.c.Set(c, tp, activities)
+		d, err := ac.as.LoadDraft(c, dReq)
 		if err != nil {
-			tools.ReturnMSG(c, "set cache error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "get dao success", activities)
+		c.JSON(200, tools.ReturnMSG(c, "success", d))
 	}
 }
 
-// todo 时间这样找不了区间
-func (a *ActivityController) ListActivityByTime() gin.HandlerFunc {
+// @Tags Activity
+// @Summary 通过名称查找活动
+// @Produce json
+// @Param name query string true "名称查找"
+// @Success 200 {object} resp.Resp
+// @Router /act/name [get]
+func (ac *ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		time := c.Query("time")
-		//先去缓存
-		activities, err := a.c.Get(c, time)
-		if err == nil {
-			tools.ReturnMSG(c, "success", activities)
+		n := c.Query("name")
+		if n == "" {
+			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
-		//不能因为缓存as为空而去数据库查找，因为可能数据库中没有这个数据
-
-		//去数据库
-		activities, err = a.adh.ListActivityByTime(c, time)
+		as, err := ac.as.FindActByName(c, n)
 		if err != nil {
-			tools.ReturnMSG(c, "error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = a.c.Set(c, time, activities)
-		if err != nil {
-			tools.ReturnMSG(c, "error", err)
-			return
-		}
-		tools.ReturnMSG(c, "success", activities)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
-func (a *ActivityController) ListActivityByHost() gin.HandlerFunc {
+// @Tags Activity
+// @Summary 通过搜索条件查找活动
+// @Produce json
+// @Param actSearchReq body req.ActSearchReq true "搜索条件"
+// @Success 200 {object} resp.Resp
+// @Router /act/search [post]
+func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		host := c.Query("host")
-		activities, err := a.c.Get(c, host)
-		if err == nil {
-			tools.ReturnMSG(c, "get cache success", activities)
-			return
-		}
-		activities, err = a.adh.ListActivityByHost(c, host)
+		var actReq req.ActSearchReq
+		err := c.ShouldBindJSON(&actReq)
 		if err != nil {
-			tools.ReturnMSG(c, "get dao error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = a.c.Set(c, host, activities)
+		as, err := ac.as.FindActBySearches(c, &actReq)
 		if err != nil {
-			tools.ReturnMSG(c, "set cache error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		tools.ReturnMSG(c, "get dao success", activities)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }
 
-func (a *ActivityController) ListActivityByLocation() gin.HandlerFunc {
+// @Tags Activity
+// @Summary 通过日期查找活动
+// @Produce json
+// @Param date query string true "日期"
+// @Success 200 {object} resp.Resp
+// @Router /act/date [get]
+func (ac *ActController) FindActByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		location := c.Query("location")
-		activities, err := a.c.Get(c, location)
-		if err == nil {
-			tools.ReturnMSG(c, "get cache success", activities)
+		// 02-01
+		d := c.Query("date")
+		if d == "" {
+			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
 			return
 		}
-		activities, err = a.adh.ListActivityByLocation(c, location)
+		as, err := ac.as.FindActByDate(c, d)
 		if err != nil {
-			tools.ReturnMSG(c, "get dao error", err)
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = a.c.Set(c, location, activities)
-		if err != nil {
-			tools.ReturnMSG(c, "set cache error", err)
-			return
-		}
-		tools.ReturnMSG(c, "get dao success", activities)
-	}
-}
-
-func (a *ActivityController) ListActivityByName() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		name := c.Query("name")
-		activities, err := a.c.Get(c, name)
-		if err == nil {
-			tools.ReturnMSG(c, "get cache success", activities)
-			return
-		}
-		activities, err = a.adh.ListActivityByName(c, name)
-		if err != nil {
-			tools.ReturnMSG(c, "get dao error", err)
-			return
-		}
-		err = a.c.Set(c, name, activities)
-		if err != nil {
-			tools.ReturnMSG(c, "set cache error", err)
-			return
-		}
-		tools.ReturnMSG(c, "get dao success", activities)
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
 	}
 }

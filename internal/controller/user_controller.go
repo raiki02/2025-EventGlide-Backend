@@ -1,305 +1,210 @@
 package controller
 
 import (
-	"context"
-	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/raiki02/EG/internal/dao"
-	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
-	"io"
-	"net"
-	"net/http"
-	"net/http/cookiejar"
-	"net/url"
-	"regexp"
-	"strings"
-	"time"
 )
 
-// user这边操作数据库不频繁，不接入redis，如果有神人喜欢一直换名字和头像当我没说。
 type UserControllerHdl interface {
-	Login(context.Context) gin.HandlerFunc
-	Logout(context.Context) gin.HandlerFunc
-	NewUser(context.Context, string, string) error
-	GetUserInfo(context.Context) gin.HandlerFunc
-	CheckToken(context.Context) gin.HandlerFunc
-	UpdateAvatar(context.Context) gin.HandlerFunc
-	UpdateUsername(context.Context) gin.HandlerFunc
+	Login() gin.HandlerFunc
+	Logout() gin.HandlerFunc
+	GetUserInfo() gin.HandlerFunc
+	UpdateAvatar() gin.HandlerFunc
+	UpdateUsername() gin.HandlerFunc
+	SearchUserAct() gin.HandlerFunc
+	SearchUserPost() gin.HandlerFunc
+	GenQINIUToken() gin.HandlerFunc
 }
 
 type UserController struct {
-	e      *gin.Engine
-	udh    dao.UserDAOHdl
-	cSvc   ccnuService
-	jwtHdl middleware.ClaimsHdl
+	e   *gin.Engine
+	ush *service.UserService
 }
 
-func NewUserController(e *gin.Engine, udh dao.UserDAOHdl, cSvc ccnuService, jh middleware.ClaimsHdl) UserControllerHdl {
+func NewUserController(e *gin.Engine, ush *service.UserService) *UserController {
 	return &UserController{
-		e:      e,
-		udh:    udh,
-		cSvc:   cSvc,
-		jwtHdl: jh,
+		e:   e,
+		ush: ush,
 	}
 }
 
-func (uc *UserController) UpdateAvatar(ctx context.Context) gin.HandlerFunc {
+// @Tags User
+// @Summary 登录
+// @Produce json
+// @Param studentid formData string true "学号"
+// @Param password formData string true "密码"
+// @Success 200 {object} resp.Resp
+// @Router /user/login [post]
+func (uc *UserController) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO 更新头像
-	}
-}
-
-func (uc *UserController) UpdateUsername(ctx context.Context) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// TODO 更新用户名
-	}
-}
-
-func (uc *UserController) Login(ctx context.Context) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		//根据一站式账号登录，登陆后返回token
 		studentid := c.PostForm("studentid")
 		password := c.PostForm("password")
-
-		//首次登录要初始化信息，全部使用默认
-		if !uc.udh.CheckUserExist(c.Request.Context(), tools.StrToInt(studentid)) {
-			uc.udh.Insert(c, studentid, password)
+		if studentid == "" || password == "" {
+			c.JSON(200, tools.ReturnMSG(c, "studentid or password is empty", nil))
+			return
 		}
-
-		success, err := uc.cSvc.Login(context.Background(), studentid, password)
+		user, token, err := uc.ush.Login(c, studentid, password)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": err.Error(),
-			})
+			c.JSON(200, tools.ReturnMSG(c, "login fail", nil))
 			return
 		}
-		if !success {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "登录失败",
-			})
-			return
-		}
-		//token操作
-		token := uc.jwtHdl.GenToken(c.Request.Context(), studentid)
-		err = uc.jwtHdl.StoreInRedis(c.Request.Context(), studentid, token)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "token存储失败",
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"message": "登录成功: " + studentid,
-		})
-
+		c.JSON(200, tools.ReturnMSG(c, "login success", user, token))
 	}
 }
 
-func (uc *UserController) Logout(ctx context.Context) gin.HandlerFunc {
+// @Tags User
+// @Summary 登出
+// @Produce json
+// @Param Authorization header string true "token"
+// @Success 200 {object} resp.Resp
+// @Router /user/logout [post]
+func (uc *UserController) Logout() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
-		err := uc.jwtHdl.ClearToken(c.Request.Context(), token)
+		err := uc.ush.Logout(c, token)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "登出失败",
-			})
+			c.JSON(200, tools.ReturnMSG(c, "logout fail", nil))
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{
-			"message": "登出成功",
-		})
+		c.JSON(200, tools.ReturnMSG(c, "logout success", nil))
 	}
-
 }
 
-func (uc *UserController) NewUser(ctx context.Context, sid, pwd string) error {
-	return uc.udh.Insert(ctx, sid, pwd)
-}
-
-func (uc *UserController) GetUserInfo(ctx context.Context) gin.HandlerFunc {
+// @Tags User
+// @Summary 获取用户信息
+// @Produce json
+// @Param sid query string true "学号"
+// @Success 200 {object} resp.Resp
+// @Router /user/info [get]
+func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO 我的页面，返回信息，头像去图床找，没有就用默认
-		studentid := c.Query("studentid")
-		user, err := uc.udh.FindUserById(c.Request.Context(), studentid)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "用户不存在",
-			})
+		sid := c.Query("sid")
+		if sid == "" {
+			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"message":   "获取成功",
-			"studentid": user.StudentId,
-			"username":  user.Name,
-			"avatar":    user.Avatar,
-		})
+		user, err := uc.ush.GetUserInfo(c, sid)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "get user info fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "get user info success", user))
 	}
 }
 
-func (uc *UserController) CheckToken(ctx context.Context) gin.HandlerFunc {
+// @Tags User
+// @Summary 更新头像
+// @Description not finished
+// @Produce json
+// @Param userAvatarReq body req.UserAvatarReq true "用户头像更改"
+// @Success 200 {object} resp.Resp
+// @Router /user/avatar [post]
+func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO 检查token，过期就返回401，前端重新登录
-		token := c.GetHeader("Authorization")
-		err := uc.jwtHdl.CheckToken(c.Request.Context(), token)
+		var userAvatarReq req.UserAvatarReq
+		err := c.ShouldBind(&userAvatarReq)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"message": "token过期",
-			})
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{
-			"message": "token有效",
-		})
-	}
-}
-
-//---一站式账号登录
-
-type ccnuService struct {
-	timeout time.Duration
-}
-
-func NewCCNUService(timeout time.Duration) *ccnuService {
-	return &ccnuService{
-		timeout: timeout,
-	}
-}
-
-func (c *ccnuService) Login(ctx context.Context, studentId string, password string) (bool, error) {
-	var (
-		client *http.Client
-		err    error
-	)
-	client, err = c.loginUndergraduateClient(ctx, studentId, password)
-	return client != nil, err
-}
-
-func (c *ccnuService) client() *http.Client {
-	j, _ := cookiejar.New(&cookiejar.Options{})
-	return &http.Client{
-		Transport: nil,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return nil
-		},
-		Jar:     j,
-		Timeout: c.timeout,
-	}
-}
-
-func (c *ccnuService) loginUndergraduateClient(ctx context.Context, studentId string, password string) (*http.Client, error) {
-	params, err := c.makeAccountPreflightRequest()
-	if err != nil {
-		return nil, err
-	}
-
-	v := url.Values{}
-	v.Set("username", studentId)
-	v.Set("password", password)
-	v.Set("lt", params.lt)
-	v.Set("execution", params.execution)
-	v.Set("_eventId", params._eventId)
-	v.Set("submit", params.submit)
-
-	request, err := http.NewRequest("POST", "https://account.ccnu.edu.cn/cas/login;jsessionid="+params.JSESSIONID, strings.NewReader(v.Encode()))
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	request.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36")
-	request.WithContext(ctx)
-
-	client := c.client()
-	resp, err := client.Do(request)
-	if err != nil {
-		var opErr *net.OpError
-		if errors.As(err, &opErr) {
-			return nil, errors.New("网络异常")
+		err = uc.ush.UpdateAvatar(c, userAvatarReq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "update avatar fail", nil))
+			return
 		}
-		return nil, err
+		c.JSON(200, tools.ReturnMSG(c, "update avatar success", nil))
 	}
-	if len(resp.Header.Get("Set-Cookie")) == 0 {
-		return nil, errors.New("学号或密码错误")
-	}
-	return client, nil
 }
 
-type accountRequestParams struct {
-	lt         string
-	execution  string
-	_eventId   string
-	submit     string
-	JSESSIONID string
-}
-
-func (c *ccnuService) makeAccountPreflightRequest() (*accountRequestParams, error) {
-	var JSESSIONID string
-	var lt string
-	var execution string
-	var _eventId string
-
-	params := &accountRequestParams{}
-
-	// 初始化 http request
-	request, err := http.NewRequest("GET", "https://account.ccnu.edu.cn/cas/login", nil)
-	if err != nil {
-		return params, err
-	}
-
-	// 发起请求
-	resp, err := c.client().Do(request)
-	if err != nil {
-		return params, err
-	}
-
-	// 读取 Body
-	body, err := io.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
-	if err != nil {
-		return params, err
-	}
-
-	// 获取 Cookie 中的 JSESSIONID
-	for _, cookie := range resp.Cookies() {
-		if cookie.Name == "JSESSIONID" {
-			JSESSIONID = cookie.Value
+// @Tags User
+// @Summary 更新用户名
+// @Produce json
+// @Param sid formData string true "学号"
+// @Param newname formData string true "新用户名"
+// @Success 200 {object} resp.Resp
+// @Router /user/username [post]
+func (uc *UserController) UpdateUsername() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sid := c.PostForm("sid")
+		name := c.PostForm("newname")
+		if name == "" {
+			c.JSON(200, tools.ReturnMSG(c, "name is empty", nil))
+			return
 		}
+		err := uc.ush.UpdateUsername(c, sid, name)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "update username fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "update username success", nil))
 	}
 
-	if JSESSIONID == "" {
-		return params, errors.New("Can not get JSESSIONID")
+}
+
+// @Tags User
+// @Summary 搜索用户活动
+// @Produce json
+// @Param ureq body req.UserSearchReq true "搜索请求"
+// @Success 200 {object} resp.Resp
+// @Router /user/search/act [post]
+func (uc *UserController) SearchUserAct() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ureq req.UserSearchReq
+		err := c.ShouldBindJSON(&ureq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if ureq.Sid == "" {
+			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
+			return
+		}
+		acts, err := uc.ush.SearchUserAct(c, ureq.Sid, ureq.Keyword)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "search user act fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "search user act success", acts))
 	}
+}
 
-	// 正则匹配 HTML 返回的表单字段
-	ltReg := regexp.MustCompile("name=\"lt\".+value=\"(.+)\"")
-	executionReg := regexp.MustCompile("name=\"execution\".+value=\"(.+)\"")
-	_eventIdReg := regexp.MustCompile("name=\"_eventId\".+value=\"(.+)\"")
-
-	bodyStr := string(body)
-
-	ltArr := ltReg.FindStringSubmatch(bodyStr)
-	if len(ltArr) != 2 {
-		return params, errors.New("Can not get form paramater: lt")
+// @Tags User
+// @Summary 搜索用户帖子
+// @Produce json
+// @Param ureq body req.UserSearchReq true "搜索请求"
+// @Success 200 {object} resp.Resp
+// @Router /user/search/post [post]
+func (uc *UserController) SearchUserPost() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ureq req.UserSearchReq
+		err := c.ShouldBindJSON(&ureq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if ureq.Sid == "" {
+			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
+			return
+		}
+		posts, err := uc.ush.SearchUserPost(c, ureq.Sid, ureq.Keyword)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "search user post fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "search user post success", posts))
 	}
-	lt = ltArr[1]
+}
 
-	execArr := executionReg.FindStringSubmatch(bodyStr)
-	if len(execArr) != 2 {
-		return params, errors.New("Can not get form paramater: execution")
+// @Tags User
+// @Summary 获取七牛云token
+// @Produce json
+// @Success 200 {object} resp.Resp
+// @Router /user/token/qiniu [get]
+func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := uc.ush.GenQINIUToken(c)
+		c.JSON(200, tools.ReturnMSG(c, "gen qiniu token success", token))
 	}
-	execution = execArr[1]
-
-	_eventIdArr := _eventIdReg.FindStringSubmatch(bodyStr)
-	if len(_eventIdArr) != 2 {
-		return params, errors.New("Can not get form paramater: _eventId")
-	}
-	_eventId = _eventIdArr[1]
-
-	params.lt = lt
-	params.execution = execution
-	params._eventId = _eventId
-	params.submit = "LOGIN"
-	params.JSESSIONID = JSESSIONID
-
-	return params, nil
 }

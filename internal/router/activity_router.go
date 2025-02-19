@@ -6,30 +6,34 @@ import (
 	"github.com/raiki02/EG/internal/middleware"
 )
 
-type ActivityRouterHdl interface {
-	RegisterActivityRouters()
+type ActRouterHdl interface {
+	RegisterActRouters() error
 }
 
-type ActivityRouter struct {
+type ActRouter struct {
 	e   *gin.Engine
-	ach controller.ActivityControllerHdl
-	ch  middleware.ClaimsHdl
+	ach *controller.ActController
+	j   *middleware.Jwt
 }
 
-func NewActivityRouter(e *gin.Engine, ach controller.ActivityControllerHdl, ch middleware.ClaimsHdl) ActivityRouter {
-	return ActivityRouter{e: e, ach: ach, ch: ch}
-}
-
-func (a *ActivityRouter) RegisterActivityRouters() {
-	act := a.e.Group("/activity")
-	{
-		act.POST("/new", a.ach.NewActivity())
-		act.POST("/draft", a.ach.NewDraft())
-		act.GET("/all", a.ach.ListAllActivity())
-		act.GET("/type", a.ach.ListActivityByType())
-		act.GET("/time", a.ach.ListActivityByTime())
-		act.GET("/host", a.ach.ListActivityByHost())
-		act.GET("/location", a.ach.ListActivityByLocation())
-		act.GET("/name", a.ach.ListActivityByName())
+func NewActRouter(e *gin.Engine, ach *controller.ActController, j *middleware.Jwt) *ActRouter {
+	return &ActRouter{
+		e:   e,
+		ach: ach,
+		j:   j,
 	}
+}
+
+func (ar ActRouter) RegisterActRouters() error {
+	act := ar.e.Group("act")
+	act.Use(ar.j.WrapCheckToken())
+	{
+		act.POST("/new", ar.ach.NewAct())
+		act.POST("/draft", ar.ach.NewDraft())
+		act.POST("/load", ar.ach.LoadDraft())
+		act.GET("/name", ar.ach.FindActByName())
+		act.GET("/date", ar.ach.FindActByDate())
+		act.POST("/search", ar.ach.FindActBySearches())
+	}
+	return nil
 }

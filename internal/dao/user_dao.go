@@ -1,55 +1,47 @@
 package dao
 
 import (
-	"context"
+	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
 
-type UserDAOHdl interface {
-	UpdateAvatar(context.Context) error
-	UpdateUsername(context.Context) error
-	Insert(context.Context, string, string) error
-	CheckUserExist(context.Context, int) bool
-	FindUserById(context.Context, string) (model.User, error)
+type UserDaoHdl interface {
+	UpdateAvatar(*gin.Context, string, string) error
+	UpdateUsername(*gin.Context, string, string) error
+	Create(*gin.Context, *model.User) error
+	CheckUserExist(*gin.Context, string) bool
+	GetUserInfo(*gin.Context, string) (model.User, error)
 }
 
-type UserDAO struct {
+type UserDao struct {
 	db *gorm.DB
 }
 
-func NewUserDAO(db *gorm.DB) UserDAOHdl {
-	return &UserDAO{db: db}
+func NewUserDao(db *gorm.DB) *UserDao {
+	return &UserDao{db: db}
 }
 
-func (dao *UserDAO) UpdateAvatar(ctx context.Context) error {
-	return nil
+func (ud *UserDao) UpdateAvatar(ctx *gin.Context, sid string, imgurl string) error {
+	return ud.db.Model(&model.User{}).Where("sid = ?", sid).Update("avatar", imgurl).Error
 }
 
-func (dao *UserDAO) UpdateUsername(ctx context.Context) error {
-	return nil
+func (ud *UserDao) UpdateUsername(ctx *gin.Context, sid string, name string) error {
+	return ud.db.Model(&model.User{}).Where("sid = ?", sid).Update("name", name).Error
 }
 
 // 新建用户时默认username是studentid，默认头像全一样/头像库随机
-func (dao *UserDAO) Insert(ctx context.Context, ssid, pwd string) error {
-	u := model.User{
-		Name:      ssid,
-		StudentId: ssid,
-		Avatar:    model.DefaultAvatar,
-	}
-	return dao.db.Create(&u).Error
+func (ud *UserDao) Create(ctx *gin.Context, user *model.User) error {
+	return ud.db.Create(user).Error
 }
 
-// 检查是否存在
-func (dao *UserDAO) CheckUserExist(ctx context.Context, sid int) bool {
-	var u model.User
-	dao.db.Where("student_id = ?", sid).First(&u)
-	return u.Id != 0
+func (ud *UserDao) CheckUserExist(ctx *gin.Context, sid string) bool {
+	res := ud.db.Where("sid = ?", sid).Find(&model.User{}).RowsAffected
+	return res != 0
 }
 
-// 检查还要返回
-func (dao *UserDAO) FindUserById(ctx context.Context, sid string) (model.User, error) {
-	var u model.User
-	err := dao.db.Where("student_id = ?", sid).First(&u).Error
-	return u, err
+func (ud *UserDao) GetUserInfo(ctx *gin.Context, sid string) (model.User, error) {
+	var user model.User
+	err := ud.db.Where("sid = ?", sid).First(&user).Error
+	return user, err
 }
