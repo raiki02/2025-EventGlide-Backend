@@ -75,6 +75,7 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 // @Tags User
 // @Summary 获取用户信息
 // @Produce json
+// @Param Authorization header string true "token"
 // @Param sid query string true "学号"
 // @Success 200 {object} resp.Resp
 // @Router /user/info [get]
@@ -98,6 +99,7 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 // @Summary 更新头像
 // @Description not finished
 // @Produce json
+// @Param Authorization header string true "token"
 // @Param userAvatarReq body req.UserAvatarReq true "用户头像更改"
 // @Success 200 {object} resp.Resp
 // @Router /user/avatar [post]
@@ -121,6 +123,7 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 // @Tags User
 // @Summary 更新用户名
 // @Produce json
+// @Param Authorization header string true "token"
 // @Param sid formData string true "学号"
 // @Param newname formData string true "新用户名"
 // @Success 200 {object} resp.Resp
@@ -146,6 +149,7 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 // @Tags User
 // @Summary 搜索用户活动
 // @Produce json
+// @Param Authorization header string true "token"
 // @Param ureq body req.UserSearchReq true "搜索请求"
 // @Success 200 {object} resp.Resp
 // @Router /user/search/act [post]
@@ -173,6 +177,7 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 // @Tags User
 // @Summary 搜索用户帖子
 // @Produce json
+// @Param Authorization header string true "token"
 // @Param ureq body req.UserSearchReq true "搜索请求"
 // @Success 200 {object} resp.Resp
 // @Router /user/search/post [post]
@@ -200,6 +205,7 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 // @Tags User
 // @Summary 获取七牛云token
 // @Produce json
+// @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp
 // @Router /user/token/qiniu [get]
 func (uc *UserController) GenQiniuToken() gin.HandlerFunc {

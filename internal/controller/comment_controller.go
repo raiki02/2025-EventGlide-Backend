@@ -26,6 +26,7 @@ func NewCommentController(cs *service.CommentService) *CommentController {
 // @Tags Comment
 // @Summary 创建评论
 // @Produce json
+// @Param Authorization header string true "token"
 // @Param CommentReq body req.CommentReq true "评论"
 // @Success 200 {object} resp.Resp
 // @Router /comment/create [post]
@@ -44,6 +45,7 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 // @Tags Comment
 // @Summary 回复评论
 // @Produce json
+// @Param Authorization header string true "token"
 // @Param CommentReq body req.CommentReq true "回复"
 // @Success 200 {object} resp.Resp
 // @Router /comment/answer [post]
@@ -63,6 +65,7 @@ func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 // @Summary 删除评论
 // @Produce json
 // @Param sid formData string true "学号"
+// @Param Authorization header string true "token"
 // @Param target_id formData string true "目标id"
 // @Success 200 {object} resp.Resp
 // @Router /comment/delete [post]

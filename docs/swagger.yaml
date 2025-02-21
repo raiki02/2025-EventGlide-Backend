@@ -185,6 +185,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.Activity'
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -198,6 +203,11 @@ paths:
   /act/date:
     get:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 日期
         in: query
         name: date
@@ -225,6 +235,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.ActivityDraft'
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -240,6 +255,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 加载草稿
         in: body
         name: draft
@@ -259,6 +279,11 @@ paths:
   /act/name:
     get:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 名称查找
         in: query
         name: name
@@ -277,6 +302,11 @@ paths:
   /act/search:
     post:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 搜索条件
         in: body
         name: actSearchReq
@@ -296,6 +326,11 @@ paths:
   /comment/answer:
     post:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 回复
         in: body
         name: CommentReq
@@ -315,6 +350,11 @@ paths:
   /comment/create:
     post:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 评论
         in: body
         name: CommentReq
@@ -339,6 +379,11 @@ paths:
         name: sid
         required: true
         type: string
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 目标id
         in: formData
         name: target_id
@@ -359,6 +404,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 评论入参
         in: body
         name: number
@@ -378,6 +428,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 点赞入参
         in: body
         name: number
@@ -397,6 +452,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 点赞入参
         in: body
         name: number
@@ -416,6 +476,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 更新入参
         in: body
         name: number
@@ -432,6 +497,12 @@ paths:
       - number
   /post/all:
     get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -447,6 +518,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子
         in: body
         name: post
@@ -468,6 +544,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子
         in: body
         name: post
@@ -489,6 +570,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 草稿
         in: body
         name: post
@@ -508,6 +594,11 @@ paths:
   /post/find:
     get:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子名
         in: query
         name: name
@@ -528,6 +619,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 草稿请求
         in: body
         name: draft
@@ -548,6 +644,11 @@ paths:
     post:
       description: not finished
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 用户头像更改
         in: body
         name: userAvatarReq
@@ -567,6 +668,11 @@ paths:
   /user/info:
     get:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 学号
         in: query
         name: sid
@@ -626,6 +732,11 @@ paths:
   /user/search/act:
     post:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 搜索请求
         in: body
         name: ureq
@@ -645,6 +756,11 @@ paths:
   /user/search/post:
     post:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 搜索请求
         in: body
         name: ureq
@@ -663,6 +779,12 @@ paths:
       - User
   /user/token/qiniu:
     get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -676,6 +798,11 @@ paths:
   /user/username:
     post:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 学号
         in: formData
         name: sid
