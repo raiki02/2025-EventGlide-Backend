@@ -121,15 +121,21 @@ definitions:
       end_time:
         type: string
       host:
-        type: string
+        items:
+          type: string
+        type: array
       if_register:
         type: string
       location:
-        type: string
+        items:
+          type: string
+        type: array
       start_time:
         type: string
       type:
-        type: string
+        items:
+          type: string
+        type: array
     type: object
   req.CommentReq:
     properties:
@@ -140,9 +146,35 @@ definitions:
       target_id:
         type: string
     type: object
+  req.DeleteCommentReq:
+    properties:
+      sid:
+        type: string
+      target_id:
+        type: string
+    type: object
   req.DraftReq:
     properties:
       bid:
+        type: string
+      sid:
+        type: string
+    type: object
+  req.FindCommentReq:
+    properties:
+      name:
+        type: string
+    type: object
+  req.LoginReq:
+    properties:
+      password:
+        type: string
+      studentid:
+        type: string
+    type: object
+  req.UpdateNameReq:
+    properties:
+      new_name:
         type: string
       sid:
         type: string
@@ -159,6 +191,23 @@ definitions:
       keyword:
         type: string
       sid:
+        type: string
+    type: object
+  resp.LoginResp:
+    properties:
+      Id:
+        type: integer
+      avatar:
+        type: string
+      likes:
+        type: string
+      name:
+        type: string
+      school:
+        type: string
+      sid:
+        type: string
+      token:
         type: string
     type: object
   resp.Resp:
@@ -384,11 +433,12 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 目标id
-        in: formData
-        name: target_id
+      - description: 删除评论
+        in: body
+        name: DeleteCommentReq
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.DeleteCommentReq'
       produces:
       - application/json
       responses:
@@ -592,7 +642,7 @@ paths:
       tags:
       - Post
   /post/find:
-    get:
+    post:
       parameters:
       - description: token
         in: header
@@ -600,10 +650,11 @@ paths:
         required: true
         type: string
       - description: 帖子名
-        in: query
+        in: body
         name: name
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.FindCommentReq'
       produces:
       - application/json
       responses:
@@ -691,23 +742,24 @@ paths:
   /user/login:
     post:
       parameters:
-      - description: 学号
-        in: formData
-        name: studentid
+      - description: 登录请求
+        in: body
+        name: user
         required: true
-        type: string
-      - description: 密码
-        in: formData
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.LoginReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.LoginResp'
+              type: object
       summary: 登录
       tags:
       - User
@@ -803,16 +855,12 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 学号
-        in: formData
-        name: sid
+      - description: 更新用户名
+        in: body
+        name: unr
         required: true
-        type: string
-      - description: 新用户名
-        in: formData
-        name: newname
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.UpdateNameReq'
       produces:
       - application/json
       responses:

@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
 )
@@ -34,7 +35,7 @@ func NewUserController(e *gin.Engine, ush *service.UserService) *UserController 
 // @Summary 登录
 // @Produce json
 // @Param user body req.LoginReq true "登录请求"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=resp.LoginResp}
 // @Router /user/login [post]
 func (uc *UserController) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -53,7 +54,16 @@ func (uc *UserController) Login() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "login fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "login success", user, token))
+		res := resp.LoginResp{
+			Id:     user.Id,
+			Sid:    user.StudentId,
+			Name:   user.Name,
+			Avatar: user.Avatar,
+			School: user.School,
+			Likes:  user.Likes,
+			Token:  token,
+		}
+		c.JSON(200, tools.ReturnMSG(c, "login success", res))
 	}
 }
 

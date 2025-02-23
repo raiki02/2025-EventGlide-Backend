@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
+	resp2 "github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"

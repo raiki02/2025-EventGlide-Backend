@@ -74,3 +74,7 @@ type DeleteCommentReq struct {
 	Sid      string `json:"sid"`
 	TargetID string `json:"target_id"`
 }
+
+type FindCommentReq struct {
+	Name string `json:"name"`
+}

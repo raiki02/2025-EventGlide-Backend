@@ -343,11 +343,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "目标id",
-                        "name": "target_id",
-                        "in": "formData",
-                        "required": true
+                        "description": "删除评论",
+                        "name": "DeleteCommentReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.DeleteCommentReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -657,7 +659,7 @@ const docTemplate = `{
             }
         },
         "/post/find": {
-            "get": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -674,11 +676,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
                         "description": "帖子名",
                         "name": "name",
-                        "in": "query",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.FindCommentReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -815,25 +819,32 @@ const docTemplate = `{
                 "summary": "登录",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "学号",
-                        "name": "studentid",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密码",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
+                        "description": "登录请求",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.LoginReq"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.LoginResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -987,18 +998,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "学号",
-                        "name": "sid",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "新用户名",
-                        "name": "newname",
-                        "in": "formData",
-                        "required": true
+                        "description": "更新用户名",
+                        "name": "unr",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UpdateNameReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -1192,19 +1198,28 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "host": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "if_register": {
                     "type": "string"
                 },
                 "location": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "start_time": {
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -1222,10 +1237,51 @@ const docTemplate = `{
                 }
             }
         },
+        "req.DeleteCommentReq": {
+            "type": "object",
+            "properties": {
+                "sid": {
+                    "type": "string"
+                },
+                "target_id": {
+                    "type": "string"
+                }
+            }
+        },
         "req.DraftReq": {
             "type": "object",
             "properties": {
                 "bid": {
+                    "type": "string"
+                },
+                "sid": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.FindCommentReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.LoginReq": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "studentid": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.UpdateNameReq": {
+            "type": "object",
+            "properties": {
+                "new_name": {
                     "type": "string"
                 },
                 "sid": {
@@ -1251,6 +1307,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sid": {
+                    "type": "string"
+                }
+            }
+        },
+        "resp.LoginResp": {
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "integer"
+                },
+                "avatar": {
+                    "type": "string"
+                },
+                "likes": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "school": {
+                    "type": "string"
+                },
+                "sid": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }
