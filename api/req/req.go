@@ -60,3 +60,17 @@ type UserAvatarReq struct {
 	Sid       string `json:"sid"`
 	AvatarUrl string `json:"avatar_url"`
 }
+
+type UpdateNameReq struct {
+	Sid  string `json:"sid"`
+	Name string `json:"new_name"`
+}
+type LoginReq struct {
+	Studentid string `json:"studentid"`
+	Password  string `json:"password"`
+}
+
+type DeleteCommentReq struct {
+	Sid      string `json:"sid"`
+	TargetID string `json:"target_id"`
+}

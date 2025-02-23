@@ -33,19 +33,22 @@ func NewUserController(e *gin.Engine, ush *service.UserService) *UserController 
 // @Tags User
 // @Summary 登录
 // @Produce json
-// @Param studentid formData string true "学号"
-// @Param password formData string true "密码"
+// @Param user body req.LoginReq true "登录请求"
 // @Success 200 {object} resp.Resp
 // @Router /user/login [post]
 func (uc *UserController) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		studentid := c.PostForm("studentid")
-		password := c.PostForm("password")
-		if studentid == "" || password == "" {
+		var lr req.LoginReq
+		err := c.ShouldBindJSON(&lr)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if lr.Studentid == "" || lr.Password == "" {
 			c.JSON(200, tools.ReturnMSG(c, "studentid or password is empty", nil))
 			return
 		}
-		user, token, err := uc.ush.Login(c, studentid, password)
+		user, token, err := uc.ush.Login(c, lr.Studentid, lr.Password)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "login fail", nil))
 			return
@@ -124,19 +127,22 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 // @Summary 更新用户名
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param sid formData string true "学号"
-// @Param newname formData string true "新用户名"
+// @Param unr body req.UpdateNameReq true "更新用户名"
 // @Success 200 {object} resp.Resp
 // @Router /user/username [post]
 func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sid := c.PostForm("sid")
-		name := c.PostForm("newname")
-		if name == "" {
+		var unr req.UpdateNameReq
+		err := c.ShouldBind(&unr)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if unr.Name == "" {
 			c.JSON(200, tools.ReturnMSG(c, "name is empty", nil))
 			return
 		}
-		err := uc.ush.UpdateUsername(c, sid, name)
+		err = uc.ush.UpdateUsername(c, unr.Sid, unr.Name)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "update username fail", nil))
 			return

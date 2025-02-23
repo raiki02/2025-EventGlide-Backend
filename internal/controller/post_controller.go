@@ -73,13 +73,22 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 // @Summary 通过帖子名查找帖子
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param name formData string true "帖子名"
+// @Param name body name true "帖子名"
 // @Success 200 {object} resp.Resp
 // @Router /post/find [post]
 func (pc *PostController) FindPostByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		name := c.PostForm("name")
-		posts, err := pc.ps.FindPostByName(c, name)
+		type name struct {
+			Name string `json:"name"`
+		}
+		var n name
+		err := c.ShouldBindJSON(&n)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+
+		posts, err := pc.ps.FindPostByName(c, n.Name)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
