@@ -101,8 +101,9 @@ func TestActDao(t *testing.T) {
 	ctr := getCtr(t)
 	actDao := NewMockActDaoHdl(ctr)
 
+	now := time.Now()
 	actDao.EXPECT().CreateAct(gomock.Any(), &model.Activity{
-		CreatedAt:      time.Now(),
+		CreatedAt:      now,
 		CreatorId:      "1234566",
 		Bid:            "1-1-1-1",
 		Type:           "test_type",
@@ -118,7 +119,7 @@ func TestActDao(t *testing.T) {
 		Description:    "test_description",
 	}).Return(nil)
 	actDao.CreateAct(ctx, &model.Activity{
-		CreatedAt:      time.Now(),
+		CreatedAt:      now,
 		CreatorId:      "1234566",
 		Bid:            "1-1-1-1",
 		Type:           "test_type",
