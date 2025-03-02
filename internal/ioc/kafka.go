@@ -11,24 +11,24 @@ type KafkaHdl interface {
 }
 
 type Kafka struct {
-	producer *sarama.AsyncProducer
+	producer *sarama.SyncProducer
 	consumer *sarama.ConsumerGroup
 }
 
-func NewKafka(producer *sarama.AsyncProducer, consumer *sarama.ConsumerGroup) *Kafka {
+func NewKafka(producer *sarama.SyncProducer, consumer *sarama.ConsumerGroup) *Kafka {
 	return &Kafka{
 		producer: producer,
 		consumer: consumer,
 	}
 }
 
-func NewAsyncProducer() (*sarama.AsyncProducer, error) {
+func NewAsyncProducer() (*sarama.SyncProducer, error) {
 	config := sarama.NewConfig()
 	config.Producer.Return.Successes = true
 	config.Producer.Return.Errors = true
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	addr := viper.GetString("kafka.addr")
-	producer, err := sarama.NewAsyncProducer([]string{addr}, config)
+	producer, err := sarama.NewSyncProducer([]string{addr}, config)
 	if err != nil {
 		return nil, err
 	}
