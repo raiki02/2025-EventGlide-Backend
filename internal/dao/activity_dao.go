@@ -10,16 +10,16 @@ import (
 )
 
 type ActDaoHdl interface {
-	CreateAct(*gin.Context, model.Activity) error
-	CreateDraft(*gin.Context, model.ActivityDraft) error
+	CreateAct(*gin.Context, *model.Activity) error
+	CreateDraft(*gin.Context, *model.ActivityDraft) error
 	DeleteAct(*gin.Context, model.Activity) error
 	LoadDraft(*gin.Context, string, string) (*model.ActivityDraft, error)
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 
-	CheckExist(*gin.Context, model.Activity) bool
+	CheckExist(*gin.Context, *model.Activity) bool
 
-	FindActBySearches(*gin.Context, *model.Activity) ([]model.Activity, error)
+	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
 }
 
 type ActDao struct {
@@ -124,7 +124,7 @@ func (ad *ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]model.Activity, error) {
 	var as []model.Activity
 	var q *gorm.DB
-	
+
 	if a.Type != nil {
 		q = ad.db.Where("type in ?", a.Type)
 	}

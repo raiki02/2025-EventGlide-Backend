@@ -90,7 +90,7 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param sid query string true "学号"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=model.User}
 // @Router /user/info [get]
 func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -167,7 +167,7 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param ureq body req.UserSearchReq true "搜索请求"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=[]model.Activity}
 // @Router /user/search/act [post]
 func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -195,7 +195,7 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param ureq body req.UserSearchReq true "搜索请求"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=[]model.Post}
 // @Router /user/search/post [post]
 func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -222,7 +222,7 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 // @Summary 获取七牛云token
 // @Produce json
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=string}
 // @Router /user/token/qiniu [get]
 func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
 	return func(c *gin.Context) {

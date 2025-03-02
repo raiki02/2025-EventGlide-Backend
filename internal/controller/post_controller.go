@@ -31,7 +31,7 @@ func NewPostController(ps *service.PostService) *PostController {
 // @Summary 获取所有帖子
 // @Produce json
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=[]model.Post}
 // @Router /post/all [get]
 func (pc *PostController) GetAllPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -50,7 +50,7 @@ func (pc *PostController) GetAllPost() gin.HandlerFunc {
 // @Accept json
 // @Param Authorization header string true "token"
 // @Param post body model.Post true "帖子"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=model.Post}
 // @Router /post/create [post]
 func (pc *PostController) CreatePost() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -74,7 +74,7 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param name body req.FindCommentReq true "帖子名"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=[]model.Post}
 // @Router /post/find [post]
 func (pc *PostController) FindPostByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -126,7 +126,7 @@ func (pc *PostController) DeletePost() gin.HandlerFunc {
 // @Accept json
 // @Param Authorization header string true "token"
 // @Param post body model.PostDraft true "草稿"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=string}
 // @Router /post/draft [post]
 func (pr *PostController) CreateDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -151,7 +151,7 @@ func (pr *PostController) CreateDraft() gin.HandlerFunc {
 // @Accept json
 // @Param Authorization header string true "token"
 // @Param draft body req.DraftReq true "草稿请求"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=model.PostDraft}
 // @Router /post/load [post]
 func (pr *PostController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {

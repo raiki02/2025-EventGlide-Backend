@@ -116,6 +116,21 @@ definitions:
       title:
         type: string
     type: object
+  model.User:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      likes:
+        type: string
+      name:
+        type: string
+      school:
+        type: string
+      sid:
+        type: string
+    type: object
   req.ActSearchReq:
     properties:
       end_time:
@@ -193,6 +208,26 @@ definitions:
       sid:
         type: string
     type: object
+  resp.AnswerResp:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      likes:
+        type: integer
+    type: object
+  resp.CommentResp:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      likes:
+        type: integer
+      sub_comments:
+        type: integer
+    type: object
   resp.LoginResp:
     properties:
       Id:
@@ -245,7 +280,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Activity'
+              type: object
       summary: 创建活动
       tags:
       - Activity
@@ -268,7 +308,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Activity'
+                  type: array
+              type: object
       summary: 通过日期查找活动
       tags:
       - Activity
@@ -295,7 +342,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  type: string
+              type: object
       summary: 创建活动草稿
       tags:
       - Activity
@@ -321,7 +373,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ActivityDraft'
+              type: object
       summary: 加载活动草稿
       tags:
       - Activity
@@ -344,7 +401,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Activity'
+                  type: array
+              type: object
       summary: 通过名称查找活动
       tags:
       - Activity
@@ -368,7 +432,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Activity'
+                  type: array
+              type: object
       summary: 通过搜索条件查找活动
       tags:
       - Activity
@@ -392,7 +463,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.AnswerResp'
+              type: object
       summary: 回复评论
       tags:
       - Comment
@@ -416,7 +492,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.CommentResp'
+              type: object
       summary: 创建评论
       tags:
       - Comment
@@ -559,7 +640,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Post'
+                  type: array
+              type: object
       summary: 获取所有帖子
       tags:
       - Post
@@ -585,7 +673,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Post'
+              type: object
       summary: 创建帖子
       tags:
       - Post
@@ -637,7 +730,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  type: string
+              type: object
       summary: 创建草稿
       tags:
       - Post
@@ -661,7 +759,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Post'
+                  type: array
+              type: object
       summary: 通过帖子名查找帖子
       tags:
       - Post
@@ -687,7 +792,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PostDraft'
+              type: object
       summary: 加载草稿
       tags:
       - Post
@@ -735,7 +845,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
       summary: 获取用户信息
       tags:
       - User
@@ -801,7 +916,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Activity'
+                  type: array
+              type: object
       summary: 搜索用户活动
       tags:
       - User
@@ -825,7 +947,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Post'
+                  type: array
+              type: object
       summary: 搜索用户帖子
       tags:
       - User
@@ -843,7 +972,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  type: string
+              type: object
       summary: 获取七牛云token
       tags:
       - User

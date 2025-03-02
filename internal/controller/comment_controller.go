@@ -28,7 +28,7 @@ func NewCommentController(cs *service.CommentService) *CommentController {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param CommentReq body req.CommentReq true "评论"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=resp.CommentResp}
 // @Router /comment/create [post]
 func (cc *CommentController) CreateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -38,7 +38,12 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
 			return
 		}
-		err = cc.cs.CreateComment(c, &cReq)
+		cmt, err := cc.cs.CreateComment(c, &cReq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "create comment fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "create comment success", cmt))
 	}
 }
 
@@ -47,7 +52,7 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param CommentReq body req.CommentReq true "回复"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=resp.AnswerResp}
 // @Router /comment/answer [post]
 func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -57,7 +62,12 @@ func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
 			return
 		}
-		err = cc.cs.AnswerComment(c, &cReq)
+		asw, err := cc.cs.AnswerComment(c, &cReq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "answer comment fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "answer comment success", asw))
 	}
 }
 

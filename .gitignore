@@ -1,6 +1,5 @@
 .idea
 /config/conf.yaml
-/test
 /volumes
 /tmp
 /config/dev-conf.yml

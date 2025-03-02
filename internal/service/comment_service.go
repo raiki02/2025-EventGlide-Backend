@@ -25,16 +25,16 @@ func NewCommentService(cd *dao.CommentDao) *CommentService {
 	}
 }
 
-func (cs *CommentService) CreateComment(c *gin.Context, req *req.CommentReq) error {
+func (cs *CommentService) CreateComment(c *gin.Context, req *req.CommentReq) (*model.Comment, error) {
 	cmt := toComment(c, req)
 	cmt.Bid = tools.GenUUID(c)
-	return cs.cd.CreateComment(c, cmt)
+	return cmt, cs.cd.CreateComment(c, cmt)
 }
 
-func (cs *CommentService) AnswerComment(c *gin.Context, req *req.CommentReq) error {
+func (cs *CommentService) AnswerComment(c *gin.Context, req *req.CommentReq) (*model.SubComment, error) {
 	answer := toAnswer(c, req)
 	answer.Bid = tools.GenUUID(c)
-	return cs.cd.AnswerComment(c, answer)
+	return answer, cs.cd.AnswerComment(c, answer)
 }
 
 func (cs *CommentService) DeleteComment(c *gin.Context, sid string, targetId string) error {

@@ -3,7 +3,6 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
-	resp2 "github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
@@ -36,7 +35,7 @@ func NewActController(as *service.ActivityService, iu *service.ImgUploader) *Act
 // @Accept json
 // @Param activity body model.Activity true "活动"
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=model.Activity}
 // @Router /act/create [post]
 func (ac *ActController) NewAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -66,7 +65,7 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 // @Accept json
 // @Param draft body model.ActivityDraft true "活动草稿"
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=string}
 // @Router /act/draft [post]
 func (ac *ActController) NewDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -96,7 +95,7 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 // @Accept json
 // @Param Authorization header string true "token"
 // @Param draft body req.DraftReq true "加载草稿"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=model.ActivityDraft}
 // @Router /act/load [post]
 func (ac ActController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -120,7 +119,7 @@ func (ac ActController) LoadDraft() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param name query string true "名称查找"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=[]model.Activity}
 // @Router /act/name [get]
 func (ac *ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -143,7 +142,7 @@ func (ac *ActController) FindActByName() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param actSearchReq body req.ActSearchReq true "搜索条件"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=[]model.Activity}
 // @Router /act/search [post]
 func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -167,7 +166,7 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param date query string true "日期"
-// @Success 200 {object} resp.Resp
+// @Success 200 {object} resp.Resp{data=[]model.Activity}
 // @Router /act/date [get]
 func (ac *ActController) FindActByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
