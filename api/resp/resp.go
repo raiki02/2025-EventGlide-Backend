@@ -40,3 +40,27 @@ type NumberSearchResp struct {
 	Total int             `json:"total"`
 	Nums  []*model.Number `json:"nums"`
 }
+
+type ListActivitiesResp struct {
+	User struct {
+		Sid      string `json:"sid"`
+		Avatar   string `json:"avatar"`
+		Username string `json:"username"`
+		School   string `json:"school"`
+	} `json:"user"`
+
+	DetailTime struct {
+		StartTime string `json:"start_time"`
+		EndTime   string `json:"end_time"`
+	} `json:"detail_time"`
+
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Location    string   `json:"location"`
+	Host        string   `json:"host"`
+	Type        string   `json:"type"`
+	IfRegister  string   `json:"if_register"`
+	ImgUrls     []string `json:"img_urls"`
+	Likes       int      `json:"likes"`
+	Comments    int      `json:"comments"`
+}

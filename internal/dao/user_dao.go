@@ -12,6 +12,7 @@ type UserDaoHdl interface {
 	Create(*gin.Context, *model.User) error
 	CheckUserExist(*gin.Context, string) bool
 	GetUserInfo(*gin.Context, string) (model.User, error)
+	FindUserByID(*gin.Context, string) model.User
 }
 
 type UserDao struct {
@@ -30,7 +31,6 @@ func (ud *UserDao) UpdateUsername(ctx *gin.Context, sid string, name string) err
 	return ud.db.Model(&model.User{}).Where("sid = ?", sid).Update("name", name).Error
 }
 
-// 新建用户时默认username是studentid，默认头像全一样/头像库随机
 func (ud *UserDao) Create(ctx *gin.Context, user *model.User) error {
 	return ud.db.Create(user).Error
 }
@@ -44,4 +44,13 @@ func (ud *UserDao) GetUserInfo(ctx *gin.Context, sid string) (model.User, error)
 	var user model.User
 	err := ud.db.Where("sid = ?", sid).First(&user).Error
 	return user, err
+}
+
+func (ud *UserDao) FindUserByID(ctx *gin.Context, sid string) model.User {
+	var user model.User
+	err := ud.db.Where("sid = ?", sid).First(&user).Error
+	if err != nil {
+		return model.User{}
+	}
+	return user
 }

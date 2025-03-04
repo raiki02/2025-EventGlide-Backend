@@ -24,7 +24,7 @@ func NewNumberController(ns *service.NumberService) *NumberController {
 	}
 }
 
-// @Tag Number
+// @Tags Number
 // @Summary Send a inteaction
 // @Param req body req.NumberSendReq true "NumberSendReq"
 // @Success 200 {object} resp.Resp
@@ -46,7 +46,7 @@ func (nc *NumberController) Send() gin.HandlerFunc {
 	}
 }
 
-// @Tag Number
+// @Tags Number
 // @Summary Delete a inteaction
 // @Param req body req.NumberDelReq true "NumberDelReq"
 // @Success 200 {object} resp.Resp
@@ -68,10 +68,11 @@ func (nc *NumberController) Delete() gin.HandlerFunc {
 	}
 }
 
-// @Tag Number
+// @Tags Number
 // @Summary Search inteactions
 // @Param req body req.NumberSearchReq true "NumberSearchReq"
 // @Success 200 {object} resp.Resp{data=resp.NumberSearchResp}
+// @Router /number/search [post]
 func (nc *NumberController) Search() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var rq req.NumberSearchReq

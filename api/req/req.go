@@ -24,12 +24,14 @@ type NumberDelReq struct {
 }
 
 type ActSearchReq struct {
-	Type       []string `json:"type"`
-	Host       []string `json:"host"`
-	Location   []string `json:"location"`
-	IfRegister string   `json:"if_register"`
-	StartTime  string   `json:"start_time"`
-	EndTime    string   `json:"end_time"`
+	Type       []string `json:"type,omitempty"`
+	Host       []string `json:"host,omitempty"`
+	Location   []string `json:"location,omitempty"`
+	IfRegister string   `json:"if_register,omitempty"`
+	DetailDate struct {
+		StartTime string `json:"start_time,omitempty"`
+		EndTime   string `json:"end_time,omitempty"`
+	} `json:"detail_date,omitempty"`
 }
 
 func (a *ActSearchReq) GetTypes() []string {

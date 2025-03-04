@@ -16,6 +16,7 @@ type ActControllerHdl interface {
 	FindActByName() gin.HandlerFunc
 	FindActByDate() gin.HandlerFunc
 	FindActByOwnerID() gin.HandlerFunc
+	ListAllActs() gin.HandlerFunc
 }
 
 type ActController struct {
@@ -120,7 +121,7 @@ func (ac ActController) LoadDraft() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param name query string true "名称查找"
-// @Success 200 {object} resp.Resp{data=[]model.Activity}
+// @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
 // @Router /act/name [get]
 func (ac *ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -143,7 +144,7 @@ func (ac *ActController) FindActByName() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param actSearchReq body req.ActSearchReq true "搜索条件"
-// @Success 200 {object} resp.Resp{data=[]model.Activity}
+// @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
 // @Router /act/search [post]
 func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -167,7 +168,7 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param date query string true "日期"
-// @Success 200 {object} resp.Resp{data=[]model.Activity}
+// @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
 // @Router /act/date [get]
 func (ac *ActController) FindActByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -191,7 +192,7 @@ func (ac *ActController) FindActByDate() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param id path string true "创建者id"
-// @Success 200 {object} resp.Resp{data=[]model.Activity}
+// @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
 // @Router /act/owner/{id} [get]
 func (ac *ActController) FindActByOwnerID() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -201,6 +202,23 @@ func (ac *ActController) FindActByOwnerID() gin.HandlerFunc {
 			return
 		}
 		as, err := ac.as.FindActByOwnerID(c, id)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
+	}
+}
+
+// @Tags Activity
+// @Summary 列出所有活动
+// @Produce json
+// @Param Authorization header string true "token"
+// @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
+// @Router /act/all [get]
+func (ac *ActController) ListAllActs() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		as, err := ac.as.ListAllActs(c)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return

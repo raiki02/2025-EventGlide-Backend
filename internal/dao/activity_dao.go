@@ -18,7 +18,7 @@ type ActDaoHdl interface {
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 	FindActByOwnerID(*gin.Context, string) ([]model.Activity, error)
 	CheckExist(*gin.Context, *model.Activity) bool
-
+	ListAllActs(*gin.Context) ([]model.Activity, error)
 	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
 }
 
@@ -137,21 +137,26 @@ func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]mode
 	if a.IfRegister != "" {
 		q = q.Where("if_register = ?", a.IfRegister)
 	}
-	if a.StartTime != "" && a.EndTime != "" {
-		q = q.Where("start_time >= ? and end_time <= ?", a.StartTime, a.EndTime)
+	if a.DetailDate.StartTime != "" && a.DetailDate.EndTime != "" {
+		q = q.Where("start_time >= ? and end_time <= ?", a.DetailDate.StartTime, a.DetailDate.EndTime)
 	}
 	err := q.Find(&as).Error
 
 	return as, err
 }
 
-func (ad *ActDao) UpdateNumbers(c *gin.Context, Sid, Bid string, likes, comments int) error {
-	return ad.db.Model(&model.Activity{}).Where("creator_id = ? and bid = ?", Sid, Bid).Update("likes", likes).Update("comments", comments).Error
-}
-
 func (ad *ActDao) FindActByOwnerID(c *gin.Context, s string) ([]model.Activity, error) {
 	var as []model.Activity
 	err := ad.db.Where("creator_id = ?", s).Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
+}
+
+func (ad *ActDao) ListAllActs(c *gin.Context) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Find(&as).Error
 	if err != nil {
 		return nil, err
 	}

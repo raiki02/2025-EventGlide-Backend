@@ -24,7 +24,7 @@ services:
     container_name: mysql_EG
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 114514
+      MYSQL_ROOT_PASSWORD: your-password
     ports:
       - "3306:3306"
     volumes:
@@ -35,7 +35,7 @@ services:
     container_name: redis_EG
     restart: always
     environment:
-      REDIS_PASSWORD: 114514redis
+      REDIS_PASSWORD: your-password
     ports:
       - "6379:6379"
     volumes:

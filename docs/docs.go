@@ -605,6 +605,9 @@ const docTemplate = `{
         },
         "/number/create": {
             "post": {
+                "tags": [
+                    "Number"
+                ],
                 "summary": "Send a inteaction",
                 "parameters": [
                     {
@@ -629,6 +632,9 @@ const docTemplate = `{
         },
         "/number/delete": {
             "post": {
+                "tags": [
+                    "Number"
+                ],
                 "summary": "Delete a inteaction",
                 "parameters": [
                     {
@@ -646,6 +652,45 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/number/search": {
+            "post": {
+                "tags": [
+                    "Number"
+                ],
+                "summary": "Search inteactions",
+                "parameters": [
+                    {
+                        "description": "NumberSearchReq",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.NumberSearchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.NumberSearchResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
