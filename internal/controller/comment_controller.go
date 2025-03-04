@@ -11,6 +11,8 @@ type CommentControllerHdl interface {
 	CreateComment() gin.HandlerFunc
 	DeleteComment() gin.HandlerFunc
 	AnswerComment() gin.HandlerFunc
+	LoadComments() gin.HandlerFunc
+	LoadAnswers() gin.HandlerFunc
 }
 
 type CommentController struct {
@@ -98,5 +100,49 @@ func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "delete comment success", nil))
+	}
+}
+
+// @Tags Comment
+// @Summary 加载评论
+// @Produce json
+// @Param id path string true "目标id"
+// @Success 200 {object} resp.Resp{data=[]resp.CommentResp}
+// @Router /comment/load/{id} [get]
+func (cc *CommentController) LoadComments() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		target := c.Param("id")
+		if target == "" {
+			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
+			return
+		}
+		comments, err := cc.cs.LoadComments(c, target)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "load comments fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "load comments success", comments))
+	}
+}
+
+// @Tags Comment
+// @Summary 加载回复
+// @Produce json
+// @Param id path string true "目标id"
+// @Success 200 {object} resp.Resp{data=[]resp.AnswerResp}
+// @Router /comment/answer/{id} [get]
+func (cc *CommentController) LoadAnswers() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		target := c.Param("id")
+		if target == "" {
+			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
+			return
+		}
+		answers, err := cc.cs.LoadAnswers(c, target)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "load answers fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "load answers success", answers))
 	}
 }

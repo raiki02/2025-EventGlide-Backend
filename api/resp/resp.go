@@ -1,6 +1,9 @@
 package resp
 
-import "time"
+import (
+	"github.com/raiki02/EG/internal/model"
+	"time"
+)
 
 type Resp struct {
 	Code int         `json:"code"`
@@ -20,6 +23,7 @@ type LoginResp struct {
 
 type CommentResp struct {
 	CreatedAt   time.Time `json:"created_at"`
+	CreatorID   string    `json:"creator_id"`
 	Content     string    `json:"content"`
 	SubComments int       `json:"sub_comments"`
 	Likes       int       `json:"likes"`
@@ -27,6 +31,12 @@ type CommentResp struct {
 
 type AnswerResp struct {
 	CreatedAt time.Time `json:"created_at"`
+	CreatorID string    `json:"creator_id"`
 	Likes     int       `json:"likes"`
 	Content   string    `json:"content"`
+}
+
+type NumberSearchResp struct {
+	Total int             `json:"total"`
+	Nums  []*model.Number `json:"nums"`
 }

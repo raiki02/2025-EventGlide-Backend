@@ -34,5 +34,6 @@ func (pr *PostRouter) RegisterPostRouters() {
 		post.POST("/draft", pr.pch.CreateDraft())
 		post.POST("/delete", pr.pch.DeletePost())
 		post.POST("/load", pr.pch.LoadDraft())
+		post.GET("/own/:id", pr.pch.FindPostByOwnerID())
 	}
 }

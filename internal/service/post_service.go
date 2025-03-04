@@ -16,6 +16,7 @@ type PostServiceHdl interface {
 	DeletePost(*gin.Context, *model.Post) error
 	CreateDraft(*gin.Context, *model.PostDraft) error
 	LoadDraft(*gin.Context, req.DraftReq) (*model.PostDraft, error)
+	FindPostByOwnerID(*gin.Context, string) ([]model.Post, error)
 }
 
 type PostService struct {
@@ -76,4 +77,12 @@ func (ps *PostService) LoadDraft(c *gin.Context, req req.DraftReq) (model.PostDr
 		return model.PostDraft{}, err
 	}
 	return draft, nil
+}
+
+func (ps *PostService) FindPostByOwnerID(c *gin.Context, id string) ([]model.Post, error) {
+	posts, err := ps.pdh.FindPostByOwnerID(c, id)
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }

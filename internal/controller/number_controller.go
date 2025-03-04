@@ -2,15 +2,16 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
 )
 
 type NumberControllerHdl interface {
-	AddLikesNum() gin.HandlerFunc
-	CutLikesNum() gin.HandlerFunc
-	AddCommentsNum() gin.HandlerFunc
+	Send() gin.HandlerFunc
+	Delete() gin.HandlerFunc
+	Search() gin.HandlerFunc
 }
 
 type NumberController struct {
@@ -23,98 +24,70 @@ func NewNumberController(ns *service.NumberService) *NumberController {
 	}
 }
 
-// @Tags number
-// @Summary 增加点赞数
-// @Accept json
-// @Param Authorization header string true "token"
-// @Param number body model.Number true "点赞入参"
+// @Tag Number
+// @Summary Send a inteaction
+// @Param req body req.NumberSendReq true "NumberSendReq"
 // @Success 200 {object} resp.Resp
-// @Router /number/like [post]
-func (nc *NumberController) AddLikesNum() gin.HandlerFunc {
+// @Router /number/create [post]
+func (nc *NumberController) Send() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var nr model.Number
-		err := c.ShouldBindJSON(&nr)
+		var rq req.NumberSendReq
+		err := c.ShouldBindJSON(&rq)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(400, tools.ReturnMSG(c, "bind error", nil))
 			return
 		}
-		err = nc.ns.AddLikesNum(c, &nr)
+		err = nc.ns.Send(c, rq)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(400, tools.ReturnMSG(c, "send error", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
-// @Tags number
-// @Summary 减少点赞数
-// @Accept json
-// @Param Authorization header string true "token"
-// @Param number body model.Number true "点赞入参"
+// @Tag Number
+// @Summary Delete a inteaction
+// @Param req body req.NumberDelReq true "NumberDelReq"
 // @Success 200 {object} resp.Resp
-// @Router /number/unlike [post]
-func (nc *NumberController) CutLikesNum() gin.HandlerFunc {
+// @Router /number/delete [post]
+func (nc *NumberController) Delete() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var nr model.Number
-		err := c.ShouldBindJSON(&nr)
+		var rq req.NumberDelReq
+		err := c.ShouldBindJSON(&rq)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(400, tools.ReturnMSG(c, "bind error", nil))
 			return
 		}
-		err = nc.ns.CutLikesNum(c, &nr)
+		err = nc.ns.Delete(c, rq)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(400, tools.ReturnMSG(c, "del error", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
-// @Tags number
-// @Summary 增加评论数
-// @Accept json
-// @Param Authorization header string true "token"
-// @Param number body model.Number true "评论入参"
-// @Success 200 {object} resp.Resp
-// @Router /number/comment [post]
-func (nc *NumberController) AddCommentsNum() gin.HandlerFunc {
+// @Tag Number
+// @Summary Search inteactions
+// @Param req body req.NumberSearchReq true "NumberSearchReq"
+// @Success 200 {object} resp.Resp{data=resp.NumberSearchResp}
+func (nc *NumberController) Search() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var nr model.Number
-		err := c.ShouldBindJSON(&nr)
+		var rq req.NumberSearchReq
+		err := c.ShouldBindJSON(&rq)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(400, tools.ReturnMSG(c, "bind error", nil))
 			return
 		}
-		err = nc.ns.AddCommentsNum(c, &nr)
+		numbers, count, err := nc.ns.Search(c, rq)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(400, tools.ReturnMSG(c, "search error", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
-	}
-}
-
-// @Tags number
-// @Summary 更新点赞数和评论数
-// @Accept json
-// @Param Authorization header string true "token"
-// @Param number body model.Number true "更新入参"
-// @Success 200 {object} resp.Resp
-// @Router /number/update [post]
-func (nc *NumberController) UpdateNumbers() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var nr model.Number
-		err := c.ShouldBindJSON(&nr)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		err = nc.ns.UpdateNumbers(c, nr.Sid, nr.Bid)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+		c.JSON(200, tools.ReturnMSG(c, "success", resp.NumberSearchResp{
+			Nums:  numbers,
+			Total: count,
+		}))
 	}
 }

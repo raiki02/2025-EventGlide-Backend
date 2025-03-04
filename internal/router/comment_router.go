@@ -31,5 +31,7 @@ func (cr *CommentRouter) RegisterCommentRouter() {
 		cmt.POST("/create", cr.cch.CreateComment())
 		cmt.POST("/delete", cr.cch.DeleteComment())
 		cmt.POST("/answer", cr.cch.AnswerComment())
+		cmt.GET("/load/:id", cr.cch.LoadComments())
+		cmt.GET("/load/answer/:id", cr.cch.LoadAnswers())
 	}
 }

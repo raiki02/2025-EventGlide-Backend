@@ -17,19 +17,18 @@ type ActivityServiceHdl interface {
 	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
+	FindActByOwnerID(*gin.Context, string) ([]model.Activity, error)
 }
 
 type ActivityService struct {
 	ad *dao.ActDao
 	ch *cache.Cache
-	pd *dao.PostDao
 }
 
-func NewActivityService(ad *dao.ActDao, ch *cache.Cache, pd *dao.PostDao) *ActivityService {
+func NewActivityService(ad *dao.ActDao, ch *cache.Cache) *ActivityService {
 	return &ActivityService{
 		ad: ad,
 		ch: ch,
-		pd: pd,
 	}
 }
 
@@ -39,18 +38,6 @@ func (as *ActivityService) NewAct(c *gin.Context, act *model.Activity) error {
 	createdAt := time.Now()
 	act.CreatedAt = createdAt
 	err := as.ad.CreateAct(c, act)
-	if err != nil {
-		return err
-	}
-	post := &model.Post{
-		Bid:       act.Bid,
-		CreatorID: act.CreatorId,
-		Content:   act.Description,
-		ImgUrls:   act.ImgUrls,
-		Title:     act.Name,
-		CreatedAt: createdAt,
-	}
-	err = as.pd.CreatePost(c, post)
 	if err != nil {
 		return err
 	}
@@ -93,6 +80,14 @@ func (as *ActivityService) FindActByDate(c *gin.Context, date string) ([]model.A
 
 func (as *ActivityService) FindActByName(c *gin.Context, name string) ([]model.Activity, error) {
 	acts, err := as.ad.FindActByName(c, name)
+	if err != nil {
+		return nil, err
+	}
+	return acts, nil
+}
+
+func (as *ActivityService) FindActByOwnerID(c *gin.Context, id string) ([]model.Activity, error) {
+	acts, err := as.ad.FindActByOwnerID(c, id)
 	if err != nil {
 		return nil, err
 	}

@@ -15,6 +15,7 @@ type ActControllerHdl interface {
 	FindActBySearches() gin.HandlerFunc
 	FindActByName() gin.HandlerFunc
 	FindActByDate() gin.HandlerFunc
+	FindActByOwnerID() gin.HandlerFunc
 }
 
 type ActController struct {
@@ -177,6 +178,29 @@ func (ac *ActController) FindActByDate() gin.HandlerFunc {
 			return
 		}
 		as, err := ac.as.FindActByDate(c, d)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", as))
+	}
+}
+
+// @Tags Activity
+// @Summary 通过创建者id查找活动
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param id path string true "创建者id"
+// @Success 200 {object} resp.Resp{data=[]model.Activity}
+// @Router /act/owner/{id} [get]
+func (ac *ActController) FindActByOwnerID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		if id == "" {
+			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
+			return
+		}
+		as, err := ac.as.FindActByOwnerID(c, id)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return

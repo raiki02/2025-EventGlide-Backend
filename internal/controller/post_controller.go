@@ -15,6 +15,7 @@ type PostControllerHdl interface {
 	DeletePost() gin.HandlerFunc
 	CreateDraft() gin.HandlerFunc
 	LoadDraft() gin.HandlerFunc
+	FindPostByOwnerID() gin.HandlerFunc
 }
 
 type PostController struct {
@@ -167,5 +168,24 @@ func (pr *PostController) LoadDraft() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", draft))
+	}
+}
+
+// @Tags Post
+// @Summary 通过用户ID查找帖子
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param id path string true "用户ID"
+// @Success 200 {object} resp.Resp{data=[]model.Post}
+// @Router /post/owner/{id} [get]
+func (pr *PostController) FindPostByOwnerID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		posts, err := pr.ps.FindPostByOwnerID(c, id)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", posts))
 	}
 }

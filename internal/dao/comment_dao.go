@@ -10,6 +10,7 @@ type CommentDaoHdl interface {
 	CreateComment(*gin.Context, *model.Comment) error
 	DeleteComment(*gin.Context, string) error
 	AnswerComment(*gin.Context, *model.SubComment) error
+	LoadComments(*gin.Context, string) ([]model.Comment, error)
 }
 
 type CommentDao struct {
@@ -41,4 +42,16 @@ func (cd *CommentDao) UpdateNumbersForComments(c *gin.Context, sid, bid string, 
 
 func (cd *CommentDao) UpdateNumbersForAnswers(c *gin.Context, sid, bid string, like int) error {
 	return cd.db.Model(&model.SubComment{}).Where("creator_id = ? AND bid = ?", sid, bid).Update("like", like).Error
+}
+
+func (cd *CommentDao) LoadComments(c *gin.Context, targetID string) ([]model.Comment, error) {
+	var cmts []model.Comment
+	err := cd.db.Where("target_id = ?", targetID).Find(&cmts).Error
+	return cmts, err
+}
+
+func (cd *CommentDao) LoadAnswers(c *gin.Context, targetID string) ([]model.SubComment, error) {
+	var answers []model.SubComment
+	err := cd.db.Where("target_id = ?", targetID).Find(&answers).Error
+	return answers, err
 }

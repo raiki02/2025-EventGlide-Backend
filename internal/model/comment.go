@@ -2,17 +2,6 @@ package model
 
 import "time"
 
-/*
-	post -> comment -> subcomment 独立
-
-在一个帖子下评论，获取帖子id，制作评论发布：评论id，发布者id，评论内容
-回复评论，获取帖子id，评论id，制作回复：回复id，回复者id，回复内容
-
-act-post -> comment -> subcomment 共享
-获取bid，制作评论发布：评论id，发布者id，评论内容
-回复评论，获取bid，评论id，制作回复：回复id，回复者id，回复内容
-*/
-//for post/act
 type Comment struct {
 	CreatedAt   time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间; not null"`
 	Bid         string    `json:"bid" gorm:"column:bid; type:varchar(255); comment:绑定id ;not null"`
@@ -23,7 +12,6 @@ type Comment struct {
 	Content     string    `json:"content" gorm:"column:content; type:text; comment:评论内容; not null"`
 }
 
-// for comment
 type SubComment struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间 ;not null"`
 	Bid       string    `json:"bid" gorm:"column:bid; type:varchar(255); comment:绑定id ;not null"`

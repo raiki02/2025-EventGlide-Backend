@@ -15,6 +15,7 @@ type PostDaoHdl interface {
 	DeletePost(context.Context, *model.Post) error
 	FindPostByUser(context.Context, string, string) ([]model.Post, error)
 	CreateDraft(context.Context, *model.PostDraft) error
+	FindPostByOwnerID(context.Context, string) ([]model.Post, error)
 	LoadDraft(context.Context, string, string) (*model.PostDraft, error)
 }
 
@@ -88,4 +89,13 @@ func (pd *PostDao) LoadDraft(ctx context.Context, bid string, sid string) (model
 
 func (pd *PostDao) UpdateNumbers(c *gin.Context, sid, bid string, like, comment int) error {
 	return pd.db.Model(&model.Post{}).Where("creator_id = ? AND bid = ?", sid, bid).Update("like", like).Update("comment", comment).Error
+}
+
+func (pd *PostDao) FindPostByOwnerID(ctx context.Context, id string) ([]model.Post, error) {
+	var posts []model.Post
+	err := pd.db.Where("creator_id = ?", id).Find(&posts).Error
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }

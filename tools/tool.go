@@ -11,12 +11,12 @@ func GenUUID(c *gin.Context) string {
 	return u.String()
 }
 
-func Marshal(v interface{}) string {
+func Marshal(v interface{}) []byte {
 	res, err := json.Marshal(v)
 	if err != nil {
-		return ""
+		return nil
 	}
-	return string(res)
+	return res
 }
 
 func Unmarshal(data []byte, v interface{}) interface{} {

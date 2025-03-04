@@ -34,6 +34,7 @@ func (ar ActRouter) RegisterActRouters() error {
 		act.GET("/name", ar.ach.FindActByName())
 		act.GET("/date", ar.ach.FindActByDate())
 		act.POST("/search", ar.ach.FindActBySearches())
+		act.GET("/own/:id", ar.ach.FindActByOwnerID())
 	}
 	return nil
 }

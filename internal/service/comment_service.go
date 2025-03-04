@@ -13,6 +13,8 @@ type CommentServiceHdl interface {
 	CreateComment(*gin.Context, *req.CommentReq) error
 	DeleteComment(*gin.Context, string, string) error
 	AnswerComment(*gin.Context, *req.CommentReq) error
+	LoadComments(*gin.Context, string) ([]model.Comment, error)
+	LoadAnswers(*gin.Context, string) ([]model.SubComment, error)
 }
 
 type CommentService struct {
@@ -39,6 +41,14 @@ func (cs *CommentService) AnswerComment(c *gin.Context, req *req.CommentReq) (*m
 
 func (cs *CommentService) DeleteComment(c *gin.Context, sid string, targetId string) error {
 	return cs.cd.DeleteComment(c, sid, targetId)
+}
+
+func (cs *CommentService) LoadComments(c *gin.Context, targetId string) ([]model.Comment, error) {
+	return cs.cd.LoadComments(c, targetId)
+}
+
+func (cs *CommentService) LoadAnswers(c *gin.Context, targetId string) ([]model.SubComment, error) {
+	return cs.cd.LoadAnswers(c, targetId)
 }
 
 func toComment(c *gin.Context, req *req.CommentReq) *model.Comment {

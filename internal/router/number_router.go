@@ -28,9 +28,8 @@ func (nr *NumberRouter) RegisterNumberRouters() {
 	number := nr.e.Group("/number")
 	number.Use(nr.j.WrapCheckToken())
 	{
-		number.POST("/like", nr.nc.AddLikesNum())
-		number.POST("/comment", nr.nc.AddCommentsNum())
-		number.POST("/unlike", nr.nc.CutLikesNum())
-		number.POST("/update", nr.nc.UpdateNumbers())
+		number.POST("/create", nr.nc.Send())
+		number.POST("/delete", nr.nc.Delete())
+		number.POST("/search", nr.nc.Search())
 	}
 }

@@ -273,6 +273,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/act/owner/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Activity"
+                ],
+                "summary": "通过创建者id查找活动",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "创建者id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Activity"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/act/search": {
             "post": {
                 "produces": [
@@ -365,6 +415,49 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/resp.AnswerResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/comment/answer/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Comment"
+                ],
+                "summary": "加载回复",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "目标id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.AnswerResp"
+                                            }
                                         }
                                     }
                                 }
@@ -467,30 +560,60 @@ const docTemplate = `{
                 }
             }
         },
-        "/number/comment": {
-            "post": {
-                "consumes": [
+        "/comment/load/{id}": {
+            "get": {
+                "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "number"
+                    "Comment"
                 ],
-                "summary": "增加评论数",
+                "summary": "加载评论",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
+                        "description": "目标id",
+                        "name": "id",
+                        "in": "path",
                         "required": true
-                    },
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.CommentResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/number/create": {
+            "post": {
+                "summary": "Send a inteaction",
+                "parameters": [
                     {
-                        "description": "评论入参",
-                        "name": "number",
+                        "description": "NumberSendReq",
+                        "name": "req",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Number"
+                            "$ref": "#/definitions/req.NumberSendReq"
                         }
                     }
                 ],
@@ -504,104 +627,17 @@ const docTemplate = `{
                 }
             }
         },
-        "/number/like": {
+        "/number/delete": {
             "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "number"
-                ],
-                "summary": "增加点赞数",
+                "summary": "Delete a inteaction",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "点赞入参",
-                        "name": "number",
+                        "description": "NumberDelReq",
+                        "name": "req",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Number"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
-        "/number/unlike": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "number"
-                ],
-                "summary": "减少点赞数",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "点赞入参",
-                        "name": "number",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Number"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
-        "/number/update": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "number"
-                ],
-                "summary": "更新点赞数和评论数",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "更新入参",
-                        "name": "number",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Number"
+                            "$ref": "#/definitions/req.NumberDelReq"
                         }
                     }
                 ],
@@ -897,6 +933,56 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/model.PostDraft"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/post/owner/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Post"
+                ],
+                "summary": "通过用户ID查找帖子",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Post"
+                                            }
                                         }
                                     }
                                 }
@@ -1353,16 +1439,25 @@ const docTemplate = `{
         "model.Number": {
             "type": "object",
             "properties": {
-                "bid": {
+                "action": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "sid": {
+                "content": {
                     "type": "string"
                 },
-                "topic": {
+                "created_at": {
+                    "type": "string"
+                },
+                "from_sid": {
+                    "type": "string"
+                },
+                "isRead": {
+                    "type": "boolean"
+                },
+                "object": {
+                    "type": "string"
+                },
+                "to_sid": {
                     "type": "string"
                 }
             }
@@ -1480,6 +1575,9 @@ const docTemplate = `{
                 "creator_id": {
                     "type": "string"
                 },
+                "parent_id; omitempty": {
+                    "type": "string"
+                },
                 "target_id": {
                     "type": "string"
                 }
@@ -1526,6 +1624,51 @@ const docTemplate = `{
                 }
             }
         },
+        "req.NumberDelReq": {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "type": "string"
+                },
+                "sid": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.NumberSearchReq": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "object": {
+                    "type": "string"
+                },
+                "sid": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.NumberSendReq": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "from_sid": {
+                    "type": "string"
+                },
+                "object": {
+                    "type": "string"
+                },
+                "to_sid": {
+                    "type": "string"
+                }
+            }
+        },
         "req.UpdateNameReq": {
             "type": "object",
             "properties": {
@@ -1568,6 +1711,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "creator_id": {
+                    "type": "string"
+                },
                 "likes": {
                     "type": "integer"
                 }
@@ -1580,6 +1726,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_at": {
+                    "type": "string"
+                },
+                "creator_id": {
                     "type": "string"
                 },
                 "likes": {
@@ -1613,6 +1762,20 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "resp.NumberSearchResp": {
+            "type": "object",
+            "properties": {
+                "nums": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Number"
+                    }
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

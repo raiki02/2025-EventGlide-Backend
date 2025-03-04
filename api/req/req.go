@@ -4,10 +4,23 @@ import "github.com/spf13/viper"
 
 // todo 写在api的res/req中
 
-type NumberReq struct {
-	Topic string
-	Sid   string `json:"sid"`
-	Bid   string `json:"bid"`
+type NumberSendReq struct {
+	FromSid string `json:"from_sid"`
+	ToSid   string `json:"to_sid"`
+	Object  string `json:"object"`
+	Action  string `json:"action"`
+	Content string `json:"content"`
+}
+
+type NumberSearchReq struct {
+	Sid    string `json:"sid"`
+	Object string `json:"object"`
+	Action string `json:"action"`
+}
+
+type NumberDelReq struct {
+	Sid    string `json:"sid"`
+	Object string `json:"object"`
 }
 
 type ActSearchReq struct {
@@ -54,6 +67,7 @@ type CommentReq struct {
 	CreatorID string `json:"creator_id"`
 	TargetID  string `json:"target_id"`
 	Content   string `json:"content"`
+	ParentID  string `json:"parent_id; omitempty"`
 }
 
 type UserAvatarReq struct {

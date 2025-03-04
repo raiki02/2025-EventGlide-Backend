@@ -16,7 +16,7 @@ type ActDaoHdl interface {
 	LoadDraft(*gin.Context, string, string) (*model.ActivityDraft, error)
 	FindActByName(*gin.Context, string) ([]model.Activity, error)
 	FindActByDate(*gin.Context, string) ([]model.Activity, error)
-
+	FindActByOwnerID(*gin.Context, string) ([]model.Activity, error)
 	CheckExist(*gin.Context, *model.Activity) bool
 
 	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
@@ -147,4 +147,13 @@ func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]mode
 
 func (ad *ActDao) UpdateNumbers(c *gin.Context, Sid, Bid string, likes, comments int) error {
 	return ad.db.Model(&model.Activity{}).Where("creator_id = ? and bid = ?", Sid, Bid).Update("likes", likes).Update("comments", comments).Error
+}
+
+func (ad *ActDao) FindActByOwnerID(c *gin.Context, s string) ([]model.Activity, error) {
+	var as []model.Activity
+	err := ad.db.Where("creator_id = ?", s).Find(&as).Error
+	if err != nil {
+		return nil, err
+	}
+	return as, nil
 }

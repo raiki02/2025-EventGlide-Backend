@@ -1,16 +1,15 @@
 package dao
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
 
 type NumberDaoHdl interface {
-	AddLikesNum(*gin.Context, *model.Number) error
-	CutLikesNum(*gin.Context, string, string) error
-	AddCommentsNum(*gin.Context, *model.Number) error
+	Insert(*model.Number) error
+	Delete(*gin.Context, string, string) error
+	Search(*gin.Context, string, string, string) ([]*model.Number, int, error)
 }
 
 type NumberDao struct {
@@ -23,32 +22,20 @@ func NewNumberDao(db *gorm.DB) *NumberDao {
 	}
 }
 
-func (nd *NumberDao) AddLikesNum(c *gin.Context, n *model.Number) error {
-	var num model.Number
-	if nd.db.Where("sid = ? AND bid = ? AND topic = ?", n.Sid, n.Bid, "like").First(&num).RowsAffected > 0 {
-		return errors.New("already liked")
+func (nd *NumberDao) Insert(n *model.Number) error {
+	return nd.db.Create(n).Error
+}
+
+func (nd *NumberDao) Delete(c *gin.Context, sid, obj string) error {
+	return nd.db.Where("to_sid = ? and object = ? and action = like", sid, obj).Delete(&model.Number{}).Error
+}
+
+func (nd *NumberDao) Search(c *gin.Context, sid, obj, act string) ([]*model.Number, int, error) {
+	var numbers []*model.Number
+	var count int64
+	err := nd.db.Where("to_sid = ? and object = ? and action = ?", sid, obj, act).Find(&numbers).Count(&count).Error
+	if err != nil {
+		return nil, 0, err
 	}
-	return nd.db.Create(n).Error
+	return numbers, int(count), nil
 }
-
-func (nd *NumberDao) CutLikesNum(c *gin.Context, sid string, bid string) error {
-	return nd.db.Where("sid = ? AND bid = ? AND topic = ?", sid, bid, "like").Delete(&model.Number{}).Error
-}
-
-func (nd *NumberDao) AddCommentsNum(c *gin.Context, n *model.Number) error {
-	return nd.db.Create(n).Error
-}
-
-func (nd *NumberDao) GetLikesNum(c *gin.Context, sid string, bid string) int {
-	var num int64
-	nd.db.Model(&model.Number{}).Where("sid = ? AND bid = ? AND topic = ?", sid, bid, "like").Count(&num)
-	return int(num)
-}
-
-func (nd *NumberDao) GetCommentsNum(c *gin.Context, sid string, bid string) int {
-	var num int64
-	nd.db.Model(&model.Number{}).Where("sid = ? AND bid = ? AND topic = ?", sid, bid, "comment").Count(&num)
-	return int(num)
-}
-
-//todo check bid exist
