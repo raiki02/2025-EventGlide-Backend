@@ -64,3 +64,18 @@ type ListActivitiesResp struct {
 	Likes       int      `json:"likes"`
 	Comments    int      `json:"comments"`
 }
+
+type ListPostsResp struct {
+	User struct {
+		Sid      string `json:"sid"`
+		Avatar   string `json:"avatar"`
+		Username string `json:"username"`
+		School   string `json:"school"`
+	} `json:"user"`
+
+	Title    string   `json:"title"`
+	Content  string   `json:"content"`
+	ImgUrls  []string `json:"img_urls"`
+	Likes    int      `json:"likes"`
+	Comments int      `json:"comments"`
+}

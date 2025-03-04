@@ -3,7 +3,6 @@ package dao
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
@@ -85,10 +84,6 @@ func (pd *PostDao) LoadDraft(ctx context.Context, bid string, sid string) (model
 		return model.PostDraft{}, err
 	}
 	return draft, nil
-}
-
-func (pd *PostDao) UpdateNumbers(c *gin.Context, sid, bid string, like, comment int) error {
-	return pd.db.Model(&model.Post{}).Where("creator_id = ? AND bid = ?", sid, bid).Update("like", like).Update("comment", comment).Error
 }
 
 func (pd *PostDao) FindPostByOwnerID(ctx context.Context, id string) ([]model.Post, error) {
