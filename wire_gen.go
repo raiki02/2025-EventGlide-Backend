@@ -33,7 +33,7 @@ func InitApp(e *gin.Engine) *server.Server {
 	userController := controller.NewUserController(e, userService)
 	userRouter := router.NewUserRouter(e, userController, jwt)
 	cacheCache := cache.NewCache(client)
-	activityService := service.NewActivityService(actDao, cacheCache)
+	activityService := service.NewActivityService(actDao, cacheCache, userDao)
 	actController := controller.NewActController(activityService, imgUploader)
 	actRouter := router.NewActRouter(e, actController, jwt)
 	postService := service.NewPostService(postDao)

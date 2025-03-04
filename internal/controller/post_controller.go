@@ -32,7 +32,7 @@ func NewPostController(ps *service.PostService) *PostController {
 // @Summary 获取所有帖子
 // @Produce json
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp{data=[]model.Post}
+// @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
 // @Router /post/all [get]
 func (pc *PostController) GetAllPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -75,7 +75,7 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param name body req.FindCommentReq true "帖子名"
-// @Success 200 {object} resp.Resp{data=[]model.Post}
+// @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
 // @Router /post/find [post]
 func (pc *PostController) FindPostByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -176,7 +176,7 @@ func (pr *PostController) LoadDraft() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param id path string true "用户ID"
-// @Success 200 {object} resp.Resp{data=[]model.Post}
+// @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
 // @Router /post/owner/{id} [get]
 func (pr *PostController) FindPostByOwnerID() gin.HandlerFunc {
 	return func(c *gin.Context) {

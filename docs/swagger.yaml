@@ -139,8 +139,13 @@ definitions:
     type: object
   req.ActSearchReq:
     properties:
-      end_time:
-        type: string
+      detail_date:
+        properties:
+          end_time:
+            type: string
+          start_time:
+            type: string
+        type: object
       host:
         items:
           type: string
@@ -151,8 +156,6 @@ definitions:
         items:
           type: string
         type: array
-      start_time:
-        type: string
       type:
         items:
           type: string
@@ -269,6 +272,73 @@ definitions:
       sub_comments:
         type: integer
     type: object
+  resp.ListActivitiesResp:
+    properties:
+      comments:
+        type: integer
+      description:
+        type: string
+      detail_time:
+        properties:
+          end_time:
+            type: string
+          start_time:
+            type: string
+        type: object
+      host:
+        type: string
+      if_register:
+        type: string
+      img_urls:
+        items:
+          type: string
+        type: array
+      likes:
+        type: integer
+      location:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      user:
+        properties:
+          avatar:
+            type: string
+          school:
+            type: string
+          sid:
+            type: string
+          username:
+            type: string
+        type: object
+    type: object
+  resp.ListPostsResp:
+    properties:
+      comments:
+        type: integer
+      content:
+        type: string
+      img_urls:
+        items:
+          type: string
+        type: array
+      likes:
+        type: integer
+      title:
+        type: string
+      user:
+        properties:
+          avatar:
+            type: string
+          school:
+            type: string
+          sid:
+            type: string
+          username:
+            type: string
+        type: object
+    type: object
   resp.LoginResp:
     properties:
       Id:
@@ -308,6 +378,29 @@ info:
   description: 校灵通 API 文档
   title: EventGlide API
 paths:
+  /act/all:
+    get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.ListActivitiesResp'
+              type: object
+      summary: 列出所有活动
+      tags:
+      - Activity
   /act/create:
     post:
       consumes:
@@ -362,9 +455,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.Activity'
-                  type: array
+                  $ref: '#/definitions/resp.ListActivitiesResp'
               type: object
       summary: 通过日期查找活动
       tags:
@@ -455,9 +546,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.Activity'
-                  type: array
+                  $ref: '#/definitions/resp.ListActivitiesResp'
               type: object
       summary: 通过名称查找活动
       tags:
@@ -485,9 +574,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.Activity'
-                  type: array
+                  $ref: '#/definitions/resp.ListActivitiesResp'
               type: object
       summary: 通过创建者id查找活动
       tags:
@@ -516,9 +603,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.Activity'
-                  type: array
+                  $ref: '#/definitions/resp.ListActivitiesResp'
               type: object
       summary: 通过搜索条件查找活动
       tags:
@@ -735,7 +820,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/model.Post'
+                    $ref: '#/definitions/resp.ListPostsResp'
                   type: array
               type: object
       summary: 获取所有帖子
@@ -854,7 +939,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/model.Post'
+                    $ref: '#/definitions/resp.ListPostsResp'
                   type: array
               type: object
       summary: 通过帖子名查找帖子
@@ -915,7 +1000,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/model.Post'
+                    $ref: '#/definitions/resp.ListPostsResp'
                   type: array
               type: object
       summary: 通过用户ID查找帖子

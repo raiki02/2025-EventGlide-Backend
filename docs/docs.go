@@ -16,6 +16,46 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/act/all": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Activity"
+                ],
+                "summary": "列出所有活动",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/act/create": {
             "post": {
                 "consumes": [
@@ -105,10 +145,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Activity"
-                                            }
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
                                         }
                                     }
                                 }
@@ -260,10 +297,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Activity"
-                                            }
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
                                         }
                                     }
                                 }
@@ -310,10 +344,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Activity"
-                                            }
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
                                         }
                                     }
                                 }
@@ -362,10 +393,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Activity"
-                                            }
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
                                         }
                                     }
                                 }
@@ -728,7 +756,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Post"
+                                                "$ref": "#/definitions/resp.ListPostsResp"
                                             }
                                         }
                                     }
@@ -924,7 +952,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Post"
+                                                "$ref": "#/definitions/resp.ListPostsResp"
                                             }
                                         }
                                     }
@@ -1026,7 +1054,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Post"
+                                                "$ref": "#/definitions/resp.ListPostsResp"
                                             }
                                         }
                                     }
@@ -1582,8 +1610,16 @@ const docTemplate = `{
         "req.ActSearchReq": {
             "type": "object",
             "properties": {
-                "end_time": {
-                    "type": "string"
+                "detail_date": {
+                    "type": "object",
+                    "properties": {
+                        "end_time": {
+                            "type": "string"
+                        },
+                        "start_time": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "host": {
                     "type": "array",
@@ -1599,9 +1635,6 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
-                },
-                "start_time": {
-                    "type": "string"
                 },
                 "type": {
                     "type": "array",
@@ -1781,6 +1814,109 @@ const docTemplate = `{
                 },
                 "sub_comments": {
                     "type": "integer"
+                }
+            }
+        },
+        "resp.ListActivitiesResp": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "detail_time": {
+                    "type": "object",
+                    "properties": {
+                        "end_time": {
+                            "type": "string"
+                        },
+                        "start_time": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "host": {
+                    "type": "string"
+                },
+                "if_register": {
+                    "type": "string"
+                },
+                "img_urls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "school": {
+                            "type": "string"
+                        },
+                        "sid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "resp.ListPostsResp": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "img_urls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "school": {
+                            "type": "string"
+                        },
+                        "sid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
