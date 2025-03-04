@@ -19,6 +19,10 @@ func InitApp(e *gin.Engine) *server.Server {
 	wire.Build(
 		ioc.InitDB,
 		ioc.InitRedis,
+		ioc.NewKafkaClient,
+		ioc.NewProducer,
+		ioc.NewConsumer,
+		ioc.NewKafka,
 		cache.NewCache,
 		dao.NewActDao,
 		dao.NewUserDao,
