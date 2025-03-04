@@ -172,16 +172,20 @@ func TestActDao(t *testing.T) {
 		Host:       []string{"test_host"},
 		Location:   []string{"test_location"},
 		IfRegister: "yes",
-		StartTime:  "2021-09-01 00:00:00",
-		EndTime:    "2021-09-01 00:00:00",
+		DetailDate: struct {
+			StartTime string `json:"start_time,omitempty"`
+			EndTime   string `json:"end_time,omitempty"`
+		}{StartTime: "2021-09-01 00:00:00", EndTime: "2021-09-01 00:00:00"},
 	}).Return([]model.Activity{}, nil)
 	actDao.FindActBySearches(ctx, &req.ActSearchReq{
 		Type:       []string{"test_type"},
 		Host:       []string{"test_host"},
 		Location:   []string{"test_location"},
 		IfRegister: "yes",
-		StartTime:  "2021-09-01 00:00:00",
-		EndTime:    "2021-09-01 00:00:00",
+		DetailDate: struct {
+			StartTime string `json:"start_time,omitempty"`
+			EndTime   string `json:"end_time,omitempty"`
+		}{StartTime: "2021-09-01 00:00:00", EndTime: "2021-09-01 00:00:00"},
 	})
 
 	actDao.EXPECT().FindActByDate(gomock.Any(), "2021-09-01").Return([]model.Activity{}, nil)
