@@ -108,7 +108,7 @@ func (us *UserService) GetUserInfo(ctx *gin.Context, studentId string) (model.Us
 }
 
 func (us *UserService) UpdateAvatar(ctx *gin.Context, req req.UserAvatarReq) error {
-	err := s.udh.UpdateAvatar(ctx, req.Sid, req.AvatarUrl)
+	err := us.udh.UpdateAvatar(ctx, req.Sid, req.AvatarUrl)
 	if err != nil {
 		return err
 	}
@@ -162,6 +162,8 @@ func (us *UserService) Like(ctx *gin.Context, targetID string, Objetct string) e
 		return us.adh.Like(ctx, targetID)
 	case "post":
 		return us.pdh.Like(ctx, targetID)
+	default:
+		return errors.New("Object not found")
 	}
 }
 
@@ -171,6 +173,8 @@ func (us *UserService) Comment(ctx *gin.Context, targetID string, Object string)
 		return us.adh.Comment(ctx, targetID)
 	case "post":
 		return us.pdh.Comment(ctx, targetID)
+	default:
+		return errors.New("Object not found")
 	}
 }
 
