@@ -21,6 +21,8 @@ type ActDaoHdl interface {
 	ListAllActs(*gin.Context) ([]model.Activity, error)
 	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
 	UpdateActNum(*gin.Context)
+	Like(*gin.Context, string) error
+	Comment(*gin.Context, string) error
 }
 
 type ActDao struct {
@@ -163,6 +165,12 @@ func (ad *ActDao) ListAllActs(c *gin.Context) ([]model.Activity, error) {
 	return as, nil
 }
 
-func (ad *ActDao) UpdateActNum(c *gin.Context) {
+func (ad *ActDao) Like(c *gin.Context, targetID string) error {
+	var act model.Activity
+	return ad.db.Where("bid = ?", targetID).Find(&act).Update("like", act.Likes+1).Error
+}
 
+func (ad *ActDao) Comment(c *gin.Context, targetID string) error {
+	var act model.Activity
+	return ad.db.Where("bid = ?", targetID).Find(&act).Update("comment", act.Comments+1).Error
 }

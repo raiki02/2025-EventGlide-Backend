@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
@@ -17,6 +18,8 @@ type PostDaoHdl interface {
 	FindPostByOwnerID(context.Context, string) ([]model.Post, error)
 	LoadDraft(context.Context, string, string) (*model.PostDraft, error)
 	UpdatePostNum(context.Context)
+	Like(*gin.Context, string) error
+	Comment(*gin.Context, string) error
 }
 
 type PostDao struct {
@@ -94,4 +97,14 @@ func (pd *PostDao) FindPostByOwnerID(ctx context.Context, id string) ([]model.Po
 		return nil, err
 	}
 	return posts, nil
+}
+
+func (pd *PostDao) Like(c *gin.Context, bid string) error {
+	var post model.Post
+	return pd.db.Where("bid = ?", bid).First(&post).Update("likes", post.Likes+1).Error
+}
+
+func (pd *PostDao) Comment(c *gin.Context, bid string) error {
+	var post model.Post
+	return pd.db.Where("bid = ?", bid).First(&post).Update("comments", post.Comments+1).Error
 }

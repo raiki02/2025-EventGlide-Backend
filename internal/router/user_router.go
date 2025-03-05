@@ -31,5 +31,7 @@ func (ur *UserRouter) RegisterUserRouters() {
 		user.POST("/username", ur.j.WrapCheckToken(), ur.uc.UpdateUsername())
 		user.POST("/search/act", ur.j.WrapCheckToken(), ur.uc.SearchUserAct())
 		user.POST("/search/post", ur.j.WrapCheckToken(), ur.uc.SearchUserPost())
+		user.POST("/like", ur.j.WrapCheckToken(), ur.uc.Like())
+		user.POST("/comment", ur.j.WrapCheckToken(), ur.uc.comment())
 	}
 }

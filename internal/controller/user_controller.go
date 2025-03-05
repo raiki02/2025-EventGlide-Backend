@@ -17,6 +17,8 @@ type UserControllerHdl interface {
 	SearchUserAct() gin.HandlerFunc
 	SearchUserPost() gin.HandlerFunc
 	GenQINIUToken() gin.HandlerFunc
+	Like() gin.HandlerFunc
+	Comment() gin.HandlerFunc
 }
 
 type UserController struct {
@@ -228,5 +230,53 @@ func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := uc.ush.GenQINIUToken(c)
 		c.JSON(200, tools.ReturnMSG(c, "gen qiniu token success", token))
+	}
+}
+
+// @Tags User
+// @Summary 点赞
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param lr body req.NumReq true "点赞请求"
+// @Success 200 {object} resp.Resp
+// @Router /user/like [post]
+func (uc *UserController) Like() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var lr req.NumReq
+		err := c.ShouldBindJSON(&lr)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		err = uc.ush.Like(c, lr.TargetId, lr.Object)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "like fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "like success", nil))
+	}
+}
+
+// @Tags User
+// @Summary 评论
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param cr body req.NumReq true "评论请求"
+// @Success 200 {object} resp.Resp
+// @Router /user/comment [post]
+func (uc *UserController) Comment() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var cr req.NumReq
+		err := c.ShouldBindJSON(&cr)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		err = uc.ush.Comment(c, cr.TargetId, cr.Object)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "comment fail", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "comment success", nil))
 	}
 }

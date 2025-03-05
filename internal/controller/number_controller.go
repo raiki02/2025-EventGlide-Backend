@@ -48,6 +48,7 @@ func (nc *NumberController) Send() gin.HandlerFunc {
 
 // @Tags Number
 // @Summary Delete a inteaction
+// @Param Authorization header string true "token"
 // @Param req body req.NumberDelReq true "NumberDelReq"
 // @Success 200 {object} resp.Resp
 // @Router /number/delete [post]
@@ -71,6 +72,7 @@ func (nc *NumberController) Delete() gin.HandlerFunc {
 // @Tags Number
 // @Summary Search inteactions
 // @Param req body req.NumberSearchReq true "NumberSearchReq"
+// @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=resp.NumberSearchResp}
 // @Router /number/search [post]
 func (nc *NumberController) Search() gin.HandlerFunc {

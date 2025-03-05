@@ -666,6 +666,13 @@ const docTemplate = `{
                 "summary": "Delete a inteaction",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "NumberDelReq",
                         "name": "req",
                         "in": "body",
@@ -700,6 +707,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/req.NumberSearchReq"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1103,6 +1117,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/comment": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "评论",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "评论请求",
+                        "name": "cr",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.NumReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
         "/user/info": {
             "get": {
                 "produces": [
@@ -1145,6 +1196,43 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/like": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "点赞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "点赞请求",
+                        "name": "lr",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.NumReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
                         }
                     }
                 }
@@ -1698,6 +1786,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "studentid": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.NumReq": {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "type": "string"
+                },
+                "target_id": {
                     "type": "string"
                 }
             }

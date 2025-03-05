@@ -30,6 +30,8 @@ type UserServiceHdl interface {
 	SearchUserAct(*gin.Context, string, string) ([]model.Activity, error)
 	SearchUserPost(*gin.Context, string, string) ([]model.Post, error)
 	GenQINIUToken(*gin.Context) string
+	Like(*gin.Context, string, string) error
+	Comment(*gin.Context, string, string) error
 }
 
 type UserService struct {
@@ -52,60 +54,60 @@ func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, jwth *m
 	}
 }
 
-func (s *UserService) CreateUser(ctx *gin.Context, sid string) error {
+func (us *UserService) CreateUser(ctx *gin.Context, sid string) error {
 	user := &model.User{
 		StudentId: sid,
 		Name:      sid,
 		Avatar:    genRandomAvatar(ctx),
 		School:    "华中师范大学",
 	}
-	err := s.udh.Create(ctx, user)
+	err := us.udh.Create(ctx, user)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) Login(ctx *gin.Context, studentId string, password string) (*model.User, string, error) {
-	client, err := s.cSvc.Login(ctx, studentId, password)
+func (us *UserService) Login(ctx *gin.Context, studentId string, password string) (*model.User, string, error) {
+	client, err := us.cSvc.Login(ctx, studentId, password)
 	if err != nil {
 		return nil, "", err
 	}
 	if !client {
 		return nil, "", errors.New("登录失败")
 	}
-	if !s.udh.CheckUserExist(ctx, studentId) {
-		err := s.CreateUser(ctx, studentId)
+	if !us.udh.CheckUserExist(ctx, studentId) {
+		err := us.CreateUser(ctx, studentId)
 		if err != nil {
 			return nil, "", err
 		}
 	}
-	token := s.jwth.GenToken(ctx, studentId)
-	err = s.jwth.StoreInRedis(ctx, studentId, token)
+	token := us.jwth.GenToken(ctx, studentId)
+	err = us.jwth.StoreInRedis(ctx, studentId, token)
 	if err != nil {
 		return nil, "", err
 	}
-	user, err := s.udh.GetUserInfo(ctx, studentId)
+	user, err := us.udh.GetUserInfo(ctx, studentId)
 	return &user, token, nil
 }
 
-func (s *UserService) Logout(ctx *gin.Context, token string) error {
-	err := s.jwth.ClearToken(ctx, token)
+func (us *UserService) Logout(ctx *gin.Context, token string) error {
+	err := us.jwth.ClearToken(ctx, token)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) GetUserInfo(ctx *gin.Context, studentId string) (model.User, error) {
-	user, err := s.udh.GetUserInfo(ctx, studentId)
+func (us *UserService) GetUserInfo(ctx *gin.Context, studentId string) (model.User, error) {
+	user, err := us.udh.GetUserInfo(ctx, studentId)
 	if err != nil {
 		return model.User{}, err
 	}
 	return user, nil
 }
 
-func (s *UserService) UpdateAvatar(ctx *gin.Context, req req.UserAvatarReq) error {
+func (us *UserService) UpdateAvatar(ctx *gin.Context, req req.UserAvatarReq) error {
 	err := s.udh.UpdateAvatar(ctx, req.Sid, req.AvatarUrl)
 	if err != nil {
 		return err
@@ -113,24 +115,24 @@ func (s *UserService) UpdateAvatar(ctx *gin.Context, req req.UserAvatarReq) erro
 	return nil
 }
 
-func (s *UserService) UpdateUsername(ctx *gin.Context, studentId string, name string) error {
-	err := s.udh.UpdateUsername(ctx, studentId, name)
+func (us *UserService) UpdateUsername(ctx *gin.Context, studentId string, name string) error {
+	err := us.udh.UpdateUsername(ctx, studentId, name)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) SearchUserAct(ctx *gin.Context, studentId string, keyword string) ([]model.Activity, error) {
-	acts, err := s.adh.FindActByUser(ctx, studentId, keyword)
+func (us *UserService) SearchUserAct(ctx *gin.Context, studentId string, keyword string) ([]model.Activity, error) {
+	acts, err := us.adh.FindActByUser(ctx, studentId, keyword)
 	if err != nil {
 		return nil, err
 	}
 	return acts, nil
 }
 
-func (s *UserService) SearchUserPost(ctx *gin.Context, studentId string, keyword string) ([]model.Post, error) {
-	posts, err := s.pdh.FindPostByUser(ctx, studentId, keyword)
+func (us *UserService) SearchUserPost(ctx *gin.Context, studentId string, keyword string) ([]model.Post, error) {
+	posts, err := us.pdh.FindPostByUser(ctx, studentId, keyword)
 	if err != nil {
 		return nil, err
 	}
@@ -150,11 +152,29 @@ func genRandomAvatar(c *gin.Context) string {
 	}
 }
 
-func (s *UserService) GenQINIUToken(ctx *gin.Context) string {
-	return s.iuh.GenQINIUToken(ctx)
+func (us *UserService) GenQINIUToken(ctx *gin.Context) string {
+	return us.iuh.GenQINIUToken(ctx)
 }
 
-//---一站式账号登录
+func (us *UserService) Like(ctx *gin.Context, targetID string, Objetct string) error {
+	switch Objetct {
+	case "activity":
+		return us.adh.Like(ctx, targetID)
+	case "post":
+		return us.pdh.Like(ctx, targetID)
+	}
+}
+
+func (us *UserService) Comment(ctx *gin.Context, targetID string, Object string) error {
+	switch Object {
+	case "activity":
+		return us.adh.Comment(ctx, targetID)
+	case "post":
+		return us.pdh.Comment(ctx, targetID)
+	}
+}
+
+//---一站式账号登录------------------------------------------------------------
 
 type ccnuService struct {
 	timeout time.Duration

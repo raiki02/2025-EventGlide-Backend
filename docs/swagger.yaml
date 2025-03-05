@@ -198,6 +198,13 @@ definitions:
       studentid:
         type: string
     type: object
+  req.NumReq:
+    properties:
+      object:
+        type: string
+      target_id:
+        type: string
+    type: object
   req.NumberDelReq:
     properties:
       object:
@@ -765,6 +772,11 @@ paths:
   /number/delete:
     post:
       parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: NumberDelReq
         in: body
         name: req
@@ -788,6 +800,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/req.NumberSearchReq'
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       responses:
         "200":
           description: OK
@@ -1031,6 +1048,30 @@ paths:
       summary: 更新头像
       tags:
       - User
+  /user/comment:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 评论请求
+        in: body
+        name: cr
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 评论
+      tags:
+      - User
   /user/info:
     get:
       parameters:
@@ -1057,6 +1098,30 @@ paths:
                   $ref: '#/definitions/model.User'
               type: object
       summary: 获取用户信息
+      tags:
+      - User
+  /user/like:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 点赞请求
+        in: body
+        name: lr
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 点赞
       tags:
       - User
   /user/login:
