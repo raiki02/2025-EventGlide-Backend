@@ -11,6 +11,10 @@ type CommentDaoHdl interface {
 	DeleteComment(*gin.Context, string) error
 	AnswerComment(*gin.Context, *model.SubComment) error
 	LoadComments(*gin.Context, string) ([]model.Comment, error)
+	ListAllComments(*gin.Context) ([]model.Comment, error)
+	LoadAnswers(*gin.Context, string) ([]model.SubComment, error)
+	UpdateCommentNum(*gin.Context)
+	UpdateAnswerNum(*gin.Context)
 }
 
 type CommentDao struct {

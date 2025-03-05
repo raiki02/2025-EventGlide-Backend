@@ -10,6 +10,7 @@ type NumberDaoHdl interface {
 	Insert(*model.Number) error
 	Delete(*gin.Context, string, string) error
 	Search(*gin.Context, string, string, string) ([]*model.Number, int, error)
+	Update()
 }
 
 type NumberDao struct {
@@ -33,9 +34,15 @@ func (nd *NumberDao) Delete(c *gin.Context, sid, obj string) error {
 func (nd *NumberDao) Search(c *gin.Context, sid, obj, act string) ([]*model.Number, int, error) {
 	var numbers []*model.Number
 	var count int64
-	err := nd.db.Where("to_sid = ? and object = ? and action = ?", sid, obj, act).Find(&numbers).Count(&count).Error
+	err := nd.db.Where("to_sid = ? and object = ? and action = ? and is_read = 0", sid, obj, act).Find(&numbers).Count(&count).Error
 	if err != nil {
 		return nil, 0, err
 	}
+	nd.db.Where("to_sid = ? and object = ? and action = ? and is_read = 0", sid, obj, act).Update("is_read", 1)
+
 	return numbers, int(count), nil
+}
+
+func (nd *NumberDao) Update() {
+
 }

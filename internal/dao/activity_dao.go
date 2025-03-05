@@ -20,6 +20,7 @@ type ActDaoHdl interface {
 	CheckExist(*gin.Context, *model.Activity) bool
 	ListAllActs(*gin.Context) ([]model.Activity, error)
 	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
+	UpdateActNum(*gin.Context)
 }
 
 type ActDao struct {
@@ -120,7 +121,6 @@ func (ad *ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 	}
 }
 
-// todo 过滤器
 func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]model.Activity, error) {
 	var as []model.Activity
 	var q *gorm.DB
@@ -161,4 +161,8 @@ func (ad *ActDao) ListAllActs(c *gin.Context) ([]model.Activity, error) {
 		return nil, err
 	}
 	return as, nil
+}
+
+func (ad *ActDao) UpdateActNum(c *gin.Context) {
+
 }

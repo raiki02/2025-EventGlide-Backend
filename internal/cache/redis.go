@@ -7,15 +7,12 @@ import (
 	"time"
 )
 
-// 先找缓存，缓存没有再找数据库
-// TODO: scpoe： 活动，帖子，jwt
 type CacheHdl interface {
 	Get(context.Context, string) ([]interface{}, error)
 	Set(context.Context, string, []interface{}) error
 	Del(context.Context, string) error
 }
 
-// 操作顺序 router -> controller -> cache -> dao
 type Cache struct {
 	rdb *redis.Client
 }
@@ -42,7 +39,6 @@ func (c *Cache) Del(ctx context.Context, key string) error {
 	return c.rdb.Del(ctx, key).Err()
 }
 
-// redis的val不能存结构体，转换成json格式储存
 func Tojson(in []interface{}) []byte {
 	return []byte(tools.Marshal(in))
 }

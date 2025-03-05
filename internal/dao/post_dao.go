@@ -16,6 +16,7 @@ type PostDaoHdl interface {
 	CreateDraft(context.Context, *model.PostDraft) error
 	FindPostByOwnerID(context.Context, string) ([]model.Post, error)
 	LoadDraft(context.Context, string, string) (*model.PostDraft, error)
+	UpdatePostNum(context.Context)
 }
 
 type PostDao struct {
