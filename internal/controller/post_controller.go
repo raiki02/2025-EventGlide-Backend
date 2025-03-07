@@ -50,23 +50,23 @@ func (pc *PostController) GetAllPost() gin.HandlerFunc {
 // @Produce json
 // @Accept json
 // @Param Authorization header string true "token"
-// @Param post body model.Post true "帖子"
-// @Success 200 {object} resp.Resp{data=model.Post}
+// @Param post body req.CreatePostReq true "帖子"
+// @Success 200 {object} resp.Resp{}
 // @Router /post/create [post]
 func (pc *PostController) CreatePost() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var post model.Post
+		var post req.CreatePostReq
 		err := c.ShouldBindJSON(&post)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = pc.ps.CreatePost(c, &post)
+		_, err = pc.ps.CreatePost(c, &post)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "success", post))
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
@@ -74,13 +74,12 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 // @Summary 通过帖子名查找帖子
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param name body req.FindCommentReq true "帖子名"
+// @Param name body req.FindPostReq true "帖子名"
 // @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
 // @Router /post/find [post]
 func (pc *PostController) FindPostByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		var n req.FindCommentReq
+		var n req.FindPostReq
 		err := c.ShouldBindJSON(&n)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
@@ -126,23 +125,23 @@ func (pc *PostController) DeletePost() gin.HandlerFunc {
 // @Produce json
 // @Accept json
 // @Param Authorization header string true "token"
-// @Param post body model.PostDraft true "草稿"
-// @Success 200 {object} resp.Resp{data=string}
+// @Param post body req.CreatePostReq true "草稿"
+// @Success 200 {object} resp.Resp{}
 // @Router /post/draft [post]
 func (pr *PostController) CreateDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var postDraft model.PostDraft
+		var postDraft req.CreatePostReq
 		err := c.ShouldBindJSON(&postDraft)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = pr.ps.CreateDraft(c, &postDraft)
+		d, err := pr.ps.CreateDraft(c, &postDraft)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "success", postDraft.Bid))
+		c.JSON(200, tools.ReturnMSG(c, "success", d.Bid))
 	}
 }
 

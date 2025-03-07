@@ -49,7 +49,7 @@ func (ad *ActDao) CreateDraft(c *gin.Context, d *model.ActivityDraft) error {
 
 func (ad *ActDao) LoadDraft(c *gin.Context, s string, b string) (model.ActivityDraft, error) {
 	var d model.ActivityDraft
-	err := ad.db.Where("creator_id = ? and bid = ?", s, b).Find(&d).Error
+	err := ad.db.Where("student_id = ? and bid = ?", s, b).Find(&d).Error
 	if err != nil {
 		return model.ActivityDraft{}, err
 	}
@@ -61,13 +61,13 @@ func (ad *ActDao) LoadDraft(c *gin.Context, s string, b string) (model.ActivityD
 func (ad *ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]model.Activity, error) {
 	var as []model.Activity
 	if keyword == "" {
-		err := ad.db.Where("creator_id = ? ", s).Find(&as).Error
+		err := ad.db.Where("student_id = ? ", s).Find(&as).Error
 		if err != nil {
 			return nil, err
 		}
 		return as, nil
 	} else {
-		err := ad.db.Where("creator_id = ? and name like ?", s, fmt.Sprintf("%%%s%%", keyword)).Find(&as).Error
+		err := ad.db.Where("student_id = ? and title like ?", s, fmt.Sprintf("%%%s%%", keyword)).Find(&as).Error
 		if err != nil {
 			return nil, err
 		}
@@ -77,7 +77,7 @@ func (ad *ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]mod
 
 func (ad *ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.Where("name like ?", fmt.Sprintf("%%%s%%", n)).Find(&as).Error
+	err := ad.db.Where("title like ?", fmt.Sprintf("%%%s%%", n)).Find(&as).Error
 	if err != nil {
 		return nil, err
 	}
@@ -96,10 +96,9 @@ func (ad *ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, err
 func (ad *ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {
 	ret := ad.db.Where(&model.Activity{
 		Type:       a.Type,
-		Host:       a.Host,
-		Location:   a.Location,
+		HolderType: a.HolderType,
+		Position:   a.Position,
 		IfRegister: a.IfRegister,
-		Capacity:   a.Capacity,
 	}).Find(&model.Activity{}).RowsAffected
 	if ret == 0 {
 		return false
@@ -111,10 +110,9 @@ func (ad *ActDao) CheckExist(c *gin.Context, a *model.Activity) bool {
 func (ad *ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 	ret := ad.db.Where(&model.Activity{
 		Type:       a.Type,
-		Host:       a.Host,
-		Location:   a.Location,
+		HolderType: a.HolderType,
+		Position:   a.Position,
 		IfRegister: a.IfRegister,
-		Capacity:   a.Capacity,
 	}).Find(&model.Activity{}).Delete(&model.Activity{}).RowsAffected
 	if ret == 0 {
 		return errors.New("activity not exist")
@@ -139,8 +137,8 @@ func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]mode
 	if a.IfRegister != "" {
 		q = q.Where("if_register = ?", a.IfRegister)
 	}
-	if a.DetailDate.StartTime != "" && a.DetailDate.EndTime != "" {
-		q = q.Where("start_time >= ? and end_time <= ?", a.DetailDate.StartTime, a.DetailDate.EndTime)
+	if a.DetailTime.StartTime != "" && a.DetailTime.EndTime != "" {
+		q = q.Where("start_time >= ? and end_time <= ?", a.DetailTime.StartTime, a.DetailTime.EndTime)
 	}
 	err := q.Find(&as).Error
 
@@ -149,7 +147,7 @@ func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]mode
 
 func (ad *ActDao) FindActByOwnerID(c *gin.Context, s string) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.Where("creator_id = ?", s).Find(&as).Error
+	err := ad.db.Where("student_id = ?", s).Find(&as).Error
 	if err != nil {
 		return nil, err
 	}
@@ -167,10 +165,15 @@ func (ad *ActDao) ListAllActs(c *gin.Context) ([]model.Activity, error) {
 
 func (ad *ActDao) Like(c *gin.Context, targetID string) error {
 	var act model.Activity
-	return ad.db.Where("bid = ?", targetID).Find(&act).Update("like", act.Likes+1).Error
+	return ad.db.Where("bid = ?", targetID).Find(&act).Update("like_num", act.LikeNum+1).Error
 }
 
 func (ad *ActDao) Comment(c *gin.Context, targetID string) error {
 	var act model.Activity
-	return ad.db.Where("bid = ?", targetID).Find(&act).Update("comment", act.Comments+1).Error
+	return ad.db.Where("bid = ?", targetID).Find(&act).Update("comment_num", act.CommentNum+1).Error
+}
+
+func (ad *ActDao) Collect(c *gin.Context, targetID string) error {
+	var act model.Activity
+	return ad.db.Where("bid = ?", targetID).Find(&act).Update("Collect_num", act.CollectNum+1).Error
 }

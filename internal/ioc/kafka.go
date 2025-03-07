@@ -10,7 +10,7 @@ type Kafka struct {
 	C sarama.Consumer
 }
 
-func NewKafkaClient() sarama.Client {
+func NewKafkaClient() *sarama.Client {
 	addr := []string{viper.GetString("kafka.addr")}
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll
@@ -20,19 +20,19 @@ func NewKafkaClient() sarama.Client {
 	if err != nil {
 		panic(err)
 	}
-	return client
+	return &client
 }
 
-func NewProducer(client sarama.Client) sarama.SyncProducer {
-	producer, err := sarama.NewSyncProducerFromClient(client)
+func NewProducer(client *sarama.Client) sarama.SyncProducer {
+	producer, err := sarama.NewSyncProducerFromClient(*client)
 	if err != nil {
 		panic(err)
 	}
 	return producer
 }
 
-func NewConsumer(client sarama.Client) sarama.Consumer {
-	consumer, err := sarama.NewConsumerFromClient(client)
+func NewConsumer(client *sarama.Client) sarama.Consumer {
+	consumer, err := sarama.NewConsumerFromClient(*client)
 	if err != nil {
 		panic(err)
 	}

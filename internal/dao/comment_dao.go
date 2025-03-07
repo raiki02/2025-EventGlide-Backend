@@ -7,14 +7,6 @@ import (
 )
 
 type CommentDaoHdl interface {
-	CreateComment(*gin.Context, *model.Comment) error
-	DeleteComment(*gin.Context, string) error
-	AnswerComment(*gin.Context, *model.SubComment) error
-	LoadComments(*gin.Context, string) ([]model.Comment, error)
-	ListAllComments(*gin.Context) ([]model.Comment, error)
-	LoadAnswers(*gin.Context, string) ([]model.SubComment, error)
-	UpdateCommentNum(*gin.Context)
-	UpdateAnswerNum(*gin.Context)
 }
 
 type CommentDao struct {
@@ -31,31 +23,28 @@ func (cd *CommentDao) CreateComment(c *gin.Context, cmt *model.Comment) error {
 	return cd.db.Create(cmt).Error
 }
 
-func (cd *CommentDao) DeleteComment(c *gin.Context, sid string, targetID string) error {
-
-	return cd.db.Where("creator_id = ? and target_id = ?", sid, targetID).Delete(&model.Comment{}).Error
+func (cd *CommentDao) DeleteComment(c *gin.Context, sid, bid string) error {
+	return cd.db.Where("student_id = ? and bid = ?", sid, bid).Delete(&model.Comment{}).Error
 }
 
-func (cd *CommentDao) AnswerComment(c *gin.Context, cmt *model.SubComment) error {
+func (cd *CommentDao) AnswerComment(c *gin.Context, cmt *model.Comment) error {
+	cmt.Type = 1
 	return cd.db.Create(cmt).Error
 }
 
-func (cd *CommentDao) UpdateNumbersForComments(c *gin.Context, sid, bid string, like, comment int) error {
-	return cd.db.Model(&model.Comment{}).Where("creator_id = ? AND bid = ?", sid, bid).Update("like", like).Update("comment", comment).Error
-}
-
-func (cd *CommentDao) UpdateNumbersForAnswers(c *gin.Context, sid, bid string, like int) error {
-	return cd.db.Model(&model.SubComment{}).Where("creator_id = ? AND bid = ?", sid, bid).Update("like", like).Error
-}
-
-func (cd *CommentDao) LoadComments(c *gin.Context, targetID string) ([]model.Comment, error) {
+func (cd *CommentDao) LoadComments(c *gin.Context, parentid string) ([]model.Comment, error) {
 	var cmts []model.Comment
-	err := cd.db.Where("target_id = ?", targetID).Find(&cmts).Error
+	err := cd.db.Where("parent_id = ? and type = 0", parentid).Find(&cmts).Error
 	return cmts, err
 }
 
-func (cd *CommentDao) LoadAnswers(c *gin.Context, targetID string) ([]model.SubComment, error) {
-	var answers []model.SubComment
-	err := cd.db.Where("target_id = ?", targetID).Find(&answers).Error
-	return answers, err
+func (cd *CommentDao) LoadAnswers(c *gin.Context, pid string) ([]model.Comment, error) {
+	var cmts []model.Comment
+	err := cd.db.Where("parent_id = ? and type = 1", pid).Find(&cmts).Error
+	return cmts, err
+}
+
+func (cd *CommentDao) Like(c *gin.Context, bid string) error {
+	var cmt model.Comment
+	return cd.db.Where("bid = ?", bid).First(&cmt).Update("like_num", cmt.LikeNum+1).Error
 }

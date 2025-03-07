@@ -1,3 +1,4 @@
+//go:generate swag init && wire gen .
 package main
 
 import (

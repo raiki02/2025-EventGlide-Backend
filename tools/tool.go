@@ -1,30 +1,22 @@
 package tools
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"strings"
 )
 
-func GenUUID(c *gin.Context) string {
+func GenUUID() string {
 	u, _ := uuid.NewUUID()
 	return u.String()
 }
 
-func Marshal(v interface{}) []byte {
-	res, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	return res
+func SliceToString(s []string) string {
+	return strings.Join(s, ",")
 }
 
-func Unmarshal(data []byte, v interface{}) interface{} {
-	err := json.Unmarshal(data, v)
-	if err != nil {
-		return nil
-	}
-	return v
+func StringToSlice(s string) []string {
+	return strings.Split(s, ",")
 }
 
 func ReturnMSG(c *gin.Context, msg string, res ...interface{}) map[string]interface{} {

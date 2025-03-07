@@ -1,74 +1,41 @@
 definitions:
   model.Activity:
     properties:
-      audition:
+      activeForm:
         type: string
       bid:
         type: string
-      capacity:
-        description: descriptive
+      collectNum:
         type: integer
-      comments:
+      commentNum:
         type: integer
-      created_at:
-        description: 活动id
+      createdAt:
         type: string
-      creator_id:
+      endTime:
         type: string
-      description:
+      holderType:
         type: string
-      end_time:
+      ifRegister:
         type: string
-      host:
+      introduce:
         type: string
-      identification:
-        description: audit
+      isChecking:
         type: string
-      if_register:
-        type: string
-      img_urls:
-        type: string
-      likes:
-        description: interactive
+      likeNum:
         type: integer
-      location:
+      position:
         type: string
-      name:
+      registerMethod:
         type: string
-      register_method:
+      showImg:
         type: string
-      start_time:
-        description: complex
+      signer:
         type: string
-      type:
-        description: |-
-          divided by function
-          basic
+      startTime:
         type: string
-    type: object
-  model.ActivityDraft:
-    properties:
-      bid:
+      studentID:
         type: string
-      capacity:
-        type: integer
-      creator_id:
-        type: string
-      description:
-        type: string
-      end_time:
-        type: string
-      host:
-        type: string
-      if_register:
-        type: string
-      location:
-        type: string
-      name:
-        type: string
-      register_method:
-        type: string
-      start_time:
+      title:
         type: string
       type:
         type: string
@@ -94,18 +61,20 @@ definitions:
     properties:
       bid:
         type: string
-      comments:
+      collectNum:
         type: integer
-      content:
-        type: string
-      created_at:
-        type: string
-      creator_id:
-        type: string
-      img_urls:
-        type: string
-      likes:
+      commentNum:
         type: integer
+      createdAt:
+        type: string
+      introduce:
+        type: string
+      likeNum:
+        type: integer
+      showImg:
+        type: string
+      studentID:
+        type: string
       title:
         type: string
     type: object
@@ -113,11 +82,13 @@ definitions:
     properties:
       bid:
         type: string
-      content:
+      createdAt:
         type: string
-      created_at:
+      introduce:
         type: string
-      creator_id:
+      showImg:
+        type: string
+      studentID:
         type: string
       title:
         type: string
@@ -126,20 +97,20 @@ definitions:
     properties:
       avatar:
         type: string
+      collect:
+        type: string
       id:
         type: integer
-      likes:
-        type: string
       name:
         type: string
       school:
         type: string
-      sid:
+      student_id:
         type: string
     type: object
   req.ActSearchReq:
     properties:
-      detail_date:
+      detailTime:
         properties:
           end_time:
             type: string
@@ -161,20 +132,72 @@ definitions:
           type: string
         type: array
     type: object
-  req.CommentReq:
+  req.CreateActReq:
+    properties:
+      introduce:
+        type: string
+      labelform:
+        properties:
+          activeForm:
+            type: string
+          endTime:
+            type: string
+          hodlerType:
+            type: string
+          if_register:
+            type: string
+          position:
+            type: string
+          register_method:
+            type: string
+          signer:
+            items:
+              properties:
+                name:
+                  type: string
+                studentid:
+                  type: string
+              type: object
+            type: array
+          startTime:
+            type: string
+          type:
+            type: string
+        type: object
+      showImg:
+        items:
+          type: string
+        type: array
+      studentid:
+        type: string
+      title:
+        type: string
+    type: object
+  req.CreateCommentReq:
     properties:
       content:
         type: string
-      creator_id:
+      parent_id:
         type: string
-      parent_id; omitempty:
+      studentid:
         type: string
-      target_id:
+    type: object
+  req.CreatePostReq:
+    properties:
+      introduce:
+        type: string
+      showImg:
+        items:
+          type: string
+        type: array
+      studentid:
+        type: string
+      title:
         type: string
     type: object
   req.DeleteCommentReq:
     properties:
-      sid:
+      studentid:
         type: string
       target_id:
         type: string
@@ -186,7 +209,7 @@ definitions:
       sid:
         type: string
     type: object
-  req.FindCommentReq:
+  req.FindPostReq:
     properties:
       name:
         type: string
@@ -238,7 +261,7 @@ definitions:
     properties:
       new_name:
         type: string
-      sid:
+      studentid:
         type: string
     type: object
   req.UserAvatarReq:
@@ -252,69 +275,106 @@ definitions:
     properties:
       keyword:
         type: string
-      sid:
+      studentid:
         type: string
-    type: object
-  resp.AnswerResp:
-    properties:
-      content:
-        type: string
-      created_at:
-        type: string
-      creator_id:
-        type: string
-      likes:
-        type: integer
     type: object
   resp.CommentResp:
     properties:
+      commented_pos:
+        type: string
+      commented_time:
+        type: string
       content:
         type: string
-      created_at:
-        type: string
-      creator_id:
-        type: string
-      likes:
-        type: integer
-      sub_comments:
-        type: integer
-    type: object
-  resp.ListActivitiesResp:
-    properties:
-      comments:
-        type: integer
-      description:
-        type: string
-      detail_time:
+      creator:
         properties:
-          end_time:
+          studentid:
             type: string
-          start_time:
+          username:
             type: string
         type: object
-      host:
-        type: string
+      likeNum:
+        type: integer
+      replyNum:
+        type: integer
+    type: object
+  resp.CreateActivityResp:
+    properties:
       if_register:
         type: string
-      img_urls:
+      introduce:
+        type: string
+      isChecking:
+        type: string
+      position:
+        type: string
+      showImg:
         items:
           type: string
         type: array
-      likes:
-        type: integer
-      location:
-        type: string
       title:
         type: string
       type:
         type: string
-      user:
+      userInfo:
         properties:
           avatar:
             type: string
           school:
             type: string
-          sid:
+          studentid:
+            type: string
+          username:
+            type: string
+        type: object
+    type: object
+  resp.ImgBedResp:
+    properties:
+      access_token:
+        type: string
+      domain_name:
+        type: string
+    type: object
+  resp.ListActivitiesResp:
+    properties:
+      bid:
+        type: string
+      collectNum:
+        type: integer
+      commentNum:
+        type: integer
+      detailTime:
+        properties:
+          endTime:
+            type: string
+          startTime:
+            type: string
+        type: object
+      holderType:
+        type: string
+      if_register:
+        type: string
+      introduce:
+        type: string
+      likeNum:
+        type: integer
+      position:
+        type: string
+      showImg:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      type:
+        type: string
+      userInfo:
+        properties:
+          avatar:
+            type: string
+          school:
+            type: string
+          studentid:
             type: string
           username:
             type: string
@@ -322,25 +382,27 @@ definitions:
     type: object
   resp.ListPostsResp:
     properties:
-      comments:
+      collectNum:
         type: integer
-      content:
+      commentNum:
+        type: integer
+      introduce:
         type: string
-      img_urls:
+      likeNum:
+        type: integer
+      showImg:
         items:
           type: string
         type: array
-      likes:
-        type: integer
       title:
         type: string
-      user:
+      userInfo:
         properties:
           avatar:
             type: string
           school:
             type: string
-          sid:
+          studentid:
             type: string
           username:
             type: string
@@ -352,8 +414,10 @@ definitions:
         type: integer
       avatar:
         type: string
-      likes:
-        type: string
+      collect:
+        items:
+          type: string
+        type: array
       name:
         type: string
       school:
@@ -418,7 +482,7 @@ paths:
         name: activity
         required: true
         schema:
-          $ref: '#/definitions/model.Activity'
+          $ref: '#/definitions/req.CreateActReq'
       - description: token
         in: header
         name: Authorization
@@ -434,12 +498,12 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/model.Activity'
+                  $ref: '#/definitions/resp.CreateActivityResp'
               type: object
       summary: 创建活动
       tags:
       - Activity
-  /act/date:
+  /act/date/{date}:
     get:
       parameters:
       - description: token
@@ -448,7 +512,7 @@ paths:
         required: true
         type: string
       - description: 日期
-        in: query
+        in: path
         name: date
         required: true
         type: string
@@ -478,7 +542,7 @@ paths:
         name: draft
         required: true
         schema:
-          $ref: '#/definitions/model.ActivityDraft'
+          $ref: '#/definitions/req.CreateActReq'
       - description: token
         in: header
         name: Authorization
@@ -494,7 +558,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  type: string
+                  $ref: '#/definitions/resp.CreateActivityResp'
               type: object
       summary: 创建活动草稿
       tags:
@@ -525,12 +589,12 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/model.ActivityDraft'
+                  $ref: '#/definitions/resp.CreateActivityResp'
               type: object
       summary: 加载活动草稿
       tags:
       - Activity
-  /act/name:
+  /act/name/{name}:
     get:
       parameters:
       - description: token
@@ -538,8 +602,8 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 名称查找
-        in: query
+      - description: 名称
+        in: path
         name: name
         required: true
         type: string
@@ -558,7 +622,7 @@ paths:
       summary: 通过名称查找活动
       tags:
       - Activity
-  /act/owner/{id}:
+  /act/own/{id}:
     get:
       parameters:
       - description: token
@@ -628,7 +692,7 @@ paths:
         name: CommentReq
         required: true
         schema:
-          $ref: '#/definitions/req.CommentReq'
+          $ref: '#/definitions/req.CreateCommentReq'
       produces:
       - application/json
       responses:
@@ -639,7 +703,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/resp.AnswerResp'
+                  $ref: '#/definitions/resp.CommentResp'
               type: object
       summary: 回复评论
       tags:
@@ -663,7 +727,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/resp.AnswerResp'
+                    $ref: '#/definitions/resp.CommentResp'
                   type: array
               type: object
       summary: 加载回复
@@ -682,7 +746,7 @@ paths:
         name: CommentReq
         required: true
         schema:
-          $ref: '#/definitions/req.CommentReq'
+          $ref: '#/definitions/req.CreateCommentReq'
       produces:
       - application/json
       responses:
@@ -858,19 +922,14 @@ paths:
         name: post
         required: true
         schema:
-          $ref: '#/definitions/model.Post'
+          $ref: '#/definitions/req.CreatePostReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/resp.Resp'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.Post'
-              type: object
+            $ref: '#/definitions/resp.Resp'
       summary: 创建帖子
       tags:
       - Post
@@ -915,19 +974,14 @@ paths:
         name: post
         required: true
         schema:
-          $ref: '#/definitions/model.PostDraft'
+          $ref: '#/definitions/req.CreatePostReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/resp.Resp'
-            - properties:
-                data:
-                  type: string
-              type: object
+            $ref: '#/definitions/resp.Resp'
       summary: 创建草稿
       tags:
       - Post
@@ -944,7 +998,7 @@ paths:
         name: name
         required: true
         schema:
-          $ref: '#/definitions/req.FindCommentReq'
+          $ref: '#/definitions/req.FindPostReq'
       produces:
       - application/json
       responses:
@@ -1048,6 +1102,30 @@ paths:
       summary: 更新头像
       tags:
       - User
+  /user/collect:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 收藏请求
+        in: body
+        name: cr
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 收藏
+      tags:
+      - User
   /user/comment:
     post:
       parameters:
@@ -1081,7 +1159,7 @@ paths:
         required: true
         type: string
       - description: 学号
-        in: query
+        in: path
         name: sid
         required: true
         type: string
@@ -1246,7 +1324,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  type: string
+                  $ref: '#/definitions/resp.ImgBedResp'
               type: object
       summary: 获取七牛云token
       tags:

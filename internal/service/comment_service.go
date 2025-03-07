@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
@@ -10,63 +11,93 @@ import (
 )
 
 type CommentServiceHdl interface {
-	CreateComment(*gin.Context, *req.CommentReq) error
-	DeleteComment(*gin.Context, string, string) error
-	AnswerComment(*gin.Context, *req.CommentReq) error
-	LoadComments(*gin.Context, string) ([]model.Comment, error)
-	LoadAnswers(*gin.Context, string) ([]model.SubComment, error)
 }
 
 type CommentService struct {
 	cd *dao.CommentDao
+	ud *dao.UserDao
 }
 
-func NewCommentService(cd *dao.CommentDao) *CommentService {
+func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao) *CommentService {
 	return &CommentService{
 		cd: cd,
+		ud: ud,
 	}
 }
 
-func (cs *CommentService) CreateComment(c *gin.Context, req *req.CommentReq) (*model.Comment, error) {
-	cmt := toComment(c, req)
-	cmt.Bid = tools.GenUUID(c)
-	return cmt, cs.cd.CreateComment(c, cmt)
+func (cs *CommentService) toComment(r req.CreateCommentReq) *model.Comment {
+	return &model.Comment{
+		StudentID: r.StudentID,
+		Content:   r.Content,
+		ParentID:  r.ParentID,
+		CreatedAt: time.Now(),
+		Bid:       tools.GenUUID(),
+		Position:  "华中师范大学",
+	}
 }
 
-func (cs *CommentService) AnswerComment(c *gin.Context, req *req.CommentReq) (*model.SubComment, error) {
-	answer := toAnswer(c, req)
-	answer.Bid = tools.GenUUID(c)
-	return answer, cs.cd.AnswerComment(c, answer)
+func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.CommentResp {
+	var res resp.CommentResp
+	user, err := cs.ud.GetUserInfo(c, cmt.StudentID)
+	if err != nil {
+		return resp.CommentResp{}
+	}
+	res.Content = cmt.Content
+	res.CommentedTime = cmt.CreatedAt.String()
+	res.CommentedPos = cmt.Position
+	res.LikeNum = cmt.LikeNum
+	res.ReplyNum = cmt.ReplyNum
+	res.Creator.StudentID = user.StudentID
+	res.Creator.Username = user.Name
+	return res
 }
 
-func (cs *CommentService) DeleteComment(c *gin.Context, sid string, targetId string) error {
-	return cs.cd.DeleteComment(c, sid, targetId)
+func (cs *CommentService) toResps(c *gin.Context, cmts []model.Comment) []resp.CommentResp {
+	var res []resp.CommentResp
+	for _, cmt := range cmts {
+		res = append(res, cs.toResp(c, &cmt))
+	}
+	return res
 }
 
-func (cs *CommentService) LoadComments(c *gin.Context, targetId string) ([]model.Comment, error) {
-	return cs.cd.LoadComments(c, targetId)
+func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) (resp.CommentResp, error) {
+	cmt := cs.toComment(r)
+	err := cs.cd.CreateComment(c, cmt)
+	if err != nil {
+		return resp.CommentResp{}, err
+	}
+	return cs.toResp(c, cmt), nil
 }
 
-func (cs *CommentService) LoadAnswers(c *gin.Context, targetId string) ([]model.SubComment, error) {
-	return cs.cd.LoadAnswers(c, targetId)
+func (cs *CommentService) DeleteComment(c *gin.Context, r req.DeleteCommentReq) error {
+	err := cs.cd.DeleteComment(c, r.StudentID, r.TargetID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func toComment(c *gin.Context, req *req.CommentReq) *model.Comment {
-	var cmt model.Comment
-	cmt.CreatedAt = time.Now()
-	cmt.Bid = tools.GenUUID(c)
-	cmt.Content = req.Content
-	cmt.CreatorID = req.CreatorID
-	cmt.TargetID = req.TargetID
-	return &cmt
+func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) (resp.CommentResp, error) {
+	cmt := cs.toComment(r)
+	err := cs.cd.AnswerComment(c, cmt)
+	if err != nil {
+		return resp.CommentResp{}, err
+	}
+	return cs.toResp(c, cmt), nil
 }
 
-func toAnswer(c *gin.Context, req *req.CommentReq) *model.SubComment {
-	var cmt model.SubComment
-	cmt.CreatedAt = time.Now()
-	cmt.Bid = tools.GenUUID(c)
-	cmt.Content = req.Content
-	cmt.CreatorID = req.CreatorID
-	cmt.TargetID = req.TargetID
-	return &cmt
+func (cs *CommentService) LoadComments(c *gin.Context, parentid string) ([]resp.CommentResp, error) {
+	cmts, err := cs.cd.LoadComments(c, parentid)
+	if err != nil {
+		return nil, err
+	}
+	return cs.toResps(c, cmts), nil
+}
+
+func (cs *CommentService) LoadAnswers(c *gin.Context, parentid string) ([]resp.CommentResp, error) {
+	cmts, err := cs.cd.LoadAnswers(c, parentid)
+	if err != nil {
+		return nil, err
+	}
+	return cs.toResps(c, cmts), nil
 }

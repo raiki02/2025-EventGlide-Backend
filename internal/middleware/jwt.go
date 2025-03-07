@@ -40,8 +40,7 @@ func (c *Jwt) GenToken(ctx *gin.Context, sid string) string {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	t, _ := token.SignedString(c.jwtKey)
-	t = "Bearer " + t
-	return t // "bearer token"
+	return t // "token"
 }
 
 func (c *Jwt) StoreInRedis(ctx *gin.Context, sid string, token string) error {

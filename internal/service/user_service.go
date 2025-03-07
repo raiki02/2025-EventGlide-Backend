@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
 	"github.com/raiki02/EG/internal/model"
@@ -38,16 +39,18 @@ type UserService struct {
 	udh  *dao.UserDao
 	adh  *dao.ActDao
 	pdh  *dao.PostDao
+	cdh  *dao.CommentDao
 	jwth *middleware.Jwt
 	cSvc *ccnuService
 	iuh  *ImgUploader
 }
 
-func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, jwth *middleware.Jwt, cSvc *ccnuService, iuh *ImgUploader) *UserService {
+func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, cdh *dao.CommentDao, jwth *middleware.Jwt, iuh *ImgUploader, cSvc *ccnuService) *UserService {
 	return &UserService{
 		udh:  udh,
 		adh:  adh,
 		pdh:  pdh,
+		cdh:  cdh,
 		jwth: jwth,
 		cSvc: cSvc,
 		iuh:  iuh,
@@ -56,7 +59,7 @@ func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, jwth *m
 
 func (us *UserService) CreateUser(ctx *gin.Context, sid string) error {
 	user := &model.User{
-		StudentId: sid,
+		StudentID: sid,
 		Name:      sid,
 		Avatar:    genRandomAvatar(ctx),
 		School:    "华中师范大学",
@@ -152,8 +155,12 @@ func genRandomAvatar(c *gin.Context) string {
 	}
 }
 
-func (us *UserService) GenQINIUToken(ctx *gin.Context) string {
-	return us.iuh.GenQINIUToken(ctx)
+func (us *UserService) GenQINIUToken(ctx *gin.Context) resp.ImgBedResp {
+	res := resp.ImgBedResp{
+		AccessToken: us.iuh.GenQINIUToken(ctx),
+		DomainName:  us.iuh.ImgUrl,
+	}
+	return res
 }
 
 func (us *UserService) Like(ctx *gin.Context, targetID string, Objetct string) error {
@@ -162,6 +169,8 @@ func (us *UserService) Like(ctx *gin.Context, targetID string, Objetct string) e
 		return us.adh.Like(ctx, targetID)
 	case "post":
 		return us.pdh.Like(ctx, targetID)
+	case "comment":
+		return us.cdh.Like(ctx, targetID)
 	default:
 		return errors.New("Object not found")
 	}
@@ -173,6 +182,17 @@ func (us *UserService) Comment(ctx *gin.Context, targetID string, Object string)
 		return us.adh.Comment(ctx, targetID)
 	case "post":
 		return us.pdh.Comment(ctx, targetID)
+	default:
+		return errors.New("Object not found")
+	}
+}
+
+func (us *UserService) Collect(ctx *gin.Context, targetID string, Object string) error {
+	switch Object {
+	case "activity":
+		return us.adh.Collect(ctx, targetID)
+	case "post":
+		return us.pdh.Collect(ctx, targetID)
 	default:
 		return errors.New("Object not found")
 	}

@@ -19,6 +19,7 @@ type UserControllerHdl interface {
 	GenQINIUToken() gin.HandlerFunc
 	Like() gin.HandlerFunc
 	Comment() gin.HandlerFunc
+	Collect() gin.HandlerFunc
 }
 
 type UserController struct {
@@ -47,23 +48,23 @@ func (uc *UserController) Login() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		if lr.Studentid == "" || lr.Password == "" {
+		if lr.StudentiD == "" || lr.Password == "" {
 			c.JSON(200, tools.ReturnMSG(c, "studentid or password is empty", nil))
 			return
 		}
-		user, token, err := uc.ush.Login(c, lr.Studentid, lr.Password)
+		user, token, err := uc.ush.Login(c, lr.StudentiD, lr.Password)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "login fail", nil))
 			return
 		}
 		res := resp.LoginResp{
-			Id:     user.Id,
-			Sid:    user.StudentId,
-			Name:   user.Name,
-			Avatar: user.Avatar,
-			School: user.School,
-			Likes:  user.Likes,
-			Token:  token,
+			Id:      user.Id,
+			Sid:     user.StudentID,
+			Name:    user.Name,
+			Avatar:  user.Avatar,
+			School:  user.School,
+			Collect: tools.StringToSlice(user.Collect),
+			Token:   token,
 		}
 		c.JSON(200, tools.ReturnMSG(c, "login success", res))
 	}
@@ -91,12 +92,12 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 // @Summary 获取用户信息
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param sid query string true "学号"
+// @Param sid path string true "学号"
 // @Success 200 {object} resp.Resp{data=model.User}
 // @Router /user/info [get]
 func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sid := c.Query("sid")
+		sid := c.Param("sid")
 		if sid == "" {
 			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
@@ -154,7 +155,7 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "name is empty", nil))
 			return
 		}
-		err = uc.ush.UpdateUsername(c, unr.Sid, unr.Name)
+		err = uc.ush.UpdateUsername(c, unr.StudentID, unr.Name)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "update username fail", nil))
 			return
@@ -179,11 +180,11 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		if ureq.Sid == "" {
+		if ureq.StudentiD == "" {
 			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
-		acts, err := uc.ush.SearchUserAct(c, ureq.Sid, ureq.Keyword)
+		acts, err := uc.ush.SearchUserAct(c, ureq.StudentiD, ureq.Keyword)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "search user act fail", nil))
 			return
@@ -207,11 +208,11 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		if ureq.Sid == "" {
+		if ureq.StudentiD == "" {
 			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
-		posts, err := uc.ush.SearchUserPost(c, ureq.Sid, ureq.Keyword)
+		posts, err := uc.ush.SearchUserPost(c, ureq.StudentiD, ureq.Keyword)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "search user post fail", nil))
 			return
@@ -224,12 +225,12 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 // @Summary 获取七牛云token
 // @Produce json
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp{data=string}
+// @Success 200 {object} resp.Resp{data=resp.ImgBedResp}
 // @Router /user/token/qiniu [get]
 func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := uc.ush.GenQINIUToken(c)
-		c.JSON(200, tools.ReturnMSG(c, "gen qiniu token success", token))
+		res := uc.ush.GenQINIUToken(c)
+		c.JSON(200, tools.ReturnMSG(c, "gen qiniu token success", res))
 	}
 }
 
@@ -278,5 +279,29 @@ func (uc *UserController) Comment() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "comment success", nil))
+	}
+}
+
+// @Tags User
+// @Summary 收藏
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param cr body req.NumReq true "收藏请求"
+// @Success 200 {object} resp.Resp
+// @Router /user/collect [post]
+func (uc *UserController) Collect() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var cr req.NumReq
+		err := context.ShouldBindJSON(&cr)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, err.Error(), nil))
+			return
+		}
+		err = uc.ush.Collect(context, cr.TargetId, cr.Object)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, "collect fail", nil))
+			return
+		}
+		context.JSON(200, tools.ReturnMSG(context, "collect success", nil))
 	}
 }

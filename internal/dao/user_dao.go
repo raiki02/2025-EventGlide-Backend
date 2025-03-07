@@ -23,32 +23,32 @@ func NewUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{db: db}
 }
 
-func (ud *UserDao) UpdateAvatar(ctx *gin.Context, sid string, imgurl string) error {
-	return ud.db.Model(&model.User{}).Where("sid = ?", sid).Update("avatar", imgurl).Error
+func (ud *UserDao) UpdateAvatar(ctx *gin.Context, student_id string, imgurl string) error {
+	return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Update("avatar", imgurl).Error
 }
 
-func (ud *UserDao) UpdateUsername(ctx *gin.Context, sid string, name string) error {
-	return ud.db.Model(&model.User{}).Where("sid = ?", sid).Update("name", name).Error
+func (ud *UserDao) UpdateUsername(ctx *gin.Context, student_id string, name string) error {
+	return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Update("name", name).Error
 }
 
 func (ud *UserDao) Create(ctx *gin.Context, user *model.User) error {
 	return ud.db.Create(user).Error
 }
 
-func (ud *UserDao) CheckUserExist(ctx *gin.Context, sid string) bool {
-	res := ud.db.Where("sid = ?", sid).Find(&model.User{}).RowsAffected
+func (ud *UserDao) CheckUserExist(ctx *gin.Context, student_id string) bool {
+	res := ud.db.Where("student_id = ?", student_id).Find(&model.User{}).RowsAffected
 	return res != 0
 }
 
-func (ud *UserDao) GetUserInfo(ctx *gin.Context, sid string) (model.User, error) {
+func (ud *UserDao) GetUserInfo(ctx *gin.Context, student_id string) (model.User, error) {
 	var user model.User
-	err := ud.db.Where("sid = ?", sid).First(&user).Error
+	err := ud.db.Where("student_id = ?", student_id).First(&user).Error
 	return user, err
 }
 
-func (ud *UserDao) FindUserByID(ctx *gin.Context, sid string) model.User {
+func (ud *UserDao) FindUserByID(ctx *gin.Context, student_id string) model.User {
 	var user model.User
-	err := ud.db.Where("sid = ?", sid).First(&user).Error
+	err := ud.db.Where("student_id = ?", student_id).First(&user).Error
 	if err != nil {
 		return model.User{}
 	}

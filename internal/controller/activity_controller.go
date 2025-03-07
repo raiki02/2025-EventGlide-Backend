@@ -3,7 +3,6 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
-	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
 )
@@ -35,28 +34,27 @@ func NewActController(as *service.ActivityService, iu *service.ImgUploader) *Act
 // @Summary 创建活动
 // @Produce json
 // @Accept json
-// @Param activity body model.Activity true "活动"
+// @Param activity body req.CreateActReq true "活动"
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp{data=model.Activity}
+// @Success 200 {object} resp.Resp{data=resp.CreateActivityResp}
 // @Router /act/create [post]
 func (ac *ActController) NewAct() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var act model.Activity
+		var act req.CreateActReq
 		//获取用户填写信息
-		//host,location,startTime,endTime,ifRegister,image_urls ,name
 		err := c.ShouldBindJSON(&act)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 
-		err = ac.as.NewAct(c, &act)
+		a, err := ac.as.NewAct(c, &act)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
 
-		c.JSON(200, tools.ReturnMSG(c, "success", act))
+		c.JSON(200, tools.ReturnMSG(c, "success", a))
 	}
 }
 
@@ -65,13 +63,13 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 // @Description not finished
 // @Produce json
 // @Accept json
-// @Param draft body model.ActivityDraft true "活动草稿"
+// @Param draft body req.CreateActReq true "活动草稿"
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp{data=string}
+// @Success 200 {object} resp.Resp{data=resp.CreateActivityResp}
 // @Router /act/draft [post]
 func (ac *ActController) NewDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var d model.ActivityDraft
+		var d req.CreateActReq
 		//获取用户填写信息
 		err := c.ShouldBindJSON(&d)
 		if err != nil {
@@ -79,15 +77,12 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 			return
 		}
 
-		//直接创建，不管有没有类似的
-		//不保存上传图片，考虑图床空间
-		//不设置绑定id，不一定会发布
-		err = ac.as.NewDraft(c, &d)
+		res, err := ac.as.NewDraft(c, &d)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "success", d.Bid))
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
 
@@ -97,7 +92,7 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 // @Accept json
 // @Param Authorization header string true "token"
 // @Param draft body req.DraftReq true "加载草稿"
-// @Success 200 {object} resp.Resp{data=model.ActivityDraft}
+// @Success 200 {object} resp.Resp{data=resp.CreateActivityResp}
 // @Router /act/load [post]
 func (ac ActController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -120,12 +115,12 @@ func (ac ActController) LoadDraft() gin.HandlerFunc {
 // @Summary 通过名称查找活动
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param name query string true "名称查找"
+// @Param name path string true "名称"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/name [get]
+// @Router /act/name/{name} [get]
 func (ac *ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		n := c.Query("name")
+		n := c.Param("name")
 		if n == "" {
 			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
@@ -167,13 +162,13 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 // @Summary 通过日期查找活动
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param date query string true "日期"
+// @Param date path string true "日期"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/date [get]
+// @Router /act/date/{date} [get]
 func (ac *ActController) FindActByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 02-01
-		d := c.Query("date")
+		d := c.Param("date")
 		if d == "" {
 			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
 			return
@@ -193,7 +188,7 @@ func (ac *ActController) FindActByDate() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Param id path string true "创建者id"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/owner/{id} [get]
+// @Router /act/own/{id} [get]
 func (ac *ActController) FindActByOwnerID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")

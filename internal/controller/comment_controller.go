@@ -29,23 +29,27 @@ func NewCommentController(cs *service.CommentService) *CommentController {
 // @Summary 创建评论
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param CommentReq body req.CommentReq true "评论"
+// @Param CommentReq body req.CreateCommentReq true "评论"
 // @Success 200 {object} resp.Resp{data=resp.CommentResp}
 // @Router /comment/create [post]
 func (cc *CommentController) CreateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var cReq req.CommentReq
-		err := c.ShouldBindJSON(&cReq)
+		var r req.CreateCommentReq
+		err := c.ShouldBindJSON(&r)
 		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if r.StudentID == "" || r.Content == "" || r.ParentID == "" {
 			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
 			return
 		}
-		cmt, err := cc.cs.CreateComment(c, &cReq)
+		res, err := cc.cs.CreateComment(c, r)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "create comment fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "create comment success", cmt))
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
 
@@ -53,23 +57,27 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 // @Summary 回复评论
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param CommentReq body req.CommentReq true "回复"
-// @Success 200 {object} resp.Resp{data=resp.AnswerResp}
+// @Param CommentReq body req.CreateCommentReq true "回复"
+// @Success 200 {object} resp.Resp{data=resp.CommentResp}
 // @Router /comment/answer [post]
 func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var cReq req.CommentReq
-		err := c.ShouldBindJSON(&cReq)
+		var r req.CreateCommentReq
+		err := c.ShouldBindJSON(&r)
 		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if r.StudentID == "" || r.Content == "" || r.ParentID == "" {
 			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
 			return
 		}
-		asw, err := cc.cs.AnswerComment(c, &cReq)
+		res, err := cc.cs.AnswerComment(c, r)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "answer comment fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "answer comment success", asw))
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
 
@@ -83,23 +91,22 @@ func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 // @Router /comment/delete [post]
 func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var dcr req.DeleteCommentReq
-		err := c.ShouldBindJSON(&dcr)
+		var r req.DeleteCommentReq
+		err := c.ShouldBindJSON(&r)
 		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if r.StudentID == "" || r.TargetID == "" {
 			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
 			return
 		}
-
-		if dcr.TargetID == "" || dcr.Sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
-			return
-		}
-		err = cc.cs.DeleteComment(c, dcr.Sid, dcr.TargetID)
+		err = cc.cs.DeleteComment(c, r)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "delete comment fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "delete comment success", nil))
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
@@ -111,17 +118,18 @@ func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 // @Router /comment/load/{id} [get]
 func (cc *CommentController) LoadComments() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		target := c.Param("id")
-		if target == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
+		id := c.Param("id")
+		if id == "" {
+			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
 			return
 		}
-		comments, err := cc.cs.LoadComments(c, target)
+		res, err := cc.cs.LoadComments(c, id)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "load comments fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "load comments success", comments))
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
+
 	}
 }
 
@@ -129,20 +137,20 @@ func (cc *CommentController) LoadComments() gin.HandlerFunc {
 // @Summary 加载回复
 // @Produce json
 // @Param id path string true "目标id"
-// @Success 200 {object} resp.Resp{data=[]resp.AnswerResp}
+// @Success 200 {object} resp.Resp{data=[]resp.CommentResp}
 // @Router /comment/answer/{id} [get]
 func (cc *CommentController) LoadAnswers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		target := c.Param("id")
-		if target == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
+		id := c.Param("id")
+		if id == "" {
+			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
 			return
 		}
-		answers, err := cc.cs.LoadAnswers(c, target)
+		res, err := cc.cs.LoadAnswers(c, id)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "load answers fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "load answers success", answers))
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }

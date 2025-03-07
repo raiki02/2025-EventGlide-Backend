@@ -26,12 +26,13 @@ func (ur *UserRouter) RegisterUserRouters() {
 		user.POST("/login", ur.uc.Login())
 		user.POST("/logout", ur.j.WrapCheckToken(), ur.uc.Logout())
 		user.GET("/token/qiniu", ur.j.WrapCheckToken(), ur.uc.GenQiniuToken())
-		user.GET("/info", ur.j.WrapCheckToken(), ur.uc.GetUserInfo())
+		user.GET("/info/:id", ur.j.WrapCheckToken(), ur.uc.GetUserInfo())
 		user.POST("/avatar", ur.j.WrapCheckToken(), ur.uc.UpdateAvatar())
 		user.POST("/username", ur.j.WrapCheckToken(), ur.uc.UpdateUsername())
 		user.POST("/search/act", ur.j.WrapCheckToken(), ur.uc.SearchUserAct())
 		user.POST("/search/post", ur.j.WrapCheckToken(), ur.uc.SearchUserPost())
 		user.POST("/like", ur.j.WrapCheckToken(), ur.uc.Like())
 		user.POST("/comment", ur.j.WrapCheckToken(), ur.uc.Comment())
+		user.POST("/collect", ur.j.WrapCheckToken(), ur.uc.Collect())
 	}
 }
