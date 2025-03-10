@@ -1,6 +1,5 @@
 package model
 
-// 每个首次使用的用户根据插入数据库，用于活动草稿，头像，昵称操作
 type User struct {
 	Id        int    `gorm:"column:id; type: int; not null; primary_key; autoIncrement"`
 	StudentID string `gorm:"column:student_id;type:varchar(255);not null" json:"student_id"`

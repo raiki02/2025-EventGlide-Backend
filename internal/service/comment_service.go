@@ -49,6 +49,7 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 	res.ReplyNum = cmt.ReplyNum
 	res.Creator.StudentID = user.StudentID
 	res.Creator.Username = user.Name
+	res.Creator.Avatar = user.Avatar
 	return res
 }
 

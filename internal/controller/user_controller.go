@@ -48,11 +48,11 @@ func (uc *UserController) Login() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		if lr.StudentiD == "" || lr.Password == "" {
+		if lr.StudentID == "" || lr.Password == "" {
 			c.JSON(200, tools.ReturnMSG(c, "studentid or password is empty", nil))
 			return
 		}
-		user, token, err := uc.ush.Login(c, lr.StudentiD, lr.Password)
+		user, token, err := uc.ush.Login(c, lr.StudentID, lr.Password)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "login fail", nil))
 			return
@@ -66,7 +66,7 @@ func (uc *UserController) Login() gin.HandlerFunc {
 			Collect: tools.StringToSlice(user.Collect),
 			Token:   token,
 		}
-		c.JSON(200, tools.ReturnMSG(c, "login success", res))
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
 
@@ -84,7 +84,7 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "logout fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "logout success", nil))
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
@@ -107,7 +107,7 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "get user info fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "get user info success", user))
+		c.JSON(200, tools.ReturnMSG(c, "success", user))
 	}
 }
 
@@ -132,7 +132,7 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "update avatar fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "update avatar success", nil))
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
@@ -160,7 +160,7 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "update username fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "update username success", nil))
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 
 }
@@ -180,16 +180,16 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		if ureq.StudentiD == "" {
+		if ureq.StudentID == "" {
 			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
-		acts, err := uc.ush.SearchUserAct(c, ureq.StudentiD, ureq.Keyword)
+		acts, err := uc.ush.SearchUserAct(c, ureq.StudentID, ureq.Keyword)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "search user act fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "search user act success", acts))
+		c.JSON(200, tools.ReturnMSG(c, "success", acts))
 	}
 }
 
@@ -208,16 +208,16 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		if ureq.StudentiD == "" {
+		if ureq.StudentID == "" {
 			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
 			return
 		}
-		posts, err := uc.ush.SearchUserPost(c, ureq.StudentiD, ureq.Keyword)
+		posts, err := uc.ush.SearchUserPost(c, ureq.StudentID, ureq.Keyword)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "search user post fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "search user post success", posts))
+		c.JSON(200, tools.ReturnMSG(c, "success", posts))
 	}
 }
 
@@ -230,7 +230,7 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		res := uc.ush.GenQINIUToken(c)
-		c.JSON(200, tools.ReturnMSG(c, "gen qiniu token success", res))
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
 
@@ -254,7 +254,7 @@ func (uc *UserController) Like() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "like fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "like success", nil))
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
@@ -278,7 +278,7 @@ func (uc *UserController) Comment() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "comment fail", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "comment success", nil))
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
 
@@ -302,6 +302,6 @@ func (uc *UserController) Collect() gin.HandlerFunc {
 			context.JSON(200, tools.ReturnMSG(context, "collect fail", nil))
 			return
 		}
-		context.JSON(200, tools.ReturnMSG(context, "collect success", nil))
+		context.JSON(200, tools.ReturnMSG(context, "success", nil))
 	}
 }

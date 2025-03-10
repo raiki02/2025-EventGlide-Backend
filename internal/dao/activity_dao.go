@@ -56,7 +56,7 @@ func (ad *ActDao) LoadDraft(c *gin.Context, s string, b string) (model.ActivityD
 	return d, nil
 }
 
-// TODO: 是否换成按页展示，每页返回固定个数活动
+// TODO: 换成按页展示，每页返回固定个数活动
 
 func (ad *ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]model.Activity, error) {
 	var as []model.Activity
@@ -129,10 +129,10 @@ func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]mode
 		q = ad.db.Where("type in ?", a.Type)
 	}
 	if a.Host != nil {
-		q = q.Where("host in ?", a.Host)
+		q = q.Where("holder_type in ?", a.Host)
 	}
 	if a.Location != nil {
-		q = q.Where("location in ?", a.Location)
+		q = q.Where("position in ?", a.Location)
 	}
 	if a.IfRegister != "" {
 		q = q.Where("if_register = ?", a.IfRegister)

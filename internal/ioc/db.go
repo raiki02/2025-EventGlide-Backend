@@ -19,9 +19,8 @@ func InitDB() *gorm.DB {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	sqldb.SetMaxIdleConns(viper.GetInt("mysql.max_idle_conns"))
-	sqldb.SetMaxOpenConns(viper.GetInt("mysql.max_open_conns"))
+	sqldb.SetMaxIdleConns(viper.GetInt("mysql.maxIdleConns"))
+	sqldb.SetMaxOpenConns(viper.GetInt("mysql.maxOpenConns"))
 
 	err = migrate(db)
 	if err != nil {

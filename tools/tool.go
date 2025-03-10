@@ -12,14 +12,20 @@ func GenUUID() string {
 }
 
 func SliceToString(s []string) string {
+	if len(s) == 0 {
+		return ""
+	}
 	return strings.Join(s, ",")
 }
 
 func StringToSlice(s string) []string {
+	if s == "" {
+		return nil
+	}
 	return strings.Split(s, ",")
 }
 
-func ReturnMSG(c *gin.Context, msg string, res ...interface{}) map[string]interface{} {
+func ReturnMSG(c *gin.Context, msg string, res interface{}) map[string]interface{} {
 	return gin.H{
 		"code": c.Writer.Status(),
 		"msg":  msg,

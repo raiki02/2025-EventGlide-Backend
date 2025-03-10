@@ -288,6 +288,8 @@ definitions:
         type: string
       creator:
         properties:
+          avatar:
+            type: string
           studentid:
             type: string
           username:

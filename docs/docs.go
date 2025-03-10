@@ -1949,6 +1949,9 @@ const docTemplate = `{
                 "creator": {
                     "type": "object",
                     "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
                         "studentid": {
                             "type": "string"
                         },

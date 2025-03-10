@@ -37,7 +37,6 @@ func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao) *Activ
 }
 
 func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.CreateActivityResp, error) {
-
 	act := toAct(r)
 
 	err := as.ad.CreateAct(c, act)
@@ -45,7 +44,7 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 		return resp.CreateActivityResp{}, err
 	}
 
-	return *as.toCreateResp(c, act), nil
+	return as.toCreateResp(c, act), nil
 
 }
 
@@ -58,7 +57,7 @@ func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActReq) (resp.C
 		return resp.CreateActivityResp{}, err
 	}
 
-	return *as.toCreateResp(c, d), nil
+	return as.toCreateResp(c, d), nil
 }
 
 func (as *ActivityService) LoadDraft(c *gin.Context, dReq req.DraftReq) (resp.CreateActivityResp, error) {
@@ -67,7 +66,7 @@ func (as *ActivityService) LoadDraft(c *gin.Context, dReq req.DraftReq) (resp.Cr
 		return resp.CreateActivityResp{}, err
 	}
 
-	return *as.toCreateResp(c, d), nil
+	return as.toCreateResp(c, d), nil
 }
 
 func (as *ActivityService) FindActBySearches(c *gin.Context, req *req.ActSearchReq) ([]resp.ListActivitiesResp, error) {
@@ -206,12 +205,12 @@ func toActDraft(r *req.CreateActReq) *model.ActivityDraft {
 	return &ad
 }
 
-func (as *ActivityService) toCreateResp(c *gin.Context, act any) *resp.CreateActivityResp {
+func (as *ActivityService) toCreateResp(c *gin.Context, act any) resp.CreateActivityResp {
 	var res resp.CreateActivityResp
 
 	switch act.(type) {
-	case model.Activity:
-		act := act.(model.Activity)
+	case *model.Activity:
+		act := act.(*model.Activity)
 		user := as.ud.FindUserByID(c, act.StudentID)
 		res.Title = act.Title
 		res.Introduce = act.Introduce
@@ -224,7 +223,22 @@ func (as *ActivityService) toCreateResp(c *gin.Context, act any) *resp.CreateAct
 		res.UserInfo.Username = user.Name
 		res.UserInfo.Avatar = user.Avatar
 		res.UserInfo.StudentID = user.StudentID
-		return &res
+		return res
+
+	case *model.ActivityDraft:
+		ad := act.(*model.ActivityDraft)
+		user := as.ud.FindUserByID(c, ad.StudentID)
+		res.Title = ad.Title
+		res.Introduce = ad.Introduce
+		res.ShowImg = tools.StringToSlice(ad.ShowImg)
+		res.Type = ad.Type
+		res.Position = ad.Position
+		res.IfRegister = ad.IfRegister
+		res.UserInfo.School = user.School
+		res.UserInfo.Username = user.Name
+		res.UserInfo.Avatar = user.Avatar
+		res.UserInfo.StudentID = user.StudentID
+		return res
 
 	case model.ActivityDraft:
 		ad := act.(model.ActivityDraft)
@@ -239,9 +253,8 @@ func (as *ActivityService) toCreateResp(c *gin.Context, act any) *resp.CreateAct
 		res.UserInfo.Username = user.Name
 		res.UserInfo.Avatar = user.Avatar
 		res.UserInfo.StudentID = user.StudentID
-		return &res
-
+		return res
 	default:
-		return nil
+		return res
 	}
 }

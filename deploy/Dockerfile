@@ -1,5 +1,5 @@
 FROM golang:1.23.2 AS Builder
-COPY . /app
+COPY ../.. /app
 WORKDIR /app
 RUN go build -o eg .
 

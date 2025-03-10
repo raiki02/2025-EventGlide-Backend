@@ -4,4 +4,4 @@
 /tmp
 /config/dev-conf.yml
 EG
-docker-compose.yml
+deploy/docker-compose.yml
