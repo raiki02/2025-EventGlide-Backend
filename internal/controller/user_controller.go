@@ -6,7 +6,6 @@ import (
 	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
-	"log"
 )
 
 type UserControllerHdl interface {
@@ -108,7 +107,6 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "get user info fail", nil))
 			return
 		}
-		log.Println("user: ", user)
 		c.JSON(200, tools.ReturnMSG(c, "success", user))
 	}
 }
@@ -125,7 +123,6 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var userAvatarReq req.UserAvatarReq
 		err := c.ShouldBind(&userAvatarReq)
-		log.Println("userAvatarReq: ", userAvatarReq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return

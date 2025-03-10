@@ -206,7 +206,7 @@ definitions:
     properties:
       bid:
         type: string
-      sid:
+      studentid:
         type: string
     type: object
   req.FindPostReq:
@@ -268,7 +268,7 @@ definitions:
     properties:
       avatar_url:
         type: string
-      sid:
+      studentid:
         type: string
     type: object
   req.UserSearchReq:

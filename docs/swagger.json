@@ -1811,7 +1811,7 @@
                 "bid": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }
@@ -1908,7 +1908,7 @@
                 "avatar_url": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }

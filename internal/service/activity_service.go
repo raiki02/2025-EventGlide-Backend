@@ -107,7 +107,7 @@ func (as *ActivityService) FindActByOwnerID(c *gin.Context, id string) ([]resp.L
 
 func (as *ActivityService) ListAllActs(c *gin.Context) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.ListAllActs(c)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	res := as.ToListResp(c, acts)

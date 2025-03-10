@@ -1821,7 +1821,7 @@ const docTemplate = `{
                 "bid": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }
@@ -1918,7 +1918,7 @@ const docTemplate = `{
                 "avatar_url": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }
