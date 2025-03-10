@@ -6,6 +6,7 @@ import (
 	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
+	"log"
 )
 
 type UserControllerHdl interface {
@@ -92,14 +93,14 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 // @Summary 获取用户信息
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param sid path string true "学号"
+// @Param id path string true "用户id"
 // @Success 200 {object} resp.Resp{data=model.User}
-// @Router /user/info [get]
+// @Router /user/info/{id} [get]
 func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sid := c.Param("sid")
+		sid := c.Param("id")
 		if sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "id is empty", nil))
 			return
 		}
 		user, err := uc.ush.GetUserInfo(c, sid)
@@ -107,6 +108,7 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "get user info fail", nil))
 			return
 		}
+		log.Println("user: ", user)
 		c.JSON(200, tools.ReturnMSG(c, "success", user))
 	}
 }
@@ -123,8 +125,13 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var userAvatarReq req.UserAvatarReq
 		err := c.ShouldBind(&userAvatarReq)
+		log.Println("userAvatarReq: ", userAvatarReq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if userAvatarReq.StudentID == "" || userAvatarReq.AvatarUrl == "" {
+			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
 			return
 		}
 		err = uc.ush.UpdateAvatar(c, userAvatarReq)

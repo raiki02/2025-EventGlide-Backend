@@ -1,15 +1,13 @@
-MOCK_DIR=./internal/test/mocks
-DAO_DIR=./internal/dao
+Layers=dao controller service router
+SrcFile=user.go activity.go post.go comment.go number.go
 
-DAO_FILES=$(wildcard $(DAO_DIR)/*.go)
-MOCK_FILES=$(patsubst $(DAO_DIR)/%.go, $(MOCK_DIR)/%_mock.go, $(DAO_FILES))
+MockDir=./internal/test/mock
 
-$(MOCK_DIR)/%_mock.go: $(DAO_DIR)/%.go
-	@mkdir -p $(MOCK_DIR)
-	mockgen -source=$< -destination=$@ -package=tests
-	@echo "Generated mock: $@"
+mock:
+	for i in $(Layers); do \
+		for j in $(SrcFile); do \
+		  echo $$i $$j; \
+			mockgen -source=./internal/$$i/$(patsubst %.go,%_$$(i).go,$$j) -destination=$(MockDir)/$(patsubst %.go,%_mock.go,$$(j)) -package=test; \
+		done; \
+	done
 
-mocks: $(MOCK_FILES)
-
-clean:
-	rm -rf $(MOCK_DIR)

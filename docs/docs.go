@@ -1167,7 +1167,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/info": {
+        "/user/info/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1186,8 +1186,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "学号",
-                        "name": "sid",
+                        "description": "用户id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }

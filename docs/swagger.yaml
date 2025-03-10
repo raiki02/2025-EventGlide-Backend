@@ -1152,7 +1152,7 @@ paths:
       summary: 评论
       tags:
       - User
-  /user/info:
+  /user/info/{id}:
     get:
       parameters:
       - description: token
@@ -1160,9 +1160,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 学号
+      - description: 用户id
         in: path
-        name: sid
+        name: id
         required: true
         type: string
       produces:

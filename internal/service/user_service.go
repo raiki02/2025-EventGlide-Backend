@@ -11,7 +11,6 @@ import (
 	"github.com/raiki02/EG/internal/model"
 	"github.com/spf13/viper"
 	"io"
-	"math/rand"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
@@ -61,8 +60,9 @@ func (us *UserService) CreateUser(ctx *gin.Context, sid string) error {
 	user := &model.User{
 		StudentID: sid,
 		Name:      sid,
-		Avatar:    genRandomAvatar(ctx),
-		School:    "华中师范大学",
+		//Avatar:    genRandomAvatar(ctx),
+		Avatar: viper.GetString("imgbed.defaultAvatar1"),
+		School: "华中师范大学",
 	}
 	err := us.udh.Create(ctx, user)
 	if err != nil {
@@ -142,18 +142,18 @@ func (us *UserService) SearchUserPost(ctx *gin.Context, studentId string, keywor
 	return posts, nil
 }
 
-func genRandomAvatar(c *gin.Context) string {
-	avatars := []string{
-		viper.GetString("imgbed.defaultAvatar1"),
-		viper.GetString("imgbed.defaultAvatar2"),
-	}
-	n := rand.Intn(10)
-	if n == 9 {
-		return avatars[1]
-	} else {
-		return avatars[0]
-	}
-}
+//func genRandomAvatar(c *gin.Context) string {
+//	avatars := []string{
+//		viper.GetString("imgbed.defaultAvatar1"),
+//		viper.GetString("imgbed.defaultAvatar2"),
+//	}
+//	n := rand.Intn(10)
+//	if n == 9 {
+//		return avatars[1]
+//	} else {
+//		return avatars[0]
+//	}
+//}
 
 func (us *UserService) GenQINIUToken(ctx *gin.Context) resp.ImgBedResp {
 	res := resp.ImgBedResp{
