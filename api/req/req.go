@@ -6,6 +6,6 @@ type DraftReq struct {
 }
 
 type UserAvatarReq struct {
-	Sid       string `json:"studentid"`
+	StudentID string `json:"studentid"`
 	AvatarUrl string `json:"avatar_url"`
 }

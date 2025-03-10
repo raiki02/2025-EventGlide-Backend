@@ -111,7 +111,7 @@ func (us *UserService) GetUserInfo(ctx *gin.Context, studentId string) (model.Us
 }
 
 func (us *UserService) UpdateAvatar(ctx *gin.Context, req req.UserAvatarReq) error {
-	err := us.udh.UpdateAvatar(ctx, req.Sid, req.AvatarUrl)
+	err := us.udh.UpdateAvatar(ctx, req.StudentID, req.AvatarUrl)
 	if err != nil {
 		return err
 	}
