@@ -18,7 +18,7 @@ type CreateActReq struct {
 	ShowImg   []string `json:"showImg"`
 
 	LabelForm struct {
-		HolderType     string `json:"hodlerType"`
+		HolderType     string `json:"holderType"`
 		Position       string `json:"position"`
 		IfRegister     string `json:"if_register"`
 		RegisterMethod string `json:"register_method"`

@@ -176,7 +176,7 @@ func (pr *PostController) LoadDraft() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Param id path string true "用户ID"
 // @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
-// @Router /post/owner/{id} [get]
+// @Router /post/own/{id} [get]
 func (pr *PostController) FindPostByOwnerID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")

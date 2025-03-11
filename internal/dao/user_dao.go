@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
@@ -53,4 +54,15 @@ func (ud *UserDao) FindUserByID(ctx *gin.Context, student_id string) model.User 
 		return model.User{}
 	}
 	return user
+}
+
+func (ud *UserDao) Collect(ctx *gin.Context, obj string, bid string, student_id string) error {
+	switch obj {
+	case "activity":
+		return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Association("collect_act").Append(bid)
+	case "post":
+		return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Association("collect_post").Append(bid)
+	default:
+		return errors.New("object not found")
+	}
 }

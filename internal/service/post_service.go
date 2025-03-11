@@ -155,6 +155,7 @@ func (ps *PostService) toCreateResp(c *gin.Context, p any) resp.CreatePostResp {
 		res.UserInfo.Avatar = user.Avatar
 		res.UserInfo.StudentID = user.StudentID
 		res.Title = post.Title
+		res.Bid = post.Bid
 		res.Introduce = post.Introduce
 		res.ShowImg = tools.StringToSlice(post.ShowImg)
 		return res

@@ -995,7 +995,7 @@
                 }
             }
         },
-        "/post/owner/{id}": {
+        "/post/own/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1643,7 +1643,10 @@
                 "avatar": {
                     "type": "string"
                 },
-                "collect": {
+                "collectact": {
+                    "type": "string"
+                },
+                "collectpost": {
                     "type": "string"
                 },
                 "id": {
@@ -1712,7 +1715,7 @@
                         "endTime": {
                             "type": "string"
                         },
-                        "hodlerType": {
+                        "holderType": {
                             "type": "string"
                         },
                         "if_register": {
@@ -1841,6 +1844,9 @@
                 "object": {
                     "type": "string"
                 },
+                "studentid": {
+                    "type": "string"
+                },
                 "target_id": {
                     "type": "string"
                 }
@@ -1852,7 +1858,7 @@
                 "object": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }
@@ -1866,7 +1872,7 @@
                 "object": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }

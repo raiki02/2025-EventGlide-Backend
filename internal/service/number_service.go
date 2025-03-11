@@ -59,11 +59,11 @@ func (ns *NumberService) Recv() error {
 }
 
 func (ns *NumberService) Delete(c *gin.Context, req req.NumberDelReq) error {
-	return ns.nd.Delete(c, req.Sid, req.Object)
+	return ns.nd.Delete(c, req.StudentID, req.Object)
 }
 
 func (ns *NumberService) Search(c *gin.Context, req req.NumberSearchReq) ([]*model.Number, int, error) {
-	return ns.nd.Search(c, req.Sid, req.Object, req.Action)
+	return ns.nd.Search(c, req.StudentID, req.Object, req.Action)
 }
 
 func marshal(req req.NumberSendReq) []byte {

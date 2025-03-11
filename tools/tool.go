@@ -2,13 +2,20 @@ package tools
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"math/rand"
 	"strings"
 )
 
+var (
+	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-+_=!@#$%^&*()[]{}|;:,.<>?")
+)
+
 func GenUUID() string {
-	u, _ := uuid.NewUUID()
-	return u.String()
+	var b strings.Builder
+	for i := 0; i < 4; i++ {
+		b.WriteRune(letterRunes[rand.Intn(len(letterRunes))])
+	}
+	return b.String()
 }
 
 func SliceToString(s []string) string {

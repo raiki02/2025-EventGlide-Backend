@@ -163,14 +163,14 @@ func (us *UserService) GenQINIUToken(ctx *gin.Context) resp.ImgBedResp {
 	return res
 }
 
-func (us *UserService) Like(ctx *gin.Context, targetID string, Objetct string) error {
-	switch Objetct {
+func (us *UserService) Like(ctx *gin.Context, cr req.NumReq) error {
+	switch cr.Object {
 	case "activity":
-		return us.adh.Like(ctx, targetID)
+		return us.adh.Like(ctx, cr.TargetId)
 	case "post":
-		return us.pdh.Like(ctx, targetID)
+		return us.pdh.Like(ctx, cr.TargetId)
 	case "comment":
-		return us.cdh.Like(ctx, targetID)
+		return us.cdh.Like(ctx, cr.TargetId)
 	default:
 		return errors.New("Object not found")
 	}
@@ -187,12 +187,14 @@ func (us *UserService) Comment(ctx *gin.Context, targetID string, Object string)
 	}
 }
 
-func (us *UserService) Collect(ctx *gin.Context, targetID string, Object string) error {
-	switch Object {
+func (us *UserService) Collect(ctx *gin.Context, cr req.NumReq) error {
+	switch cr.Object {
 	case "activity":
-		return us.adh.Collect(ctx, targetID)
+		us.udh.Collect(ctx, cr.Object, cr.TargetId, cr.StudentID)
+		return us.adh.Collect(ctx, cr.TargetId)
 	case "post":
-		return us.pdh.Collect(ctx, targetID)
+		us.udh.Collect(ctx, cr.Object, cr.TargetId, cr.StudentID)
+		return us.pdh.Collect(ctx, cr.TargetId)
 	default:
 		return errors.New("Object not found")
 	}

@@ -97,7 +97,9 @@ definitions:
     properties:
       avatar:
         type: string
-      collect:
+      collectact:
+        type: string
+      collectpost:
         type: string
       id:
         type: integer
@@ -142,7 +144,7 @@ definitions:
             type: string
           endTime:
             type: string
-          hodlerType:
+          holderType:
             type: string
           if_register:
             type: string
@@ -225,6 +227,8 @@ definitions:
     properties:
       object:
         type: string
+      studentid:
+        type: string
       target_id:
         type: string
     type: object
@@ -232,7 +236,7 @@ definitions:
     properties:
       object:
         type: string
-      sid:
+      studentid:
         type: string
     type: object
   req.NumberSearchReq:
@@ -241,7 +245,7 @@ definitions:
         type: string
       object:
         type: string
-      sid:
+      studentid:
         type: string
     type: object
   req.NumberSendReq:
@@ -1049,7 +1053,7 @@ paths:
       summary: 加载草稿
       tags:
       - Post
-  /post/owner/{id}:
+  /post/own/{id}:
     get:
       parameters:
       - description: token

@@ -58,13 +58,12 @@ func (uc *UserController) Login() gin.HandlerFunc {
 			return
 		}
 		res := resp.LoginResp{
-			Id:      user.Id,
-			Sid:     user.StudentID,
-			Name:    user.Name,
-			Avatar:  user.Avatar,
-			School:  user.School,
-			Collect: tools.StringToSlice(user.Collect),
-			Token:   token,
+			Id:     user.Id,
+			Sid:    user.StudentID,
+			Name:   user.Name,
+			Avatar: user.Avatar,
+			School: user.School,
+			Token:  token,
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
@@ -253,7 +252,7 @@ func (uc *UserController) Like() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = uc.ush.Like(c, lr.TargetId, lr.Object)
+		err = uc.ush.Like(c, lr)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "like fail", nil))
 			return
@@ -301,7 +300,7 @@ func (uc *UserController) Collect() gin.HandlerFunc {
 			context.JSON(200, tools.ReturnMSG(context, err.Error(), nil))
 			return
 		}
-		err = uc.ush.Collect(context, cr.TargetId, cr.Object)
+		err = uc.ush.Collect(context, cr)
 		if err != nil {
 			context.JSON(200, tools.ReturnMSG(context, "collect fail", nil))
 			return

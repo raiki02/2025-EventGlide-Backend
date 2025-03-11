@@ -1005,7 +1005,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/post/owner/{id}": {
+        "/post/own/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1653,7 +1653,10 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
-                "collect": {
+                "collectact": {
+                    "type": "string"
+                },
+                "collectpost": {
                     "type": "string"
                 },
                 "id": {
@@ -1722,7 +1725,7 @@ const docTemplate = `{
                         "endTime": {
                             "type": "string"
                         },
-                        "hodlerType": {
+                        "holderType": {
                             "type": "string"
                         },
                         "if_register": {
@@ -1851,6 +1854,9 @@ const docTemplate = `{
                 "object": {
                     "type": "string"
                 },
+                "studentid": {
+                    "type": "string"
+                },
                 "target_id": {
                     "type": "string"
                 }
@@ -1862,7 +1868,7 @@ const docTemplate = `{
                 "object": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }
@@ -1876,7 +1882,7 @@ const docTemplate = `{
                 "object": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }

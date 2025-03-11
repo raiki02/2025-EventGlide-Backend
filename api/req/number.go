@@ -9,17 +9,18 @@ type NumberSendReq struct {
 }
 
 type NumberSearchReq struct {
-	Sid    string `json:"sid"`
-	Object string `json:"object"`
-	Action string `json:"action"`
+	StudentID string `json:"studentid"`
+	Object    string `json:"object"`
+	Action    string `json:"action"`
 }
 
 type NumberDelReq struct {
-	Sid    string `json:"sid"`
-	Object string `json:"object"`
+	StudentID string `json:"studentid"`
+	Object    string `json:"object"`
 }
 
 type NumReq struct {
-	TargetId string `json:"target_id"`
-	Object   string `json:"object"`
+	StudentID string `json:"studentid"`
+	TargetId  string `json:"target_id"`
+	Object    string `json:"object"`
 }
