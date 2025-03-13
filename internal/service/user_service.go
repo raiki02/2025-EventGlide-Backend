@@ -136,7 +136,7 @@ func (us *UserService) SearchUserAct(ctx *gin.Context, studentId string, keyword
 	if err != nil {
 		return nil, err
 	}
-	res := us.as.ToListResp(ctx, acts, studentId)
+	res := us.as.ToListResp(ctx, acts)
 	return res, nil
 }
 
@@ -221,7 +221,7 @@ func (us *UserService) LoadCollectAct(ctx *gin.Context, studentId string) ([]res
 		if err != nil {
 			return nil, err
 		}
-		res = append(res, us.as.toListActResp(ctx, &acts, studentId))
+		res = append(res, us.as.toListActResp(ctx, &acts))
 	}
 	return res, nil
 }

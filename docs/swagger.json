@@ -294,7 +294,10 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resp.ListActivitiesResp"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListActivitiesResp"
+                                            }
                                         }
                                     }
                                 }
@@ -1763,6 +1766,12 @@
                 "id": {
                     "type": "integer"
                 },
+                "likeact": {
+                    "type": "string"
+                },
+                "likepost": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -2081,6 +2090,9 @@
         "resp.CreateActivityResp": {
             "type": "object",
             "properties": {
+                "bid": {
+                    "type": "string"
+                },
                 "if_register": {
                     "type": "string"
                 },
@@ -2167,6 +2179,12 @@
                 "introduce": {
                     "type": "string"
                 },
+                "isCollect": {
+                    "type": "string"
+                },
+                "isLike": {
+                    "type": "string"
+                },
                 "likeNum": {
                     "type": "integer"
                 },
@@ -2207,6 +2225,9 @@
         "resp.ListPostsResp": {
             "type": "object",
             "properties": {
+                "bid": {
+                    "type": "string"
+                },
                 "collectNum": {
                     "type": "integer"
                 },
@@ -2214,6 +2235,12 @@
                     "type": "integer"
                 },
                 "introduce": {
+                    "type": "string"
+                },
+                "isCollect": {
+                    "type": "string"
+                },
+                "isLike": {
                     "type": "string"
                 },
                 "likeNum": {
@@ -2255,12 +2282,6 @@
                 },
                 "avatar": {
                     "type": "string"
-                },
-                "collect": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "name": {
                     "type": "string"

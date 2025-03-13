@@ -62,7 +62,7 @@ func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActReq) (resp.C
 }
 
 func (as *ActivityService) LoadDraft(c *gin.Context, dReq req.DraftReq) (resp.CreateActivityResp, error) {
-	d, err := as.ad.LoadDraft(c, dReq.Sid, dReq.Bid)
+	d, err := as.ad.LoadDraft(c, dReq.Sid)
 	if err != nil {
 		return resp.CreateActivityResp{}, err
 	}
@@ -70,30 +70,30 @@ func (as *ActivityService) LoadDraft(c *gin.Context, dReq req.DraftReq) (resp.Cr
 	return as.toCreateResp(c, d), nil
 }
 
-func (as *ActivityService) FindActBySearches(c *gin.Context, req *req.ActSearchReq, id string) ([]resp.ListActivitiesResp, error) {
+func (as *ActivityService) FindActBySearches(c *gin.Context, req *req.ActSearchReq) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.FindActBySearches(c, req)
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts, id)
+	res := as.ToListResp(c, acts)
 	return res, nil
 }
 
-func (as *ActivityService) FindActByDate(c *gin.Context, date string, id string) ([]resp.ListActivitiesResp, error) {
+func (as *ActivityService) FindActByDate(c *gin.Context, date string) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.FindActByDate(c, date)
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts, id)
+	res := as.ToListResp(c, acts)
 	return res, nil
 }
 
-func (as *ActivityService) FindActByName(c *gin.Context, name string, id string) ([]resp.ListActivitiesResp, error) {
+func (as *ActivityService) FindActByName(c *gin.Context, name string) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.FindActByName(c, name)
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts, id)
+	res := as.ToListResp(c, acts)
 	return res, nil
 }
 
@@ -102,7 +102,7 @@ func (as *ActivityService) FindActByOwnerID(c *gin.Context, id string) ([]resp.L
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts, id)
+	res := as.ToListResp(c, acts)
 	return res, nil
 }
 
@@ -111,29 +111,30 @@ func (as *ActivityService) ListAllActs(c *gin.Context, id string) ([]resp.ListAc
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts, id)
+	res := as.ToListResp(c, acts)
 	return res, nil
 }
 
-func (as *ActivityService) ToListResp(c *gin.Context, acts []model.Activity, id string) []resp.ListActivitiesResp {
+func (as *ActivityService) ToListResp(c *gin.Context, acts []model.Activity) []resp.ListActivitiesResp {
 	var res []resp.ListActivitiesResp
 	for _, act := range acts {
-		res = append(res, as.toListActResp(c, &act, id))
+		res = append(res, as.toListActResp(c, &act))
 	}
 	return res
 }
 
 // 传入sid，act加like/coll字段，：yes
-func (as *ActivityService) toListActResp(c *gin.Context, act *model.Activity, id string) resp.ListActivitiesResp {
+func (as *ActivityService) toListActResp(c *gin.Context, act *model.Activity) resp.ListActivitiesResp {
 
 	var res resp.ListActivitiesResp
-	searcher := as.ud.FindUserByID(c, id)
-	if strings.Contains(searcher.CollectAct, id) {
+	sid := tools.GetSid(c)
+	searcher := as.ud.FindUserByID(c, sid)
+	if strings.Contains(searcher.CollectAct, act.Bid) {
 		res.IsCollect = "true"
 	} else {
 		res.IsCollect = "false"
 	}
-	if strings.Contains(searcher.LikeAct, id) {
+	if strings.Contains(searcher.LikeAct, act.Bid) {
 		res.IsLike = "true"
 	} else {
 		res.IsLike = "false"

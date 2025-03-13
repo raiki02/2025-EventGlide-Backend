@@ -36,7 +36,7 @@ type ActivityDraft struct {
 	ShowImg        string `gorm:"type:text;column:show_img"`
 	HolderType     string `gorm:"type:varchar(255);column:holder_type"`
 	Position       string `gorm:"type:varchar(255);column:position"`
-	IfRegister     string `gorm:"type:enum('yes','no');column:if_register;not null"`
+	IfRegister     string `gorm:"type:enum('是','否');column:if_register;not null"`
 	RegisterMethod string `gorm:"type:varchar(255);column:register_method"`
 	StartTime      string `gorm:"type:datetime;column:start_time"`
 	EndTime        string `gorm:"type:datetime;column:end_time"`

@@ -1,6 +1,7 @@
 package resp
 
 type CreateActivityResp struct {
+	Bid        string   `json:"bid"`
 	Title      string   `json:"title"`
 	Introduce  string   `json:"introduce"`
 	ShowImg    []string `json:"showImg"`

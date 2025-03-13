@@ -16,6 +16,7 @@ type CreatePostResp struct {
 }
 
 type ListPostsResp struct {
+	Bid      string `json:"bid"`
 	UserInfo struct {
 		StudentID string `json:"studentid"`
 		Avatar    string `json:"avatar"`
@@ -30,4 +31,7 @@ type ListPostsResp struct {
 	LikeNum    int `json:"likeNum"`
 	CollectNum int `json:"collectNum"`
 	CommentNum int `json:"commentNum"`
+
+	IsLike    string `json:"isLike"`
+	IsCollect string `json:"isCollect"`
 }

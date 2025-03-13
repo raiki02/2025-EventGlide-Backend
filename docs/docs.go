@@ -304,7 +304,10 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resp.ListActivitiesResp"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListActivitiesResp"
+                                            }
                                         }
                                     }
                                 }
@@ -1773,6 +1776,12 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "likeact": {
+                    "type": "string"
+                },
+                "likepost": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -2091,6 +2100,9 @@ const docTemplate = `{
         "resp.CreateActivityResp": {
             "type": "object",
             "properties": {
+                "bid": {
+                    "type": "string"
+                },
                 "if_register": {
                     "type": "string"
                 },
@@ -2177,6 +2189,12 @@ const docTemplate = `{
                 "introduce": {
                     "type": "string"
                 },
+                "isCollect": {
+                    "type": "string"
+                },
+                "isLike": {
+                    "type": "string"
+                },
                 "likeNum": {
                     "type": "integer"
                 },
@@ -2217,6 +2235,9 @@ const docTemplate = `{
         "resp.ListPostsResp": {
             "type": "object",
             "properties": {
+                "bid": {
+                    "type": "string"
+                },
                 "collectNum": {
                     "type": "integer"
                 },
@@ -2224,6 +2245,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "introduce": {
+                    "type": "string"
+                },
+                "isCollect": {
+                    "type": "string"
+                },
+                "isLike": {
                     "type": "string"
                 },
                 "likeNum": {
@@ -2265,12 +2292,6 @@ const docTemplate = `{
                 },
                 "avatar": {
                     "type": "string"
-                },
-                "collect": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "name": {
                     "type": "string"

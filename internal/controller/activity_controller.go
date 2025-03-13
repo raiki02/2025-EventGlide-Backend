@@ -116,17 +116,16 @@ func (ac *ActController) LoadDraft() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param name path string true "名称"
-// @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/name/{name}/{id} [get]
+// @Success 200 {object} resp.Resp{data=[]resp.ListActivitiesResp}
+// @Router /act/name/{name} [get]
 func (ac *ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		n := c.Param("name")
-		id := c.Param("id")
-		if n == "" || id == "" {
+		if n == "" {
 			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
-		as, err := ac.as.FindActByName(c, n, id)
+		as, err := ac.as.FindActByName(c, n)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -150,7 +149,7 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		as, err := ac.as.FindActBySearches(c, &actReq, actReq.StudentID)
+		as, err := ac.as.FindActBySearches(c, &actReq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -165,18 +164,17 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Param date path string true "日期"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/date/{date}/{id} [get]
+// @Router /act/date/{date} [get]
 func (ac *ActController) FindActByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 02-01
 		d := c.Param("date")
-		id := c.Param("id")
 
-		if d == "" || id == "" {
+		if d == "" {
 			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
 			return
 		}
-		as, err := ac.as.FindActByDate(c, d, id)
+		as, err := ac.as.FindActByDate(c, d)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return

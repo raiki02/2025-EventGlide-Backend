@@ -118,10 +118,26 @@ func (c *Jwt) WrapCheckToken() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+		ctx.Set("studentid", c.parseSid(token))
 		ctx.Next()
 	}
 }
 
-func (c *Jwt) storeSid(token string) error {
-
+func (c *Jwt) parseSid(token string) string {
+	if token == "" {
+		return ""
+	}
+	if strings.HasPrefix(token, "Bearer") {
+		_, token, _ = strings.Cut(token, " ")
+	}
+	t, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return c.jwtKey, nil
+	})
+	if err != nil {
+		return ""
+	}
+	if c, ok := t.Claims.(*jwt.RegisteredClaims); ok && t.Valid {
+		return c.Subject
+	}
+	return ""
 }

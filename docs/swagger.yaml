@@ -103,6 +103,10 @@ definitions:
         type: string
       id:
         type: integer
+      likeact:
+        type: string
+      likepost:
+        type: string
       name:
         type: string
       school:
@@ -308,6 +312,8 @@ definitions:
     type: object
   resp.CreateActivityResp:
     properties:
+      bid:
+        type: string
       if_register:
         type: string
       introduce:
@@ -364,6 +370,10 @@ definitions:
         type: string
       introduce:
         type: string
+      isCollect:
+        type: string
+      isLike:
+        type: string
       likeNum:
         type: integer
       position:
@@ -390,11 +400,17 @@ definitions:
     type: object
   resp.ListPostsResp:
     properties:
+      bid:
+        type: string
       collectNum:
         type: integer
       commentNum:
         type: integer
       introduce:
+        type: string
+      isCollect:
+        type: string
+      isLike:
         type: string
       likeNum:
         type: integer
@@ -422,10 +438,6 @@ definitions:
         type: integer
       avatar:
         type: string
-      collect:
-        items:
-          type: string
-        type: array
       name:
         type: string
       school:
@@ -630,7 +642,9 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/resp.ListActivitiesResp'
+                  items:
+                    $ref: '#/definitions/resp.ListActivitiesResp'
+                  type: array
               type: object
       summary: 通过名称查找活动
       tags:

@@ -7,6 +7,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
+	"strings"
 	"time"
 )
 
@@ -106,11 +107,23 @@ func (ps *PostService) ToListResp(c *gin.Context, posts []model.Post) []resp.Lis
 func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.ListPostsResp {
 	user := ps.ud.FindUserByID(c, post.StudentID)
 	var res resp.ListPostsResp
+	sid := tools.GetSid(c)
+	sercher := ps.ud.FindUserByID(c, sid)
+	if strings.Contains(sercher.CollectPost, post.Bid) {
+		res.IsCollect = "true"
+	} else {
+		res.IsCollect = "false"
+	}
+	if strings.Contains(sercher.LikeAct, post.Bid) {
+		res.IsLike = "true"
+	} else {
+		res.IsLike = "false"
+	}
 	res.UserInfo.School = user.School
 	res.UserInfo.Username = user.Name
 	res.UserInfo.Avatar = user.Avatar
 	res.UserInfo.StudentID = user.StudentID
-
+	res.Bid = post.Bid
 	res.Title = post.Title
 	res.Introduce = post.Introduce
 	res.ShowImg = tools.StringToSlice(post.ShowImg)

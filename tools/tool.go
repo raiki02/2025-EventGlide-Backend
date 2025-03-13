@@ -39,3 +39,16 @@ func ReturnMSG(c *gin.Context, msg string, res interface{}) map[string]interface
 		"data": res,
 	}
 }
+
+func GetSid(c *gin.Context) string {
+	sid, ok := c.Get("studentid")
+	if !ok {
+		return ""
+	}
+	res, ok := sid.(string)
+	if !ok {
+		return ""
+	}
+	return res
+
+}
