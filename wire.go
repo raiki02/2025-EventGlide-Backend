@@ -26,12 +26,14 @@ func InitApp(e *gin.Engine) *server.Server {
 
 		cache.NewCache,
 
+		dao.NewInteractionDao,
 		dao.NewActDao,
 		dao.NewUserDao,
 		dao.NewPostDao,
 		dao.NewCommentDao,
 		dao.NewNumberDao,
 
+		service.NewInteractionService,
 		service.NewImgUploader,
 		service.NewPostService,
 		service.NewUserService,
@@ -43,19 +45,21 @@ func InitApp(e *gin.Engine) *server.Server {
 		middleware.NewJwt,
 		middleware.NewCors,
 
+		controller.NewInteractionController,
 		controller.NewActController,
 		controller.NewPostController,
 		controller.NewUserController,
 		controller.NewCommentController,
 		controller.NewNumberController,
 
+		router.NewInteractionRouter,
 		router.NewActRouter,
 		router.NewCommentRouter,
 		router.NewPostRouter,
 		router.NewUserRouter,
 		router.NewNumberRouter,
 		router.NewRouter,
-		
+
 		server.NewServer,
 	)
 	return &server.Server{}

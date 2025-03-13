@@ -598,6 +598,142 @@ const docTemplate = `{
                 }
             }
         },
+        "/interaction/collect": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "收藏",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.InteractionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/interaction/discollect": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "取消收藏",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.InteractionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/interaction/dislike": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "取消点赞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.InteractionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/interaction/like": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "点赞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.InteractionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
         "/post/all": {
             "get": {
                 "produces": [
@@ -953,43 +1089,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/collect": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "收藏",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "收藏请求",
-                        "name": "cr",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.NumReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
         "/user/collect/act": {
             "post": {
                 "produces": [
@@ -1094,43 +1193,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/comment": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "评论",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "评论请求",
-                        "name": "cr",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.NumReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
         "/user/info/{id}": {
             "get": {
                 "produces": [
@@ -1173,43 +1235,6 @@ const docTemplate = `{
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            }
-        },
-        "/user/like": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "点赞",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "点赞请求",
-                        "name": "lr",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.NumReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
                         }
                     }
                 }
@@ -1728,6 +1753,9 @@ const docTemplate = `{
                 },
                 "studentid": {
                     "type": "string"
+                },
+                "subject": {
+                    "type": "string"
                 }
             }
         },
@@ -1777,6 +1805,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.InteractionReq": {
+            "type": "object",
+            "properties": {
+                "studentid": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
+                },
+                "targetid": {
                     "type": "string"
                 }
             }

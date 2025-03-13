@@ -24,7 +24,7 @@ func NewActRouter(e *gin.Engine, ach *controller.ActController, j *middleware.Jw
 	}
 }
 
-func (ar ActRouter) RegisterActRouters() error {
+func (ar ActRouter) RegisterActRouters() {
 	act := ar.e.Group("act")
 	act.Use(ar.j.WrapCheckToken())
 	{
@@ -37,5 +37,4 @@ func (ar ActRouter) RegisterActRouters() error {
 		act.GET("/own/:id", ar.ach.FindActByOwnerID())
 		act.GET("/all/:id", ar.ach.ListAllActs())
 	}
-	return nil
 }

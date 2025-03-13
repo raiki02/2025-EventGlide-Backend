@@ -20,10 +20,11 @@ type Router struct {
 	pr   *PostRouter
 	cr   *CommentRouter
 	nr   *NumberRouter
+	ir   *InteractionRouter
 	cors *middleware.Cors
 }
 
-func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr *CommentRouter, nr *NumberRouter, cors *middleware.Cors) *Router {
+func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr *CommentRouter, nr *NumberRouter, ir *InteractionRouter, cors *middleware.Cors) *Router {
 	return &Router{
 		e:    e,
 		ur:   ur,
@@ -31,6 +32,7 @@ func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr 
 		pr:   pr,
 		cr:   cr,
 		nr:   nr,
+		ir:   ir,
 		cors: cors,
 	}
 }
@@ -41,6 +43,7 @@ func (r *Router) RegisterRouters() {
 	r.ar.RegisterActRouters()
 	r.pr.RegisterPostRouters()
 	r.cr.RegisterCommentRouter()
+	r.ir.RegisterInteractionRouters()
 	//r.nr.RegisterNumberRouters()
 	r.RegisterSwagger()
 }

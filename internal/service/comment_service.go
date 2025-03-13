@@ -16,12 +16,14 @@ type CommentServiceHdl interface {
 type CommentService struct {
 	cd *dao.CommentDao
 	ud *dao.UserDao
+	id *dao.InteractionDao
 }
 
-func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao) *CommentService {
+func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao, id *dao.InteractionDao) *CommentService {
 	return &CommentService{
 		cd: cd,
 		ud: ud,
+		id: id,
 	}
 }
 
@@ -74,6 +76,15 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 	err := cs.cd.CreateComment(c, cmt)
 	if err != nil {
 		return resp.CommentResp{}, err
+	}
+	switch r.Subject {
+	case "activity":
+		err = cs.id.CommentActivity(c, r.StudentID, r.ParentID)
+	case "post":
+		err = cs.id.CommentPost(c, r.StudentID, r.ParentID)
+	case "comment":
+		err = cs.id.CommentComment(c, r.StudentID, r.ParentID)
+
 	}
 	return cs.toResp(c, cmt), nil
 }

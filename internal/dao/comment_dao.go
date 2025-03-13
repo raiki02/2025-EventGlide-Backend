@@ -1,13 +1,17 @@
 package dao
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
 )
 
 type CommentDaoHdl interface {
+	CreateComment(*gin.Context, *model.Comment) error
+	DeleteComment(*gin.Context, string, string) error
+	AnswerComment(*gin.Context, *model.Comment) error
+	LoadComments(*gin.Context, string) ([]model.Comment, error)
+	LoadAnswers(*gin.Context, string) ([]model.Comment, error)
 }
 
 type CommentDao struct {
@@ -45,14 +49,10 @@ func (cd *CommentDao) LoadAnswers(c *gin.Context, pid string) ([]model.Comment, 
 	return cmts, err
 }
 
-func (cd *CommentDao) Like(c *gin.Context, bid string, t int) error {
+func (cd *CommentDao) FindCmtByID(c *gin.Context, cid string) *model.Comment {
 	var cmt model.Comment
-	switch t {
-	case 1:
-		return cd.db.Where("bid = ?", bid).First(&cmt).Update("like_num", cmt.LikeNum+1).Error
-	case 0:
-		return cd.db.Where("bid = ?", bid).First(&cmt).Update("like_num", cmt.LikeNum-1).Error
-	default:
-		return errors.New("type error")
+	if cd.db.Where("bid = ?", cid).First(&cmt).Error != nil {
+		return nil
 	}
+	return &cmt
 }

@@ -20,9 +20,6 @@ type ActDaoHdl interface {
 	CheckExist(*gin.Context, *model.Activity) bool
 	ListAllActs(*gin.Context) ([]model.Activity, error)
 	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]model.Activity, error)
-	UpdateActNum(*gin.Context)
-	Like(*gin.Context, string) error
-	Comment(*gin.Context, string) error
 }
 
 type ActDao struct {
@@ -162,42 +159,6 @@ func (ad *ActDao) ListAllActs(c *gin.Context) ([]model.Activity, error) {
 		return nil, err
 	}
 	return as, nil
-}
-
-func (ad *ActDao) Like(c *gin.Context, targetID string, t int) error {
-	var act model.Activity
-	switch t {
-	case 1:
-		return ad.db.Where("bid = ?", targetID).Find(&act).Update("like_num", act.LikeNum+1).Error
-	case 0:
-		return ad.db.Where("bid = ?", targetID).Find(&act).Update("like_num", act.LikeNum-1).Error
-	default:
-		return errors.New("type error")
-	}
-}
-
-func (ad *ActDao) Comment(c *gin.Context, targetID string, t int) error {
-	var act model.Activity
-	switch t {
-	case 1:
-		return ad.db.Where("bid = ?", targetID).Find(&act).Update("comment_num", act.CommentNum+1).Error
-	case 0:
-		return ad.db.Where("bid = ?", targetID).Find(&act).Update("comment_num", act.CommentNum-1).Error
-	default:
-		return errors.New("type error")
-	}
-}
-
-func (ad *ActDao) Collect(c *gin.Context, targetID string, t int) error {
-	var act model.Activity
-	switch t {
-	case 1:
-		return ad.db.Where("bid = ?", targetID).Find(&act).Update("Collect_num", act.CollectNum+1).Error
-	case 0:
-		return ad.db.Where("bid = ?", targetID).Find(&act).Update("Collect_num", act.CollectNum-1).Error
-	default:
-		return errors.New("type error")
-	}
 }
 
 func (ad *ActDao) FindActByBid(c *gin.Context, bid string) (model.Activity, error) {

@@ -9,4 +9,5 @@ type CreateCommentReq struct {
 	StudentID string `json:"studentid"`
 	Content   string `json:"content"`
 	ParentID  string `json:"parent_id"`
+	Subject   string `json:"subject"`
 }

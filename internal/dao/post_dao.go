@@ -17,9 +17,6 @@ type PostDaoHdl interface {
 	CreateDraft(ctx context.Context, draft *model.PostDraft) error
 	LoadDraft(ctx context.Context, bid string, sid string) (model.PostDraft, error)
 	FindPostByOwnerID(ctx context.Context, id string) ([]model.Post, error)
-	Like(c *gin.Context, bid string) error
-	Comment(c *gin.Context, bid string) error
-	Collect(c *gin.Context, bid string) error
 }
 
 type PostDao struct {
@@ -99,40 +96,6 @@ func (pd *PostDao) FindPostByOwnerID(ctx context.Context, id string) ([]model.Po
 	return posts, nil
 }
 
-func (pd *PostDao) Like(c *gin.Context, bid string, t int) error {
-	var post model.Post
-	switch t {
-	case 1:
-		return pd.db.Where("bid = ?", bid).First(&post).Update("like_num", post.LikeNum+1).Error
-	case 0:
-		return pd.db.Where("bid = ?", bid).First(&post).Update("like_num", post.LikeNum-1).Error
-	default:
-		return fmt.Errorf("type error")
-	}
-}
-
-func (pd *PostDao) Comment(c *gin.Context, bid string, t int) error {
-	var post model.Post
-	switch t {
-	case 1:
-		return pd.db.Where("bid = ?", bid).First(&post).Update("comment_num", post.CommentNum+1).Error
-	case 0:
-		return pd.db.Where("bid = ?", bid).First(&post).Update("comment_num", post.CommentNum-1).Error
-	default:
-		return fmt.Errorf("type error")
-	}
-}
-func (pd *PostDao) Collect(c *gin.Context, bid string, t int) error {
-	var post model.Post
-	switch t {
-	case 1:
-		return pd.db.Where("bid = ?", bid).First(&post).Update("collect_num", post.CollectNum+1).Error
-	case 0:
-		return pd.db.Where("bid = ?", bid).First(&post).Update("collect_num", post.CollectNum-1).Error
-	default:
-		return fmt.Errorf("type error")
-	}
-}
 func (pd *PostDao) FindPostByBid(c *gin.Context, bid string) (model.Post, error) {
 	var post model.Post
 	err := pd.db.Where("bid = ?", bid).First(&post).Error

@@ -40,7 +40,8 @@ func InitApp(e *gin.Engine) *server.Server {
 	actRouter := router.NewActRouter(e, actController, jwt)
 	postController := controller.NewPostController(postService)
 	postRouter := router.NewPostRouter(e, postController, jwt)
-	commentService := service.NewCommentService(commentDao, userDao)
+	interactionDao := dao.NewInteractionDao(db, commentDao, userDao, actDao, postDao)
+	commentService := service.NewCommentService(commentDao, userDao, interactionDao)
 	commentController := controller.NewCommentController(commentService)
 	commentRouter := router.NewCommentRouter(commentController, e, jwt)
 	numberDao := dao.NewNumberDao(db)
@@ -51,8 +52,11 @@ func InitApp(e *gin.Engine) *server.Server {
 	numberService := service.NewNumberService(numberDao, kafka)
 	numberController := controller.NewNumberController(numberService)
 	numberRouter := router.NewNumberRouter(numberController, e, jwt)
+	interactionService := service.NewInteractionService(interactionDao)
+	interactionController := controller.NewInteractionController(interactionService)
+	interactionRouter := router.NewInteractionRouter(e, interactionController, jwt)
 	cors := middleware.NewCors(e)
-	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, numberRouter, cors)
+	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, numberRouter, interactionRouter, cors)
 	serverServer := server.NewServer(routerRouter)
 	return serverServer
 }
