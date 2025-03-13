@@ -231,6 +231,8 @@ definitions:
         type: string
       target_id:
         type: string
+      type:
+        type: integer
     type: object
   req.NumberDelReq:
     properties:
@@ -455,12 +457,17 @@ info:
   description: 校灵通 API 文档
   title: EventGlide API
 paths:
-  /act/all:
+  /act/all/{id}:
     get:
       parameters:
       - description: token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: 用户id
+        in: path
+        name: id
         required: true
         type: string
       produces:
@@ -1130,6 +1137,68 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 收藏
+      tags:
+      - User
+  /user/collect/act:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 加载收藏请求
+        in: body
+        name: cr
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/resp.ListActivitiesResp'
+                  type: array
+              type: object
+      summary: 加载活动收藏
+      tags:
+      - User
+  /user/collect/post:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 加载收藏请求
+        in: body
+        name: cr
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/resp.ListPostsResp'
+                  type: array
+              type: object
+      summary: 加载帖子收藏
       tags:
       - User
   /user/comment:

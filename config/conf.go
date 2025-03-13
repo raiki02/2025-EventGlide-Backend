@@ -10,7 +10,7 @@ var (
 )
 
 func Init() error {
-	flag.StringVar(&ConfPath, "conf", "config/conf.yaml", "配置文件路径")
+	flag.StringVar(&ConfPath, "conf", "./config/conf.yaml", "配置文件路径")
 	flag.Parse()
 	viper.SetConfigFile(ConfPath)
 

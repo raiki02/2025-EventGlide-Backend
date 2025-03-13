@@ -23,4 +23,5 @@ type NumReq struct {
 	StudentID string `json:"studentid"`
 	TargetId  string `json:"target_id"`
 	Object    string `json:"object"`
+	Type      int    `json:"type"`
 }

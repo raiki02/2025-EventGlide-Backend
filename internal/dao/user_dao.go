@@ -59,9 +59,20 @@ func (ud *UserDao) FindUserByID(ctx *gin.Context, student_id string) model.User 
 func (ud *UserDao) Collect(ctx *gin.Context, obj string, bid string, student_id string) error {
 	switch obj {
 	case "activity":
-		return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Association("collect_act").Append(bid)
+		return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Update("collect_act", gorm.Expr("CONCAT(collect_act, ?)", bid+",")).Error
 	case "post":
-		return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Association("collect_post").Append(bid)
+		return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Update("collect_post", gorm.Expr("CONCAT(collect_post, ?)", bid+",")).Error
+	default:
+		return errors.New("object not found")
+	}
+}
+
+func (ud *UserDao) Like(ctx *gin.Context, obj string, bid string, student_id string) error {
+	switch obj {
+	case "activity":
+		return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Update("like_act", gorm.Expr("CONCAT(like_act, ?)", bid+",")).Error
+	case "post":
+		return ud.db.Model(&model.User{}).Where("student_id = ?", student_id).Update("like_post", gorm.Expr("CONCAT(like_post, ?)", bid+",")).Error
 	default:
 		return errors.New("object not found")
 	}

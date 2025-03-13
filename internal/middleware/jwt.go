@@ -121,3 +121,7 @@ func (c *Jwt) WrapCheckToken() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func (c *Jwt) storeSid(token string) error {
+
+}

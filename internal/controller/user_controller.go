@@ -20,6 +20,7 @@ type UserControllerHdl interface {
 	Like() gin.HandlerFunc
 	Comment() gin.HandlerFunc
 	Collect() gin.HandlerFunc
+	LoadCollect() gin.HandlerFunc
 }
 
 type UserController struct {
@@ -276,7 +277,7 @@ func (uc *UserController) Comment() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		err = uc.ush.Comment(c, cr.TargetId, cr.Object)
+		err = uc.ush.Comment(c, cr.TargetId, cr.Object, cr.Type)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "comment fail", nil))
 			return
@@ -306,5 +307,61 @@ func (uc *UserController) Collect() gin.HandlerFunc {
 			return
 		}
 		context.JSON(200, tools.ReturnMSG(context, "success", nil))
+	}
+}
+
+// @Tags User
+// @Summary 加载活动收藏
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param cr body req.NumReq true "加载收藏请求"
+// @Success 200 {object} resp.Resp{data=[]resp.ListActivitiesResp}
+// @Router /user/collect/act [post]
+func (uc *UserController) LoadCollectAct() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var cr req.NumReq
+		err := context.ShouldBindJSON(&cr)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, err.Error(), nil))
+			return
+		}
+		if cr.StudentID == "" {
+			context.JSON(200, tools.ReturnMSG(context, "studentid is empty", nil))
+			return
+		}
+		res, err := uc.ush.LoadCollectAct(context, cr.StudentID)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, "load collect fail", nil))
+			return
+		}
+		context.JSON(200, tools.ReturnMSG(context, "success", res))
+	}
+}
+
+// @Tags User
+// @Summary 加载帖子收藏
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param cr body req.NumReq true "加载收藏请求"
+// @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
+// @Router /user/collect/post [post]
+func (uc *UserController) LoadCollectPost() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var cr req.NumReq
+		err := context.ShouldBindJSON(&cr)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, err.Error(), nil))
+			return
+		}
+		if cr.StudentID == "" {
+			context.JSON(200, tools.ReturnMSG(context, "studentid is empty", nil))
+			return
+		}
+		res, err := uc.ush.LoadCollectPost(context, cr.StudentID)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, "load collect fail", nil))
+			return
+		}
+		context.JSON(200, tools.ReturnMSG(context, "success", res))
 	}
 }

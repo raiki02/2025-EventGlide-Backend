@@ -1,6 +1,7 @@
 package req
 
 type ActSearchReq struct {
+	StudentID  string   `json:"studentid"`
 	Type       []string `json:"type"`
 	Host       []string `json:"host"`
 	Location   []string `json:"location"`

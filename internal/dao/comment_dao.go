@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
 	"gorm.io/gorm"
@@ -44,7 +45,14 @@ func (cd *CommentDao) LoadAnswers(c *gin.Context, pid string) ([]model.Comment, 
 	return cmts, err
 }
 
-func (cd *CommentDao) Like(c *gin.Context, bid string) error {
+func (cd *CommentDao) Like(c *gin.Context, bid string, t int) error {
 	var cmt model.Comment
-	return cd.db.Where("bid = ?", bid).First(&cmt).Update("like_num", cmt.LikeNum+1).Error
+	switch t {
+	case 1:
+		return cd.db.Where("bid = ?", bid).First(&cmt).Update("like_num", cmt.LikeNum+1).Error
+	case 0:
+		return cd.db.Where("bid = ?", bid).First(&cmt).Update("like_num", cmt.LikeNum-1).Error
+	default:
+		return errors.New("type error")
+	}
 }

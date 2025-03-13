@@ -98,12 +98,12 @@ func (ps *PostService) FindPostByOwnerID(c *gin.Context, id string) ([]resp.List
 func (ps *PostService) ToListResp(c *gin.Context, posts []model.Post) []resp.ListPostsResp {
 	var res []resp.ListPostsResp
 	for _, post := range posts {
-		res = append(res, ps.toResp(c, post))
+		res = append(res, ps.toListPostResp(c, post))
 	}
 	return res
 }
 
-func (ps *PostService) toResp(c *gin.Context, post model.Post) resp.ListPostsResp {
+func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.ListPostsResp {
 	user := ps.ud.FindUserByID(c, post.StudentID)
 	var res resp.ListPostsResp
 	res.UserInfo.School = user.School

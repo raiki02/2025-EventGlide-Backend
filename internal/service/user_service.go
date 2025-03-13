@@ -9,6 +9,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/middleware"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/tools"
 	"github.com/spf13/viper"
 	"io"
 	"net"
@@ -42,9 +43,11 @@ type UserService struct {
 	jwth *middleware.Jwt
 	cSvc *ccnuService
 	iuh  *ImgUploader
+	as   *ActivityService
+	ps   *PostService
 }
 
-func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, cdh *dao.CommentDao, jwth *middleware.Jwt, iuh *ImgUploader, cSvc *ccnuService) *UserService {
+func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, cdh *dao.CommentDao, jwth *middleware.Jwt, cSvc *ccnuService, iuh *ImgUploader, as *ActivityService, ps *PostService) *UserService {
 	return &UserService{
 		udh:  udh,
 		adh:  adh,
@@ -53,6 +56,8 @@ func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, cdh *da
 		jwth: jwth,
 		cSvc: cSvc,
 		iuh:  iuh,
+		as:   as,
+		ps:   ps,
 	}
 }
 
@@ -126,20 +131,22 @@ func (us *UserService) UpdateUsername(ctx *gin.Context, studentId string, name s
 	return nil
 }
 
-func (us *UserService) SearchUserAct(ctx *gin.Context, studentId string, keyword string) ([]model.Activity, error) {
+func (us *UserService) SearchUserAct(ctx *gin.Context, studentId string, keyword string) ([]resp.ListActivitiesResp, error) {
 	acts, err := us.adh.FindActByUser(ctx, studentId, keyword)
 	if err != nil {
 		return nil, err
 	}
-	return acts, nil
+	res := us.as.ToListResp(ctx, acts, studentId)
+	return res, nil
 }
 
-func (us *UserService) SearchUserPost(ctx *gin.Context, studentId string, keyword string) ([]model.Post, error) {
+func (us *UserService) SearchUserPost(ctx *gin.Context, studentId string, keyword string) ([]resp.ListPostsResp, error) {
 	posts, err := us.pdh.FindPostByUser(ctx, studentId, keyword)
 	if err != nil {
 		return nil, err
 	}
-	return posts, nil
+	res := us.ps.ToListResp(ctx, posts)
+	return res, nil
 }
 
 //func genRandomAvatar(c *gin.Context) string {
@@ -166,22 +173,24 @@ func (us *UserService) GenQINIUToken(ctx *gin.Context) resp.ImgBedResp {
 func (us *UserService) Like(ctx *gin.Context, cr req.NumReq) error {
 	switch cr.Object {
 	case "activity":
-		return us.adh.Like(ctx, cr.TargetId)
+		us.udh.Like(ctx, cr.Object, cr.TargetId, cr.StudentID)
+		return us.adh.Like(ctx, cr.TargetId, cr.Type)
 	case "post":
-		return us.pdh.Like(ctx, cr.TargetId)
+		us.udh.Like(ctx, cr.Object, cr.TargetId, cr.StudentID)
+		return us.pdh.Like(ctx, cr.TargetId, cr.Type)
 	case "comment":
-		return us.cdh.Like(ctx, cr.TargetId)
+		return us.cdh.Like(ctx, cr.TargetId, cr.Type)
 	default:
 		return errors.New("Object not found")
 	}
 }
 
-func (us *UserService) Comment(ctx *gin.Context, targetID string, Object string) error {
+func (us *UserService) Comment(ctx *gin.Context, targetID string, Object string, Type int) error {
 	switch Object {
 	case "activity":
-		return us.adh.Comment(ctx, targetID)
+		return us.adh.Comment(ctx, targetID, Type)
 	case "post":
-		return us.pdh.Comment(ctx, targetID)
+		return us.pdh.Comment(ctx, targetID, Type)
 	default:
 		return errors.New("Object not found")
 	}
@@ -191,13 +200,47 @@ func (us *UserService) Collect(ctx *gin.Context, cr req.NumReq) error {
 	switch cr.Object {
 	case "activity":
 		us.udh.Collect(ctx, cr.Object, cr.TargetId, cr.StudentID)
-		return us.adh.Collect(ctx, cr.TargetId)
+		return us.adh.Collect(ctx, cr.TargetId, cr.Type)
 	case "post":
 		us.udh.Collect(ctx, cr.Object, cr.TargetId, cr.StudentID)
-		return us.pdh.Collect(ctx, cr.TargetId)
+		return us.pdh.Collect(ctx, cr.TargetId, cr.Type)
 	default:
 		return errors.New("Object not found")
 	}
+}
+
+func (us *UserService) LoadCollectAct(ctx *gin.Context, studentId string) ([]resp.ListActivitiesResp, error) {
+	user, err := us.udh.GetUserInfo(ctx, studentId)
+	if err != nil {
+		return nil, err
+	}
+	var res []resp.ListActivitiesResp
+	ActIDs := tools.StringToSlice(user.CollectAct)
+	for _, id := range ActIDs {
+		acts, err := us.adh.FindActByBid(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, us.as.toListActResp(ctx, &acts, studentId))
+	}
+	return res, nil
+}
+
+func (us *UserService) LoadCollectPost(ctx *gin.Context, studentId string) ([]resp.ListPostsResp, error) {
+	user, err := us.udh.GetUserInfo(ctx, studentId)
+	if err != nil {
+		return nil, err
+	}
+	var res []resp.ListPostsResp
+	PostIDs := tools.StringToSlice(user.CollectPost)
+	for _, id := range PostIDs {
+		posts, err := us.pdh.FindPostByBid(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, us.ps.toListPostResp(ctx, posts))
+	}
+	return res, nil
 }
 
 //---一站式账号登录------------------------------------------------------------

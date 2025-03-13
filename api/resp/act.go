@@ -42,4 +42,7 @@ type ListActivitiesResp struct {
 	LikeNum    int `json:"likeNum"`
 	CollectNum int `json:"collectNum"`
 	CommentNum int `json:"commentNum"`
+
+	IsLike    string `json:"isLike"`
+	IsCollect string `json:"isCollect"`
 }

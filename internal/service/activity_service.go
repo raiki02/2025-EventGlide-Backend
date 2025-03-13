@@ -8,6 +8,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
+	"strings"
 	"time"
 )
 
@@ -69,30 +70,30 @@ func (as *ActivityService) LoadDraft(c *gin.Context, dReq req.DraftReq) (resp.Cr
 	return as.toCreateResp(c, d), nil
 }
 
-func (as *ActivityService) FindActBySearches(c *gin.Context, req *req.ActSearchReq) ([]resp.ListActivitiesResp, error) {
+func (as *ActivityService) FindActBySearches(c *gin.Context, req *req.ActSearchReq, id string) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.FindActBySearches(c, req)
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts)
+	res := as.ToListResp(c, acts, id)
 	return res, nil
 }
 
-func (as *ActivityService) FindActByDate(c *gin.Context, date string) ([]resp.ListActivitiesResp, error) {
+func (as *ActivityService) FindActByDate(c *gin.Context, date string, id string) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.FindActByDate(c, date)
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts)
+	res := as.ToListResp(c, acts, id)
 	return res, nil
 }
 
-func (as *ActivityService) FindActByName(c *gin.Context, name string) ([]resp.ListActivitiesResp, error) {
+func (as *ActivityService) FindActByName(c *gin.Context, name string, id string) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.FindActByName(c, name)
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts)
+	res := as.ToListResp(c, acts, id)
 	return res, nil
 }
 
@@ -101,30 +102,42 @@ func (as *ActivityService) FindActByOwnerID(c *gin.Context, id string) ([]resp.L
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts)
+	res := as.ToListResp(c, acts, id)
 	return res, nil
 }
 
-func (as *ActivityService) ListAllActs(c *gin.Context) ([]resp.ListActivitiesResp, error) {
+func (as *ActivityService) ListAllActs(c *gin.Context, id string) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.ListAllActs(c)
 	if err != nil {
 		return nil, err
 	}
-	res := as.ToListResp(c, acts)
+	res := as.ToListResp(c, acts, id)
 	return res, nil
 }
 
-func (as *ActivityService) ToListResp(c *gin.Context, acts []model.Activity) []resp.ListActivitiesResp {
+func (as *ActivityService) ToListResp(c *gin.Context, acts []model.Activity, id string) []resp.ListActivitiesResp {
 	var res []resp.ListActivitiesResp
 	for _, act := range acts {
-		res = append(res, as.toResp(c, act))
+		res = append(res, as.toListActResp(c, &act, id))
 	}
 	return res
 }
 
-func (as *ActivityService) toResp(c *gin.Context, act model.Activity) resp.ListActivitiesResp {
+// 传入sid，act加like/coll字段，：yes
+func (as *ActivityService) toListActResp(c *gin.Context, act *model.Activity, id string) resp.ListActivitiesResp {
 
 	var res resp.ListActivitiesResp
+	searcher := as.ud.FindUserByID(c, id)
+	if strings.Contains(searcher.CollectAct, id) {
+		res.IsCollect = "true"
+	} else {
+		res.IsCollect = "false"
+	}
+	if strings.Contains(searcher.LikeAct, id) {
+		res.IsLike = "true"
+	} else {
+		res.IsLike = "false"
+	}
 	user := as.ud.FindUserByID(c, act.StudentID)
 	res.UserInfo.School = user.School
 	res.UserInfo.Username = user.Name

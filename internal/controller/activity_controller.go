@@ -94,7 +94,7 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 // @Param draft body req.DraftReq true "加载草稿"
 // @Success 200 {object} resp.Resp{data=resp.CreateActivityResp}
 // @Router /act/load [post]
-func (ac ActController) LoadDraft() gin.HandlerFunc {
+func (ac *ActController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dReq req.DraftReq
 		err := c.ShouldBindJSON(&dReq)
@@ -117,15 +117,16 @@ func (ac ActController) LoadDraft() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Param name path string true "名称"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/name/{name} [get]
+// @Router /act/name/{name}/{id} [get]
 func (ac *ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		n := c.Param("name")
-		if n == "" {
+		id := c.Param("id")
+		if n == "" || id == "" {
 			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
-		as, err := ac.as.FindActByName(c, n)
+		as, err := ac.as.FindActByName(c, n, id)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -149,7 +150,7 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		as, err := ac.as.FindActBySearches(c, &actReq)
+		as, err := ac.as.FindActBySearches(c, &actReq, actReq.StudentID)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -164,16 +165,18 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Param date path string true "日期"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/date/{date} [get]
+// @Router /act/date/{date}/{id} [get]
 func (ac *ActController) FindActByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 02-01
 		d := c.Param("date")
-		if d == "" {
+		id := c.Param("id")
+
+		if d == "" || id == "" {
 			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
 			return
 		}
-		as, err := ac.as.FindActByDate(c, d)
+		as, err := ac.as.FindActByDate(c, d, id)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -209,11 +212,17 @@ func (ac *ActController) FindActByOwnerID() gin.HandlerFunc {
 // @Summary 列出所有活动
 // @Produce json
 // @Param Authorization header string true "token"
+// @Param id path string true "用户id"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/all [get]
+// @Router /act/all/{id} [get]
 func (ac *ActController) ListAllActs() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		as, err := ac.as.ListAllActs(c)
+		id := c.Param("id")
+		if id == "" {
+			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
+			return
+		}
+		as, err := ac.as.ListAllActs(c, id)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return

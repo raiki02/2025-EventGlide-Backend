@@ -7,5 +7,7 @@ type User struct {
 	Avatar      string `gorm:"column:avatar;type:varchar(255);not null" json:"avatar"`
 	School      string `gorm:"column:school;type:varchar(255);not null" json:"school"`
 	CollectAct  string `gorm:"column:collect_act;type:text" json:"collectact"`
+	LikeAct     string `gorm:"column:like_act;type:text" json:"likeact"`
 	CollectPost string `gorm:"column:collect_post;type:text" json:"collectpost"`
+	LikePost    string `gorm:"column:like_post;type:text" json:"likepost"`
 }
