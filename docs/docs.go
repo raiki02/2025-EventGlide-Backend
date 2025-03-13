@@ -462,49 +462,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/comment/answer/{id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Comment"
-                ],
-                "summary": "加载回复",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "目标id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/resp.Resp"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/resp.CommentResp"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/comment/create": {
             "post": {
                 "produces": [
@@ -632,113 +589,6 @@ const docTemplate = `{
                                             "items": {
                                                 "$ref": "#/definitions/resp.CommentResp"
                                             }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/number/create": {
-            "post": {
-                "tags": [
-                    "Number"
-                ],
-                "summary": "Send a inteaction",
-                "parameters": [
-                    {
-                        "description": "NumberSendReq",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.NumberSendReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
-        "/number/delete": {
-            "post": {
-                "tags": [
-                    "Number"
-                ],
-                "summary": "Delete a inteaction",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "NumberDelReq",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.NumberDelReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/resp.Resp"
-                        }
-                    }
-                }
-            }
-        },
-        "/number/search": {
-            "post": {
-                "tags": [
-                    "Number"
-                ],
-                "summary": "Search inteactions",
-                "parameters": [
-                    {
-                        "description": "NumberSearchReq",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.NumberSearchReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/resp.Resp"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/resp.NumberSearchResp"
                                         }
                                     }
                                 }
@@ -1680,32 +1530,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Number": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "from_sid": {
-                    "type": "string"
-                },
-                "isRead": {
-                    "type": "boolean"
-                },
-                "object": {
-                    "type": "string"
-                },
-                "to_sid": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Post": {
             "type": "object",
             "properties": {
@@ -1985,51 +1809,6 @@ const docTemplate = `{
                 }
             }
         },
-        "req.NumberDelReq": {
-            "type": "object",
-            "properties": {
-                "object": {
-                    "type": "string"
-                },
-                "studentid": {
-                    "type": "string"
-                }
-            }
-        },
-        "req.NumberSearchReq": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string"
-                },
-                "object": {
-                    "type": "string"
-                },
-                "studentid": {
-                    "type": "string"
-                }
-            }
-        },
-        "req.NumberSendReq": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "from_sid": {
-                    "type": "string"
-                },
-                "object": {
-                    "type": "string"
-                },
-                "to_sid": {
-                    "type": "string"
-                }
-            }
-        },
         "req.UpdateNameReq": {
             "type": "object",
             "properties": {
@@ -2066,6 +1845,9 @@ const docTemplate = `{
         "resp.CommentResp": {
             "type": "object",
             "properties": {
+                "bid": {
+                    "type": "string"
+                },
                 "commented_pos": {
                     "type": "string"
                 },
@@ -2091,6 +1873,40 @@ const docTemplate = `{
                 },
                 "likeNum": {
                     "type": "integer"
+                },
+                "reply": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "bid": {
+                                "type": "string"
+                            },
+                            "reply_content": {
+                                "type": "string"
+                            },
+                            "reply_creator": {
+                                "type": "object",
+                                "properties": {
+                                    "avatar": {
+                                        "type": "string"
+                                    },
+                                    "studentid": {
+                                        "type": "string"
+                                    },
+                                    "username": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "reply_pos": {
+                                "type": "string"
+                            },
+                            "reply_time": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 },
                 "replyNum": {
                     "type": "integer"
@@ -2304,20 +2120,6 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
-                }
-            }
-        },
-        "resp.NumberSearchResp": {
-            "type": "object",
-            "properties": {
-                "nums": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Number"
-                    }
-                },
-                "total": {
-                    "type": "integer"
                 }
             }
         },

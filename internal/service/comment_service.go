@@ -42,14 +42,22 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 	if err != nil {
 		return resp.CommentResp{}
 	}
+	replys, err := cs.cd.LoadAnswers(c, cmt.Bid)
+	if err != nil {
+		return resp.CommentResp{}
+	}
 	res.Content = cmt.Content
 	res.CommentedTime = cmt.CreatedAt.String()
+	res.Bid = cmt.Bid
 	res.CommentedPos = cmt.Position
 	res.LikeNum = cmt.LikeNum
 	res.ReplyNum = cmt.ReplyNum
 	res.Creator.StudentID = user.StudentID
 	res.Creator.Username = user.Name
 	res.Creator.Avatar = user.Avatar
+	for _, rep := range replys {
+		cs.processReply(c, &res, &rep)
+	}
 	return res
 }
 
@@ -92,13 +100,34 @@ func (cs *CommentService) LoadComments(c *gin.Context, parentid string) ([]resp.
 	if err != nil {
 		return nil, err
 	}
-	return cs.toResps(c, cmts), nil
+	res := cs.toResps(c, cmts)
+	return res, nil
 }
 
-func (cs *CommentService) LoadAnswers(c *gin.Context, parentid string) ([]resp.CommentResp, error) {
-	cmts, err := cs.cd.LoadAnswers(c, parentid)
-	if err != nil {
-		return nil, err
+func (cs *CommentService) processReply(c *gin.Context, r *resp.CommentResp, rep *model.Comment) {
+	var tmp struct {
+		Reply struct {
+			Bid          string `json:"bid"`
+			ReplyCreator struct {
+				StudentID string `json:"studentid"`
+				Username  string `json:"username"`
+				Avatar    string `json:"avatar"`
+			} `json:"reply_creator"`
+			ReplyContent string `json:"reply_content"`
+			ReplyTime    string `json:"reply_time"`
+			ReplyPos     string `json:"reply_pos"`
+		} `json:"reply"`
 	}
-	return cs.toResps(c, cmts), nil
+	tmp.Reply.Bid = rep.Bid
+	tmp.Reply.ReplyTime = rep.CreatedAt.String()
+	tmp.Reply.ReplyContent = rep.Content
+	tmp.Reply.ReplyPos = rep.Position
+	user, err := cs.ud.GetUserInfo(c, rep.StudentID)
+	if err != nil {
+		return
+	}
+	tmp.Reply.ReplyCreator.StudentID = user.StudentID
+	tmp.Reply.ReplyCreator.Username = user.Name
+	tmp.Reply.ReplyCreator.Avatar = user.Avatar
+	r.Reply = append(r.Reply, tmp.Reply)
 }

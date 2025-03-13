@@ -132,25 +132,3 @@ func (cc *CommentController) LoadComments() gin.HandlerFunc {
 
 	}
 }
-
-// @Tags Comment
-// @Summary 加载回复
-// @Produce json
-// @Param id path string true "目标id"
-// @Success 200 {object} resp.Resp{data=[]resp.CommentResp}
-// @Router /comment/answer/{id} [get]
-func (cc *CommentController) LoadAnswers() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		id := c.Param("id")
-		if id == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
-			return
-		}
-		res, err := cc.cs.LoadAnswers(c, id)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", res))
-	}
-}

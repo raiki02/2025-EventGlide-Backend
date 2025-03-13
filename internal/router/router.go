@@ -41,7 +41,7 @@ func (r *Router) RegisterRouters() {
 	r.ar.RegisterActRouters()
 	r.pr.RegisterPostRouters()
 	r.cr.RegisterCommentRouter()
-	r.nr.RegisterNumberRouters()
+	//r.nr.RegisterNumberRouters()
 	r.RegisterSwagger()
 }
 

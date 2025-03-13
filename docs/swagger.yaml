@@ -40,23 +40,6 @@ definitions:
       type:
         type: string
     type: object
-  model.Number:
-    properties:
-      action:
-        type: string
-      content:
-        type: string
-      created_at:
-        type: string
-      from_sid:
-        type: string
-      isRead:
-        type: boolean
-      object:
-        type: string
-      to_sid:
-        type: string
-    type: object
   model.Post:
     properties:
       bid:
@@ -238,35 +221,6 @@ definitions:
       type:
         type: integer
     type: object
-  req.NumberDelReq:
-    properties:
-      object:
-        type: string
-      studentid:
-        type: string
-    type: object
-  req.NumberSearchReq:
-    properties:
-      action:
-        type: string
-      object:
-        type: string
-      studentid:
-        type: string
-    type: object
-  req.NumberSendReq:
-    properties:
-      action:
-        type: string
-      content:
-        type: string
-      from_sid:
-        type: string
-      object:
-        type: string
-      to_sid:
-        type: string
-    type: object
   req.UpdateNameReq:
     properties:
       new_name:
@@ -290,6 +244,8 @@ definitions:
     type: object
   resp.CommentResp:
     properties:
+      bid:
+        type: string
       commented_pos:
         type: string
       commented_time:
@@ -307,6 +263,28 @@ definitions:
         type: object
       likeNum:
         type: integer
+      reply:
+        items:
+          properties:
+            bid:
+              type: string
+            reply_content:
+              type: string
+            reply_creator:
+              properties:
+                avatar:
+                  type: string
+                studentid:
+                  type: string
+                username:
+                  type: string
+              type: object
+            reply_pos:
+              type: string
+            reply_time:
+              type: string
+          type: object
+        type: array
       replyNum:
         type: integer
     type: object
@@ -446,15 +424,6 @@ definitions:
         type: string
       token:
         type: string
-    type: object
-  resp.NumberSearchResp:
-    properties:
-      nums:
-        items:
-          $ref: '#/definitions/model.Number'
-        type: array
-      total:
-        type: integer
     type: object
   resp.Resp:
     properties:
@@ -735,31 +704,6 @@ paths:
       summary: 回复评论
       tags:
       - Comment
-  /comment/answer/{id}:
-    get:
-      parameters:
-      - description: 目标id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/resp.Resp'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/resp.CommentResp'
-                  type: array
-              type: object
-      summary: 加载回复
-      tags:
-      - Comment
   /comment/create:
     post:
       parameters:
@@ -843,72 +787,6 @@ paths:
       summary: 加载评论
       tags:
       - Comment
-  /number/create:
-    post:
-      parameters:
-      - description: NumberSendReq
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/req.NumberSendReq'
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/resp.Resp'
-      summary: Send a inteaction
-      tags:
-      - Number
-  /number/delete:
-    post:
-      parameters:
-      - description: token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: NumberDelReq
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/req.NumberDelReq'
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/resp.Resp'
-      summary: Delete a inteaction
-      tags:
-      - Number
-  /number/search:
-    post:
-      parameters:
-      - description: NumberSearchReq
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/req.NumberSearchReq'
-      - description: token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/resp.Resp'
-            - properties:
-                data:
-                  $ref: '#/definitions/resp.NumberSearchResp'
-              type: object
-      summary: Search inteactions
-      tags:
-      - Number
   /post/all:
     get:
       parameters:

@@ -23,13 +23,3 @@ func NewNumberRouter(nc *controller.NumberController, e *gin.Engine, j *middlewa
 		j:  j,
 	}
 }
-
-func (nr *NumberRouter) RegisterNumberRouters() {
-	number := nr.e.Group("/number")
-	number.Use(nr.j.WrapCheckToken())
-	{
-		number.POST("/create", nr.nc.Send())
-		number.POST("/delete", nr.nc.Delete())
-		number.POST("/search", nr.nc.Search())
-	}
-}
