@@ -43,7 +43,6 @@ func (c *Jwt) GenToken(ctx *gin.Context, sid string) string {
 	if err != nil {
 		return ""
 	}
-
 	return t
 }
 

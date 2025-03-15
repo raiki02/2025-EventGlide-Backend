@@ -1,5 +1,7 @@
-.PHONY: init
 
-init:
+.PHONY: chore mocks
+
+chroe:
 	swag init
 	wire gen .
+

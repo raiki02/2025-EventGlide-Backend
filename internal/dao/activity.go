@@ -41,18 +41,17 @@ func (ad *ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 }
 
 func (ad *ActDao) CreateDraft(c *gin.Context, d *model.ActivityDraft) error {
-	var draft model.ActivityDraft
-	ad.db.Where("student_id = ?", d.StudentID).Delete(&draft)
+	ad.db.Where("student_id = ?", d.StudentID).Delete(&model.ActivityDraft{})
 	return ad.db.Create(d).Error
 }
 
 func (ad *ActDao) LoadDraft(c *gin.Context, s string) (model.ActivityDraft, error) {
 	var d model.ActivityDraft
-	if ad.db.Where("student_id = ? ", s).Find(&d).RowsAffected == 1 {
-		return d, nil
-	} else {
-		return model.ActivityDraft{}, errors.New("draft not exist")
+	err := ad.db.Where("student_id = ?", s).Find(&d).Error
+	if err != nil {
+		return model.ActivityDraft{}, err
 	}
+	return d, nil
 }
 
 // TODO: 换成按页展示，每页返回固定个数活动

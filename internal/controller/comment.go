@@ -114,6 +114,7 @@ func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 // @Summary 加载评论
 // @Produce json
 // @Param id path string true "目标id"
+// @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=[]resp.CommentResp}
 // @Router /comment/load/{id} [get]
 func (cc *CommentController) LoadComments() gin.HandlerFunc {

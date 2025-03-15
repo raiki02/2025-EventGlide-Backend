@@ -115,8 +115,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/act/date/{date}": {
-            "get": {
+        "/act/date": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -133,11 +133,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "日期",
+                        "description": "日期查找",
                         "name": "date",
-                        "in": "path",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.FindActByDateReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -216,7 +218,7 @@ const docTemplate = `{
             }
         },
         "/act/load": {
-            "post": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -234,15 +236,6 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "description": "加载草稿",
-                        "name": "draft",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.DraftReq"
-                        }
                     }
                 ],
                 "responses": {
@@ -267,8 +260,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/act/name/{name}": {
-            "get": {
+        "/act/name": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -285,11 +278,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "名称",
+                        "description": "活动名称",
                         "name": "name",
-                        "in": "path",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.FindActByNameReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -571,6 +566,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -602,6 +604,9 @@ const docTemplate = `{
             "post": {
                 "consumes": [
                     "application/json"
+                ],
+                "tags": [
+                    "Interaction"
                 ],
                 "summary": "收藏",
                 "parameters": [
@@ -637,6 +642,9 @@ const docTemplate = `{
                 "consumes": [
                     "application/json"
                 ],
+                "tags": [
+                    "Interaction"
+                ],
                 "summary": "取消收藏",
                 "parameters": [
                     {
@@ -671,6 +679,9 @@ const docTemplate = `{
                 "consumes": [
                     "application/json"
                 ],
+                "tags": [
+                    "Interaction"
+                ],
                 "summary": "取消点赞",
                 "parameters": [
                     {
@@ -704,6 +715,9 @@ const docTemplate = `{
             "post": {
                 "consumes": [
                     "application/json"
+                ],
+                "tags": [
+                    "Interaction"
                 ],
                 "summary": "点赞",
                 "parameters": [
@@ -975,7 +989,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.DraftReq"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1790,13 +1804,18 @@ const docTemplate = `{
                 }
             }
         },
-        "req.DraftReq": {
+        "req.FindActByDateReq": {
             "type": "object",
             "properties": {
-                "bid": {
+                "date": {
                     "type": "string"
-                },
-                "studentid": {
+                }
+            }
+        },
+        "req.FindActByNameReq": {
+            "type": "object",
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }

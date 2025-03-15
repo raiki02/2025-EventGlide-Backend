@@ -61,8 +61,8 @@ func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActReq) (resp.C
 	return as.toCreateResp(c, d), nil
 }
 
-func (as *ActivityService) LoadDraft(c *gin.Context, dReq req.DraftReq) (resp.CreateActivityResp, error) {
-	d, err := as.ad.LoadDraft(c, dReq.Sid)
+func (as *ActivityService) LoadDraft(c *gin.Context, sid string) (resp.CreateActivityResp, error) {
+	d, err := as.ad.LoadDraft(c, sid)
 	if err != nil {
 		return resp.CreateActivityResp{}, err
 	}
@@ -123,7 +123,6 @@ func (as *ActivityService) ToListResp(c *gin.Context, acts []model.Activity) []r
 	return res
 }
 
-// 传入sid，act加like/coll字段，：yes
 func (as *ActivityService) toListActResp(c *gin.Context, act *model.Activity) resp.ListActivitiesResp {
 
 	var res resp.ListActivitiesResp
@@ -154,6 +153,7 @@ func (as *ActivityService) toListActResp(c *gin.Context, act *model.Activity) re
 	res.Type = act.Type
 	res.LikeNum = act.LikeNum
 	res.CommentNum = act.CommentNum
+	res.CollectNum = act.CollectNum
 	res.IfRegister = act.IfRegister
 	res.ShowImg = tools.StringToSlice(act.ShowImg)
 

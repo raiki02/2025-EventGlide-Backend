@@ -7,10 +7,10 @@ import (
 
 func InitRedis() *redis.Client {
 	addr := viper.GetString("redis.addr")
-	//pw := viper.GetString("redis.password")
+	pw := viper.GetString("redis.password")
 	rdb := redis.NewClient(&redis.Options{
-		Addr: addr,
-		//Password: pw,
+		Addr:     addr,
+		Password: pw,
 	})
 	return rdb
 }

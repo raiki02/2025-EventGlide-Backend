@@ -17,7 +17,7 @@ func NewInteractionController(is *service.InteractionService) *InteractionContro
 	}
 }
 
-// @Tag Interaction
+// @Tags Interaction
 // @Summary 点赞
 // @Accept json
 // @Param Authorization header string true "token"
@@ -45,7 +45,7 @@ func (ic *InteractionController) Like() gin.HandlerFunc {
 	}
 }
 
-// @Tag Interaction
+// @Tags Interaction
 // @Summary 取消点赞
 // @Accept json
 // @Param Authorization header string true "token"
@@ -73,7 +73,7 @@ func (ic *InteractionController) Dislike() gin.HandlerFunc {
 	}
 }
 
-// @Tag Interaction
+// @Tags Interaction
 // @Summary 收藏
 // @Accept json
 // @Param Authorization header string true "token"
@@ -101,7 +101,7 @@ func (ic *InteractionController) Collect() gin.HandlerFunc {
 	}
 }
 
-// @Tag Interaction
+// @Tags Interaction
 // @Summary 取消收藏
 // @Accept json
 // @Param Authorization header string true "token"

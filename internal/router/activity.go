@@ -30,9 +30,9 @@ func (ar ActRouter) RegisterActRouters() {
 	{
 		act.POST("/create", ar.ach.NewAct())
 		act.POST("/draft", ar.ach.NewDraft())
-		act.POST("/load", ar.ach.LoadDraft())
-		act.GET("/name/:name", ar.ach.FindActByName())
-		act.GET("/date/:date", ar.ach.FindActByDate())
+		act.GET("/load", ar.ach.LoadDraft())
+		act.POST("/name", ar.ach.FindActByName())
+		act.POST("/date", ar.ach.FindActByDate())
 		act.POST("/search", ar.ach.FindActBySearches())
 		act.GET("/own/:id", ar.ach.FindActByOwnerID())
 		act.GET("/all/:id", ar.ach.ListAllActs())

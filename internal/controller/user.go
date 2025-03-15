@@ -49,6 +49,7 @@ func (uc *UserController) Login() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
+
 		if lr.StudentID == "" || lr.Password == "" {
 			c.JSON(200, tools.ReturnMSG(c, "studentid or password is empty", nil))
 			return

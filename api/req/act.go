@@ -33,3 +33,11 @@ type CreateActReq struct {
 		} `json:"signer"`
 	} `json:"labelform"`
 }
+
+type FindActByNameReq struct {
+	Name string `json:"name"`
+}
+
+type FindActByDateReq struct {
+	Date string `json:"date"`
+}

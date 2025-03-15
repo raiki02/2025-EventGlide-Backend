@@ -193,11 +193,14 @@ definitions:
       target_id:
         type: string
     type: object
-  req.DraftReq:
+  req.FindActByDateReq:
     properties:
-      bid:
+      date:
         type: string
-      studentid:
+    type: object
+  req.FindActByNameReq:
+    properties:
+      name:
         type: string
     type: object
   req.FindPostReq:
@@ -508,19 +511,20 @@ paths:
       summary: 创建活动
       tags:
       - Activity
-  /act/date/{date}:
-    get:
+  /act/date:
+    post:
       parameters:
       - description: token
         in: header
         name: Authorization
         required: true
         type: string
-      - description: 日期
-        in: path
+      - description: 日期查找
+        in: body
         name: date
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.FindActByDateReq'
       produces:
       - application/json
       responses:
@@ -569,7 +573,7 @@ paths:
       tags:
       - Activity
   /act/load:
-    post:
+    get:
       consumes:
       - application/json
       parameters:
@@ -578,12 +582,6 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 加载草稿
-        in: body
-        name: draft
-        required: true
-        schema:
-          $ref: '#/definitions/req.DraftReq'
       produces:
       - application/json
       responses:
@@ -599,19 +597,20 @@ paths:
       summary: 加载活动草稿
       tags:
       - Activity
-  /act/name/{name}:
-    get:
+  /act/name:
+    post:
       parameters:
       - description: token
         in: header
         name: Authorization
         required: true
         type: string
-      - description: 名称
-        in: path
+      - description: 活动名称
+        in: body
         name: name
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/req.FindActByNameReq'
       produces:
       - application/json
       responses:
@@ -781,6 +780,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -820,6 +824,8 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 收藏
+      tags:
+      - Interaction
   /interaction/discollect:
     post:
       consumes:
@@ -842,6 +848,8 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 取消收藏
+      tags:
+      - Interaction
   /interaction/dislike:
     post:
       consumes:
@@ -864,6 +872,8 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 取消点赞
+      tags:
+      - Interaction
   /interaction/like:
     post:
       consumes:
@@ -886,6 +896,8 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 点赞
+      tags:
+      - Interaction
   /post/all:
     get:
       parameters:
@@ -1035,7 +1047,7 @@ paths:
         name: draft
         required: true
         schema:
-          $ref: '#/definitions/req.DraftReq'
+          type: string
       produces:
       - application/json
       responses:

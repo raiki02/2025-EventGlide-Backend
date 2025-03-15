@@ -19,10 +19,10 @@ func InitApp(e *gin.Engine) *server.Server {
 	wire.Build(
 		ioc.InitDB,
 		ioc.InitRedis,
-		ioc.NewKafkaClient,
-		ioc.NewProducer,
-		ioc.NewConsumer,
-		ioc.NewKafka,
+		//ioc.NewKafkaClient,
+		//ioc.NewProducer,
+		//ioc.NewConsumer,
+		//ioc.NewKafka,
 
 		cache.NewCache,
 
@@ -31,7 +31,7 @@ func InitApp(e *gin.Engine) *server.Server {
 		dao.NewUserDao,
 		dao.NewPostDao,
 		dao.NewCommentDao,
-		dao.NewNumberDao,
+		//dao.NewNumberDao,
 
 		service.NewInteractionService,
 		service.NewImgUploader,
@@ -39,7 +39,7 @@ func InitApp(e *gin.Engine) *server.Server {
 		service.NewUserService,
 		service.NewCCNUService,
 		service.NewCommentService,
-		service.NewNumberService,
+		//service.NewNumberService,
 		service.NewActivityService,
 
 		middleware.NewJwt,
@@ -50,14 +50,14 @@ func InitApp(e *gin.Engine) *server.Server {
 		controller.NewPostController,
 		controller.NewUserController,
 		controller.NewCommentController,
-		controller.NewNumberController,
+		//controller.NewNumberController,
 
 		router.NewInteractionRouter,
 		router.NewActRouter,
 		router.NewCommentRouter,
 		router.NewPostRouter,
 		router.NewUserRouter,
-		router.NewNumberRouter,
+		//router.NewNumberRouter,
 		router.NewRouter,
 
 		server.NewServer,

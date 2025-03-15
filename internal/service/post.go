@@ -79,8 +79,8 @@ func (ps *PostService) CreateDraft(c *gin.Context, r *req.CreatePostReq) (resp.C
 	return ps.toCreateResp(c, draft), nil
 }
 
-func (ps *PostService) LoadDraft(c *gin.Context, req req.DraftReq) (resp.CreatePostResp, error) {
-	draft, err := ps.pdh.LoadDraft(c, req.Bid, req.Sid)
+func (ps *PostService) LoadDraft(c *gin.Context, sid string) (resp.CreatePostResp, error) {
+	draft, err := ps.pdh.LoadDraft(c, sid)
 	if err != nil {
 		return resp.CreatePostResp{}, err
 	}
@@ -114,7 +114,7 @@ func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.List
 	} else {
 		res.IsCollect = "false"
 	}
-	if strings.Contains(sercher.LikeAct, post.Bid) {
+	if strings.Contains(sercher.LikePost, post.Bid) {
 		res.IsLike = "true"
 	} else {
 		res.IsLike = "false"
@@ -124,6 +124,7 @@ func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.List
 	res.UserInfo.Avatar = user.Avatar
 	res.UserInfo.StudentID = user.StudentID
 	res.Bid = post.Bid
+
 	res.Title = post.Title
 	res.Introduce = post.Introduce
 	res.ShowImg = tools.StringToSlice(post.ShowImg)
@@ -149,7 +150,7 @@ func toDraft(r *req.CreatePostReq) *model.PostDraft {
 	return &model.PostDraft{
 		Bid:       tools.GenUUID(),
 		CreatedAt: time.Now(),
-
+		//TODO  返回时间
 		StudentID: r.StudentID,
 		Title:     r.Title,
 		Introduce: r.Introduce,

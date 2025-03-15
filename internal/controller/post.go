@@ -150,18 +150,17 @@ func (pr *PostController) CreateDraft() gin.HandlerFunc {
 // @Produce json
 // @Accept json
 // @Param Authorization header string true "token"
-// @Param draft body req.DraftReq true "草稿请求"
+// @Param draft body string true "草稿请求"
 // @Success 200 {object} resp.Resp{data=model.PostDraft}
 // @Router /post/load [post]
 func (pr *PostController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var draftReq req.DraftReq
-		err := c.ShouldBindJSON(&draftReq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+		sid := tools.GetSid(c)
+		if sid == "" {
+			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
 			return
 		}
-		draft, err := pr.ps.LoadDraft(c, draftReq)
+		draft, err := pr.ps.LoadDraft(c, sid)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return

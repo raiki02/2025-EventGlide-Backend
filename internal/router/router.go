@@ -14,24 +14,23 @@ type RouterHdl interface {
 }
 
 type Router struct {
-	e    *gin.Engine
-	ur   *UserRouter
-	ar   *ActRouter
-	pr   *PostRouter
-	cr   *CommentRouter
-	nr   *NumberRouter
+	e  *gin.Engine
+	ur *UserRouter
+	ar *ActRouter
+	pr *PostRouter
+	cr *CommentRouter
+	//nr   *NumberRouter
 	ir   *InteractionRouter
 	cors *middleware.Cors
 }
 
-func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr *CommentRouter, nr *NumberRouter, ir *InteractionRouter, cors *middleware.Cors) *Router {
+func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr *CommentRouter, ir *InteractionRouter, cors *middleware.Cors) *Router {
 	return &Router{
 		e:    e,
 		ur:   ur,
 		ar:   ar,
 		pr:   pr,
 		cr:   cr,
-		nr:   nr,
 		ir:   ir,
 		cors: cors,
 	}

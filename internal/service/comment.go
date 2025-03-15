@@ -49,7 +49,7 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 		return resp.CommentResp{}
 	}
 	res.Content = cmt.Content
-	res.CommentedTime = cmt.CreatedAt.String()
+	res.CommentedTime = tools.ParseTime(cmt.CreatedAt)
 	res.Bid = cmt.Bid
 	res.CommentedPos = cmt.Position
 	res.LikeNum = cmt.LikeNum

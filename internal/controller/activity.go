@@ -47,6 +47,24 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
+		if act.StudentID == "" || act.Title == "" || act.Introduce == "" {
+			c.JSON(200, tools.ReturnMSG(c, "act param empty", nil))
+			return
+		}
+		if len(act.LabelForm.Signer) <= 4 {
+			c.JSON(200, tools.ReturnMSG(c, "signers at least 5", nil))
+			return
+		}
+
+		if act.LabelForm.StartTime == "" || act.LabelForm.EndTime == "" {
+			c.JSON(200, tools.ReturnMSG(c, "time error", nil))
+			return
+		}
+
+		if act.LabelForm.EndTime < act.LabelForm.StartTime {
+			c.JSON(200, tools.ReturnMSG(c, "start time greater than end time", nil))
+			return
+		}
 
 		a, err := ac.as.NewAct(c, &act)
 		if err != nil {
@@ -91,18 +109,16 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 // @Produce json
 // @Accept json
 // @Param Authorization header string true "token"
-// @Param draft body req.DraftReq true "加载草稿"
 // @Success 200 {object} resp.Resp{data=resp.CreateActivityResp}
-// @Router /act/load [post]
+// @Router /act/load [get]
 func (ac *ActController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var dReq req.DraftReq
-		err := c.ShouldBindJSON(&dReq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+		sid := tools.GetSid(c)
+		if sid == "" {
+			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
 			return
 		}
-		d, err := ac.as.LoadDraft(c, dReq)
+		d, err := ac.as.LoadDraft(c, sid)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -115,17 +131,22 @@ func (ac *ActController) LoadDraft() gin.HandlerFunc {
 // @Summary 通过名称查找活动
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param name path string true "名称"
+// @Param name body req.FindActByNameReq true "活动名称"
 // @Success 200 {object} resp.Resp{data=[]resp.ListActivitiesResp}
-// @Router /act/name/{name} [get]
+// @Router /act/name [post]
 func (ac *ActController) FindActByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		n := c.Param("name")
-		if n == "" {
+		var r req.FindActByNameReq
+		err := c.ShouldBindJSON(&r)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		if r.Name == "" {
 			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
 			return
 		}
-		as, err := ac.as.FindActByName(c, n)
+		as, err := ac.as.FindActByName(c, r.Name)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
@@ -162,19 +183,25 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 // @Summary 通过日期查找活动
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param date path string true "日期"
+// @Param date body  req.FindActByDateReq true "日期查找"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/date/{date} [get]
+// @Router /act/date [post]
 func (ac *ActController) FindActByDate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 02-01
-		d := c.Param("date")
+		var r req.FindActByDateReq
 
-		if d == "" {
+		err := c.ShouldBindJSON(&r)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+
+		if r.Date == "" {
 			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
 			return
 		}
-		as, err := ac.as.FindActByDate(c, d)
+		as, err := ac.as.FindActByDate(c, r.Date)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return

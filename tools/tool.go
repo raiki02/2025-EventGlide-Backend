@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"strings"
+	"time"
 )
 
 var (
@@ -50,5 +51,8 @@ func GetSid(c *gin.Context) string {
 		return ""
 	}
 	return res
+}
 
+func ParseTime(t time.Time) string {
+	return t.Format("2006-01-02 15:04:05")
 }

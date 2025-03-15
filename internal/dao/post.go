@@ -75,12 +75,13 @@ func (pd *PostDao) FindPostByUser(ctx context.Context, sid string, keyword strin
 }
 
 func (pd *PostDao) CreateDraft(ctx context.Context, draft *model.PostDraft) error {
+	pd.db.Where("student_id = ?", draft.StudentID).Delete(&model.PostDraft{})
 	return pd.db.Create(draft).Error
 }
 
-func (pd *PostDao) LoadDraft(ctx context.Context, bid string, sid string) (model.PostDraft, error) {
+func (pd *PostDao) LoadDraft(ctx context.Context, sid string) (model.PostDraft, error) {
 	var draft model.PostDraft
-	err := pd.db.Where("bid = ? and student_id = ?", bid, sid).First(&draft).Error
+	err := pd.db.Where("student_id = ?", sid).First(&draft).Error
 	if err != nil {
 		return model.PostDraft{}, err
 	}
