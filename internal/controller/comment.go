@@ -58,7 +58,7 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param CommentReq body req.CreateCommentReq true "回复"
-// @Success 200 {object} resp.Resp{data=resp.CommentResp}
+// @Success 200 {object} resp.Resp{data=resp.ReplyResp}
 // @Router /comment/answer [post]
 func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 	return func(c *gin.Context) {

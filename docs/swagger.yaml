@@ -106,7 +106,7 @@ definitions:
           start_time:
             type: string
         type: object
-      host:
+      holderType:
         items:
           type: string
         type: array
@@ -439,6 +439,26 @@ definitions:
       token:
         type: string
     type: object
+  resp.ReplyResp:
+    properties:
+      bid:
+        type: string
+      reply_content:
+        type: string
+      reply_creator:
+        properties:
+          avatar:
+            type: string
+          studentid:
+            type: string
+          username:
+            type: string
+        type: object
+      reply_pos:
+        type: string
+      reply_time:
+        type: string
+    type: object
   resp.Resp:
     properties:
       code:
@@ -709,7 +729,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/resp.CommentResp'
+                  $ref: '#/definitions/resp.ReplyResp'
               type: object
       summary: 回复评论
       tags:

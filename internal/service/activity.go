@@ -230,6 +230,7 @@ func (as *ActivityService) toCreateResp(c *gin.Context, act any) resp.CreateActi
 		res.Introduce = act.Introduce
 		res.ShowImg = tools.StringToSlice(act.ShowImg)
 		res.Type = act.Type
+		res.Bid = act.Bid
 		res.Position = act.Position
 		res.IfRegister = act.IfRegister
 		res.IsChecking = act.IsChecking
@@ -246,6 +247,7 @@ func (as *ActivityService) toCreateResp(c *gin.Context, act any) resp.CreateActi
 		res.Introduce = ad.Introduce
 		res.ShowImg = tools.StringToSlice(ad.ShowImg)
 		res.Type = ad.Type
+		res.Bid = ad.Bid
 		res.Position = ad.Position
 		res.IfRegister = ad.IfRegister
 		res.UserInfo.School = user.School

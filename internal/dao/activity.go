@@ -120,25 +120,24 @@ func (ad *ActDao) DeleteAct(c *gin.Context, a model.Activity) error {
 
 func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]model.Activity, error) {
 	var as []model.Activity
-	var q *gorm.DB
-
-	if a.Type != nil {
-		q = ad.db.Where("type in ?", a.Type)
+	q := ad.db // 确保 q 初始化
+	if len(a.Type) > 0 {
+		q = q.Where("type IN ?", a.Type)
 	}
-	if a.Host != nil {
-		q = q.Where("holder_type in ?", a.Host)
+	if len(a.HolderType) > 0 {
+		q = q.Where("holder_type IN ?", a.HolderType)
 	}
-	if a.Location != nil {
-		q = q.Where("position in ?", a.Location)
+	if len(a.Location) > 0 {
+		q = q.Where("position IN ?", a.Location)
 	}
 	if a.IfRegister != "" {
 		q = q.Where("if_register = ?", a.IfRegister)
 	}
 	if a.DetailTime.StartTime != "" && a.DetailTime.EndTime != "" {
-		q = q.Where("start_time >= ? and end_time <= ?", a.DetailTime.StartTime, a.DetailTime.EndTime)
+		q = q.Where("start_time >= ? AND end_time <= ?", a.DetailTime.StartTime, a.DetailTime.EndTime)
 	}
-	err := q.Find(&as).Error
 
+	err := q.Find(&as).Error
 	return as, err
 }
 

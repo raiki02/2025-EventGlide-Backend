@@ -150,7 +150,6 @@ func toDraft(r *req.CreatePostReq) *model.PostDraft {
 	return &model.PostDraft{
 		Bid:       tools.GenUUID(),
 		CreatedAt: time.Now(),
-		//TODO  返回时间
 		StudentID: r.StudentID,
 		Title:     r.Title,
 		Introduce: r.Introduce,

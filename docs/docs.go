@@ -447,7 +447,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resp.CommentResp"
+                                            "$ref": "#/definitions/resp.ReplyResp"
                                         }
                                     }
                                 }
@@ -1670,7 +1670,7 @@ const docTemplate = `{
                         }
                     }
                 },
-                "host": {
+                "holderType": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2180,6 +2180,37 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReplyResp": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "reply_content": {
+                    "type": "string"
+                },
+                "reply_creator": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "studentid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "reply_pos": {
+                    "type": "string"
+                },
+                "reply_time": {
                     "type": "string"
                 }
             }

@@ -97,13 +97,13 @@ func (cs *CommentService) DeleteComment(c *gin.Context, r req.DeleteCommentReq) 
 	return nil
 }
 
-func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) (resp.CommentResp, error) {
+func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) (resp.ReplyResp, error) {
 	cmt := cs.toComment(r)
 	err := cs.cd.AnswerComment(c, cmt)
 	if err != nil {
-		return resp.CommentResp{}, err
+		return resp.ReplyResp{}, err
 	}
-	return cs.toResp(c, cmt), nil
+	return cs.toReply(c, cmt), nil
 }
 
 func (cs *CommentService) LoadComments(c *gin.Context, parentid string) ([]resp.CommentResp, error) {
@@ -141,4 +141,23 @@ func (cs *CommentService) processReply(c *gin.Context, r *resp.CommentResp, rep 
 	tmp.Reply.ReplyCreator.Username = user.Name
 	tmp.Reply.ReplyCreator.Avatar = user.Avatar
 	r.Reply = append(r.Reply, tmp.Reply)
+}
+
+func (cs *CommentService) toReply(c *gin.Context, r *model.Comment) resp.ReplyResp {
+	var res resp.ReplyResp
+	user, err := cs.ud.GetUserInfo(c, r.StudentID)
+	if err != nil {
+		return resp.ReplyResp{}
+	}
+	res.ReplyContent = r.Content
+	res.ReplyTime = tools.ParseTime(r.CreatedAt)
+	res.ReplyPos = r.Position
+	res.Bid = r.Bid
+	res.ReplyCreator.StudentID = user.StudentID
+	res.ReplyCreator.Username = user.Name
+	res.ReplyCreator.Avatar = user.Avatar
+	//res.LikeNum = r.LikeNum
+	//res.ReplyNum = r.ReplyNum
+	//res.ParentID = r.ParentID
+	return res
 }

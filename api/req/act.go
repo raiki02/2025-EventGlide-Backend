@@ -2,7 +2,7 @@ package req
 
 type ActSearchReq struct {
 	Type       []string `json:"type"`
-	Host       []string `json:"host"`
+	HolderType []string `json:"holderType"`
 	Location   []string `json:"location"`
 	IfRegister string   `json:"if_register"`
 	DetailTime struct {
