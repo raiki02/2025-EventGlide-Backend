@@ -48,27 +48,27 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 			return
 		}
 		if act.StudentID == "" || act.Title == "" || act.Introduce == "" {
-			c.JSON(200, tools.ReturnMSG(c, "act param empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "你的参数有误，请重新输入！", nil))
 			return
 		}
 		if len(act.LabelForm.Signer) <= 4 {
-			c.JSON(200, tools.ReturnMSG(c, "signers at least 5", nil))
+			c.JSON(200, tools.ReturnMSG(c, "请至少填写五个人的信息！", nil))
 			return
 		}
 
 		if act.LabelForm.StartTime == "" || act.LabelForm.EndTime == "" {
-			c.JSON(200, tools.ReturnMSG(c, "time error", nil))
+			c.JSON(200, tools.ReturnMSG(c, "您填写的时间有误，请重新输入！", nil))
 			return
 		}
 
 		if act.LabelForm.EndTime < act.LabelForm.StartTime {
-			c.JSON(200, tools.ReturnMSG(c, "start time greater than end time", nil))
+			c.JSON(200, tools.ReturnMSG(c, "活动起始时间不能大于结束时间！", nil))
 			return
 		}
 
 		a, err := ac.as.NewAct(c, &act)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦！请稍后尝试！", nil))
 			return
 		}
 
@@ -83,7 +83,7 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 // @Accept json
 // @Param draft body req.CreateActReq true "活动草稿"
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp{data=resp.CreateActivityResp}
+// @Success 200 {object} resp.Resp{data=req.CreateActReq}
 // @Router /act/draft [post]
 func (ac *ActController) NewDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -95,12 +95,12 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 			return
 		}
 
-		res, err := ac.as.NewDraft(c, &d)
+		_, err = ac.as.NewDraft(c, &d)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "success", res))
+		c.JSON(200, tools.ReturnMSG(c, "success", d))
 	}
 }
 
@@ -109,18 +109,18 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 // @Produce json
 // @Accept json
 // @Param Authorization header string true "token"
-// @Success 200 {object} resp.Resp{data=resp.CreateActivityResp}
+// @Success 200 {object} resp.Resp{data=model.ActivityDraft}
 // @Router /act/load [get]
 func (ac *ActController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := tools.GetSid(c)
 		if sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		d, err := ac.as.LoadDraft(c, sid)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", d))
@@ -143,12 +143,12 @@ func (ac *ActController) FindActByName() gin.HandlerFunc {
 			return
 		}
 		if r.Name == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query cannot be nil", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		as, err := ac.as.FindActByName(c, r.Name)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", as))
@@ -172,7 +172,7 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 		}
 		as, err := ac.as.FindActBySearches(c, &actReq)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", as))
@@ -198,12 +198,12 @@ func (ac *ActController) FindActByDate() gin.HandlerFunc {
 		}
 
 		if r.Date == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		as, err := ac.as.FindActByDate(c, r.Date)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", as))
@@ -221,12 +221,12 @@ func (ac *ActController) FindActByOwnerID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		if id == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		as, err := ac.as.FindActByOwnerID(c, id)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", as))
@@ -244,12 +244,12 @@ func (ac *ActController) ListAllActs() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		if id == "" {
-			c.JSON(200, tools.ReturnMSG(c, "query empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		as, err := ac.as.ListAllActs(c, id)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", as))

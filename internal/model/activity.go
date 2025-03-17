@@ -28,7 +28,7 @@ type Activity struct {
 
 type ActivityDraft struct {
 	Bid       string    `gorm:"type:varchar(255);primary_key;not null;unique;column:bid"`
-	CreatedAt time.Time `gorm:"type:datetime;column:created_at;not null"`
+	CreatedAt time.Time `gorm:"type:datetime;column:created_at;not null" `
 
 	StudentID      string `gorm:"type:varchar(255);column:student_id"`
 	Title          string `gorm:"type:varchar(255);column:title"`
@@ -36,10 +36,10 @@ type ActivityDraft struct {
 	ShowImg        string `gorm:"type:text;column:show_img"`
 	HolderType     string `gorm:"type:varchar(255);column:holder_type"`
 	Position       string `gorm:"type:varchar(255);column:position"`
-	IfRegister     string `gorm:"type:enum('是','否');column:if_register;not null"`
+	IfRegister     string `gorm:"type:varchar(32);column:if_register"`
 	RegisterMethod string `gorm:"type:varchar(255);column:register_method"`
-	StartTime      string `gorm:"type:datetime;column:start_time"`
-	EndTime        string `gorm:"type:datetime;column:end_time"`
+	StartTime      string `gorm:"type:varchar(255);column:start_time"`
+	EndTime        string `gorm:"type:varchar(255);column:end_time"`
 	Type           string `gorm:"type:varchar(255);column:type"`
 	ActiveForm     string `gorm:"type:varchar(255);column:active_form"`
 	Signer         string `gorm:"type:text;column:signer"`

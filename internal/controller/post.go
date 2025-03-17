@@ -38,7 +38,7 @@ func (pc *PostController) GetAllPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		posts, err := pc.ps.GetAllPost(c)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", posts))
@@ -63,7 +63,7 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 		}
 		_, err = pc.ps.CreatePost(c, &post)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -88,7 +88,7 @@ func (pc *PostController) FindPostByName() gin.HandlerFunc {
 
 		posts, err := pc.ps.FindPostByName(c, n.Name)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", posts))
@@ -113,7 +113,7 @@ func (pc *PostController) DeletePost() gin.HandlerFunc {
 		}
 		err = pc.ps.DeletePost(c, &post)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -126,7 +126,7 @@ func (pc *PostController) DeletePost() gin.HandlerFunc {
 // @Accept json
 // @Param Authorization header string true "token"
 // @Param post body req.CreatePostReq true "草稿"
-// @Success 200 {object} resp.Resp{}
+// @Success 200 {object} resp.Resp{data=req.CreatePostReq}
 // @Router /post/draft [post]
 func (pr *PostController) CreateDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -136,12 +136,12 @@ func (pr *PostController) CreateDraft() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		d, err := pr.ps.CreateDraft(c, &postDraft)
+		_, err = pr.ps.CreateDraft(c, &postDraft)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "success", d.Bid))
+		c.JSON(200, tools.ReturnMSG(c, "success", postDraft))
 	}
 }
 
@@ -150,19 +150,18 @@ func (pr *PostController) CreateDraft() gin.HandlerFunc {
 // @Produce json
 // @Accept json
 // @Param Authorization header string true "token"
-// @Param draft body string true "草稿请求"
 // @Success 200 {object} resp.Resp{data=model.PostDraft}
-// @Router /post/load [post]
+// @Router /post/load [get]
 func (pr *PostController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := tools.GetSid(c)
 		if sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		draft, err := pr.ps.LoadDraft(c, sid)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", draft))
@@ -181,7 +180,7 @@ func (pr *PostController) FindPostByOwnerID() gin.HandlerFunc {
 		id := c.Param("id")
 		posts, err := pr.ps.FindPostByOwnerID(c, id)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", posts))

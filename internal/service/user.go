@@ -178,6 +178,9 @@ func (us *UserService) LoadCollectAct(ctx *gin.Context, studentId string) ([]res
 	var res []resp.ListActivitiesResp
 	ActIDs := tools.StringToSlice(user.CollectAct)
 	for _, id := range ActIDs {
+		if id == "" {
+			continue
+		}
 		acts, err := us.adh.FindActByBid(ctx, id)
 		if err != nil {
 			return nil, err
@@ -195,6 +198,9 @@ func (us *UserService) LoadCollectPost(ctx *gin.Context, studentId string) ([]re
 	var res []resp.ListPostsResp
 	PostIDs := tools.StringToSlice(user.CollectPost)
 	for _, id := range PostIDs {
+		if id == "" {
+			continue
+		}
 		posts, err := us.pdh.FindPostByBid(ctx, id)
 		if err != nil {
 			return nil, err

@@ -39,6 +39,7 @@ func (pd *PostDao) GetAllPost(ctx context.Context) ([]model.Post, error) {
 }
 
 func (pd *PostDao) CreatePost(ctx context.Context, post *model.Post) error {
+	pd.db.Where("student_id = ?", post.StudentID).Delete(model.PostDraft{})
 	return pd.db.Create(post).Error
 }
 

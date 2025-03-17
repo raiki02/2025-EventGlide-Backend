@@ -36,6 +36,7 @@ func (ad *ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 	if ad.CheckExist(c, a) {
 		return errors.New("activity exist")
 	} else {
+		ad.db.Where("student_id = ?", a.StudentID).Delete(model.ActivityDraft{})
 		return ad.db.Create(a).Error
 	}
 }

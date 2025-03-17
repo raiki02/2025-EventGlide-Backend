@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-+_=!@#$%^&*()[]{}|;:,.<>?")
+	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
 )
 
 func GenUUID() string {

@@ -61,13 +61,13 @@ func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActReq) (resp.C
 	return as.toCreateResp(c, d), nil
 }
 
-func (as *ActivityService) LoadDraft(c *gin.Context, sid string) (resp.CreateActivityResp, error) {
+func (as *ActivityService) LoadDraft(c *gin.Context, sid string) (model.ActivityDraft, error) {
 	d, err := as.ad.LoadDraft(c, sid)
 	if err != nil {
-		return resp.CreateActivityResp{}, err
+		return model.ActivityDraft{}, err
 	}
 
-	return as.toCreateResp(c, d), nil
+	return d, nil
 }
 
 func (as *ActivityService) FindActBySearches(c *gin.Context, req *req.ActSearchReq) ([]resp.ListActivitiesResp, error) {
@@ -196,6 +196,24 @@ func joinSigners(signers []struct {
 	return res
 }
 
+func separateSigners(signers []string) []struct {
+	StudentID string `json:"studentid"`
+	Name      string `json:"name"`
+} {
+	var res []struct {
+		StudentID string `json:"studentid"`
+		Name      string `json:"name"`
+	}
+	for _, s := range signers {
+		ss := strings.Split(s, ":")
+		res = append(res, struct {
+			StudentID string `json:"studentid"`
+			Name      string `json:"name"`
+		}{StudentID: ss[0], Name: ss[1]})
+	}
+	return res
+}
+
 func toActDraft(r *req.CreateActReq) *model.ActivityDraft {
 	var ad model.ActivityDraft
 	ad.Bid = tools.GenUUID()
@@ -253,6 +271,8 @@ func (as *ActivityService) toCreateResp(c *gin.Context, act any) resp.CreateActi
 		res.UserInfo.School = user.School
 		res.UserInfo.Username = user.Name
 		res.UserInfo.Avatar = user.Avatar
+		res.ActiveForm = ad.ActiveForm
+		res.Signer = separateSigners(tools.StringToSlice(ad.Signer))
 		res.UserInfo.StudentID = user.StudentID
 		return res
 
@@ -269,6 +289,7 @@ func (as *ActivityService) toCreateResp(c *gin.Context, act any) resp.CreateActi
 		res.UserInfo.Username = user.Name
 		res.UserInfo.Avatar = user.Avatar
 		res.UserInfo.StudentID = user.StudentID
+		res.Signer = separateSigners(tools.StringToSlice(ad.Signer))
 		return res
 	default:
 		return res

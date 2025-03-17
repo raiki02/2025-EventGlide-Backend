@@ -41,12 +41,12 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 			return
 		}
 		if r.StudentID == "" || r.Content == "" || r.ParentID == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res, err := cc.cs.CreateComment(c, r)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", res))
@@ -69,12 +69,12 @@ func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 			return
 		}
 		if r.StudentID == "" || r.Content == "" || r.ParentID == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res, err := cc.cs.AnswerComment(c, r)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", res))
@@ -98,12 +98,12 @@ func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 			return
 		}
 		if r.StudentID == "" || r.TargetID == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		err = cc.cs.DeleteComment(c, r)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -121,12 +121,12 @@ func (cc *CommentController) LoadComments() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		if id == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param error", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res, err := cc.cs.LoadComments(c, id)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", res))

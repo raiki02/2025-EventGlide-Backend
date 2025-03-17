@@ -79,12 +79,12 @@ func (ps *PostService) CreateDraft(c *gin.Context, r *req.CreatePostReq) (resp.C
 	return ps.toCreateResp(c, draft), nil
 }
 
-func (ps *PostService) LoadDraft(c *gin.Context, sid string) (resp.CreatePostResp, error) {
+func (ps *PostService) LoadDraft(c *gin.Context, sid string) (model.PostDraft, error) {
 	draft, err := ps.pdh.LoadDraft(c, sid)
 	if err != nil {
-		return resp.CreatePostResp{}, err
+		return model.PostDraft{}, err
 	}
-	return ps.toCreateResp(c, draft), nil
+	return draft, nil
 }
 
 func (ps *PostService) FindPostByOwnerID(c *gin.Context, id string) ([]resp.ListPostsResp, error) {

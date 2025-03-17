@@ -51,12 +51,12 @@ func (uc *UserController) Login() gin.HandlerFunc {
 		}
 
 		if lr.StudentID == "" || lr.Password == "" {
-			c.JSON(200, tools.ReturnMSG(c, "studentid or password is empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		user, token, err := uc.ush.Login(c, lr.StudentID, lr.Password)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "login fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res := resp.LoginResp{
@@ -82,7 +82,7 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 		token := c.GetHeader("Authorization")
 		err := uc.ush.Logout(c, token)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "logout fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -100,12 +100,12 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := c.Param("id")
 		if sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "id is empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		user, err := uc.ush.GetUserInfo(c, sid)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "get user info fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", user))
@@ -129,12 +129,12 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 			return
 		}
 		if userAvatarReq.StudentID == "" || userAvatarReq.AvatarUrl == "" {
-			c.JSON(200, tools.ReturnMSG(c, "param empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		err = uc.ush.UpdateAvatar(c, userAvatarReq)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "update avatar fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -157,12 +157,12 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 			return
 		}
 		if unr.Name == "" {
-			c.JSON(200, tools.ReturnMSG(c, "name is empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		err = uc.ush.UpdateUsername(c, unr.StudentID, unr.Name)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "update username fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -186,12 +186,12 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 			return
 		}
 		if ureq.StudentID == "" {
-			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		acts, err := uc.ush.SearchUserAct(c, ureq.StudentID, ureq.Keyword)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "search user act fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", acts))
@@ -214,12 +214,12 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 			return
 		}
 		if ureq.StudentID == "" {
-			c.JSON(200, tools.ReturnMSG(c, "sid is empty", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		posts, err := uc.ush.SearchUserPost(c, ureq.StudentID, ureq.Keyword)
 		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "search user post fail", nil))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", posts))
@@ -255,12 +255,12 @@ func (uc *UserController) LoadCollectAct() gin.HandlerFunc {
 			return
 		}
 		if cr.StudentID == "" {
-			context.JSON(200, tools.ReturnMSG(context, "studentid is empty", nil))
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res, err := uc.ush.LoadCollectAct(context, cr.StudentID)
 		if err != nil {
-			context.JSON(200, tools.ReturnMSG(context, "load collect fail", nil))
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		context.JSON(200, tools.ReturnMSG(context, "success", res))
@@ -283,12 +283,12 @@ func (uc *UserController) LoadCollectPost() gin.HandlerFunc {
 			return
 		}
 		if cr.StudentID == "" {
-			context.JSON(200, tools.ReturnMSG(context, "studentid is empty", nil))
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res, err := uc.ush.LoadCollectPost(context, cr.StudentID)
 		if err != nil {
-			context.JSON(200, tools.ReturnMSG(context, "load collect fail", nil))
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		context.JSON(200, tools.ReturnMSG(context, "success", res))

@@ -40,6 +40,39 @@ definitions:
       type:
         type: string
     type: object
+  model.ActivityDraft:
+    properties:
+      activeForm:
+        type: string
+      bid:
+        type: string
+      createdAt:
+        type: string
+      endTime:
+        type: string
+      holderType:
+        type: string
+      ifRegister:
+        type: string
+      introduce:
+        type: string
+      position:
+        type: string
+      registerMethod:
+        type: string
+      showImg:
+        type: string
+      signer:
+        type: string
+      startTime:
+        type: string
+      studentID:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+    type: object
   model.Post:
     properties:
       bid:
@@ -587,7 +620,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/resp.CreateActivityResp'
+                  $ref: '#/definitions/req.CreateActReq'
               type: object
       summary: 创建活动草稿
       tags:
@@ -612,7 +645,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/resp.CreateActivityResp'
+                  $ref: '#/definitions/model.ActivityDraft'
               type: object
       summary: 加载活动草稿
       tags:
@@ -1017,7 +1050,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/resp.Resp'
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/req.CreatePostReq'
+              type: object
       summary: 创建草稿
       tags:
       - Post
@@ -1053,7 +1091,7 @@ paths:
       tags:
       - Post
   /post/load:
-    post:
+    get:
       consumes:
       - application/json
       parameters:
@@ -1062,12 +1100,6 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 草稿请求
-        in: body
-        name: draft
-        required: true
-        schema:
-          type: string
       produces:
       - application/json
       responses:

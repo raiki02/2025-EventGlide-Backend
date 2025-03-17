@@ -207,7 +207,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resp.CreateActivityResp"
+                                            "$ref": "#/definitions/req.CreateActReq"
                                         }
                                     }
                                 }
@@ -250,7 +250,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/resp.CreateActivityResp"
+                                            "$ref": "#/definitions/model.ActivityDraft"
                                         }
                                     }
                                 }
@@ -905,7 +905,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/req.CreatePostReq"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -964,7 +976,7 @@ const docTemplate = `{
             }
         },
         "/post/load": {
-            "post": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -982,15 +994,6 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "description": "草稿请求",
-                        "name": "draft",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 ],
                 "responses": {
@@ -1542,6 +1545,56 @@ const docTemplate = `{
                 },
                 "likeNum": {
                     "type": "integer"
+                },
+                "position": {
+                    "type": "string"
+                },
+                "registerMethod": {
+                    "type": "string"
+                },
+                "showImg": {
+                    "type": "string"
+                },
+                "signer": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "studentID": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ActivityDraft": {
+            "type": "object",
+            "properties": {
+                "activeForm": {
+                    "type": "string"
+                },
+                "bid": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "holderType": {
+                    "type": "string"
+                },
+                "ifRegister": {
+                    "type": "string"
+                },
+                "introduce": {
+                    "type": "string"
                 },
                 "position": {
                     "type": "string"

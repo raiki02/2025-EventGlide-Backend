@@ -9,7 +9,11 @@ type CreateActivityResp struct {
 	Position   string   `json:"position"`
 	IfRegister string   `json:"if_register"`
 	IsChecking string   `json:"isChecking"`
-
+	ActiveForm string   `json:"activeForm"`
+	Signer     []struct {
+		StudentID string `json:"studentid"`
+		Name      string `json:"name"`
+	} `json:"signer"`
 	UserInfo struct {
 		StudentID string `json:"studentid"`
 		Avatar    string `json:"avatar"`
