@@ -5,19 +5,32 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/dao"
+	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/internal/mq"
+	"go.uber.org/zap"
 )
 
 type InteractionService struct {
 	id *dao.InteractionDao
+	mq *mq.MQ
+	l  *zap.Logger
 }
 
-func NewInteractionService(id *dao.InteractionDao) *InteractionService {
+func NewInteractionService(id *dao.InteractionDao, mq *mq.MQ, l *zap.Logger) *InteractionService {
 	return &InteractionService{
 		id: id,
+		mq: mq,
+		l:  l.Named("interaction/service"),
 	}
 }
 
 func (is *InteractionService) Like(c *gin.Context, r *req.InteractionReq) error {
+	jreq := is.toFeed(r, "like")
+	err := is.mq.Publish(c.Request.Context(), "feed", jreq)
+	if err != nil {
+		is.l.Error("Publish Like Feed Failed", zap.Error(err))
+	}
+
 	switch r.Subject {
 	case "activity":
 		return is.id.LikeActivity(c, r.StudentID, r.TargetID)
@@ -44,6 +57,11 @@ func (is *InteractionService) Dislike(c *gin.Context, r *req.InteractionReq) err
 }
 
 func (is *InteractionService) Comment(c *gin.Context, r *req.InteractionReq) error {
+	jreq := is.toFeed(r, "comment")
+	err := is.mq.Publish(c.Request.Context(), "feed", jreq)
+	if err != nil {
+		is.l.Error("Publish Comment Feed Failed", zap.Error(err))
+	}
 	switch r.Subject {
 	case "activity":
 		return is.id.CommentActivity(c, r.StudentID, r.TargetID)
@@ -57,6 +75,11 @@ func (is *InteractionService) Comment(c *gin.Context, r *req.InteractionReq) err
 }
 
 func (is *InteractionService) Collect(c *gin.Context, r *req.InteractionReq) error {
+	jreq := is.toFeed(r, "collect")
+	err := is.mq.Publish(c.Request.Context(), "feed", jreq)
+	if err != nil {
+		is.l.Error("Publish Collect Feed Failed", zap.Error(err))
+	}
 	switch r.Subject {
 	case "activity":
 		return is.id.CollectActivity(c, r.StudentID, r.TargetID)
@@ -76,4 +99,14 @@ func (is *InteractionService) Discollect(c *gin.Context, r *req.InteractionReq) 
 	default:
 		return errors.New("subject error")
 	}
+}
+
+func (is *InteractionService) toFeed(r *req.InteractionReq, action string) model.Feed {
+	f := model.Feed{
+		TargetBid: r.TargetID,
+		Object:    r.Subject,
+		StudentId: r.StudentID,
+		Action:    action,
+	}
+	return f
 }

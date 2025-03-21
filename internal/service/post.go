@@ -7,6 +7,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
+	"go.uber.org/zap"
 	"strings"
 	"time"
 )
@@ -24,12 +25,14 @@ type PostServiceHdl interface {
 type PostService struct {
 	pdh *dao.PostDao
 	ud  *dao.UserDao
+	l   *zap.Logger
 }
 
-func NewPostService(pdh *dao.PostDao, ud *dao.UserDao) *PostService {
+func NewPostService(pdh *dao.PostDao, ud *dao.UserDao, l *zap.Logger) *PostService {
 	return &PostService{
 		pdh: pdh,
 		ud:  ud,
+		l:   l.Named("post/service"),
 	}
 }
 

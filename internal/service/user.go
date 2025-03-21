@@ -11,6 +11,7 @@ import (
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"io"
 	"net"
 	"net/http"
@@ -45,9 +46,10 @@ type UserService struct {
 	iuh  *ImgUploader
 	as   *ActivityService
 	ps   *PostService
+	l    *zap.Logger
 }
 
-func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, cdh *dao.CommentDao, jwth *middleware.Jwt, cSvc *ccnuService, iuh *ImgUploader, as *ActivityService, ps *PostService) *UserService {
+func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, cdh *dao.CommentDao, jwth *middleware.Jwt, cSvc *ccnuService, iuh *ImgUploader, as *ActivityService, ps *PostService, l *zap.Logger) *UserService {
 	return &UserService{
 		udh:  udh,
 		adh:  adh,
@@ -58,6 +60,7 @@ func NewUserService(udh *dao.UserDao, adh *dao.ActDao, pdh *dao.PostDao, cdh *da
 		iuh:  iuh,
 		as:   as,
 		ps:   ps,
+		l:    l.Named("user/service"),
 	}
 }
 

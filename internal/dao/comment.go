@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -16,11 +17,13 @@ type CommentDaoHdl interface {
 
 type CommentDao struct {
 	db *gorm.DB
+	l  *zap.Logger
 }
 
-func NewCommentDao(db *gorm.DB) *CommentDao {
+func NewCommentDao(db *gorm.DB, l *zap.Logger) *CommentDao {
 	return &CommentDao{
 		db: db,
+		l:  l.Named("comment/dao"),
 	}
 }
 

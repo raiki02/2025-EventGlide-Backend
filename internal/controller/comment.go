@@ -5,6 +5,7 @@ import (
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
+	"go.uber.org/zap"
 )
 
 type CommentControllerHdl interface {
@@ -17,11 +18,13 @@ type CommentControllerHdl interface {
 
 type CommentController struct {
 	cs *service.CommentService
+	l  *zap.Logger
 }
 
-func NewCommentController(cs *service.CommentService) *CommentController {
+func NewCommentController(cs *service.CommentService, l *zap.Logger) *CommentController {
 	return &CommentController{
 		cs: cs,
+		l:  l.Named("comment/controller"),
 	}
 }
 
@@ -41,11 +44,13 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 			return
 		}
 		if r.StudentID == "" || r.Content == "" || r.ParentID == "" {
+			cc.l.Warn("request studentid or content or parentid is empty when create comment")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res, err := cc.cs.CreateComment(c, r)
 		if err != nil {
+			cc.l.Error("create comment failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -69,11 +74,13 @@ func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 			return
 		}
 		if r.StudentID == "" || r.Content == "" || r.ParentID == "" {
+			cc.l.Warn("request studentid or content or parentid is empty when answer comment")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res, err := cc.cs.AnswerComment(c, r)
 		if err != nil {
+			cc.l.Error("answer comment failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -98,11 +105,13 @@ func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 			return
 		}
 		if r.StudentID == "" || r.TargetID == "" {
+			cc.l.Warn("request studentid or targetid is empty when delete comment")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		err = cc.cs.DeleteComment(c, r)
 		if err != nil {
+			cc.l.Error("delete comment failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -121,11 +130,13 @@ func (cc *CommentController) LoadComments() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		if id == "" {
+			cc.l.Warn("request id is empty when load comments")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		res, err := cc.cs.LoadComments(c, id)
 		if err != nil {
+			cc.l.Error("load comments failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}

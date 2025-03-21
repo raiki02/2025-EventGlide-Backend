@@ -6,6 +6,7 @@ import (
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
+	"go.uber.org/zap"
 )
 
 type PostControllerHdl interface {
@@ -20,11 +21,13 @@ type PostControllerHdl interface {
 
 type PostController struct {
 	ps *service.PostService
+	l  *zap.Logger
 }
 
-func NewPostController(ps *service.PostService) *PostController {
+func NewPostController(ps *service.PostService, l *zap.Logger) *PostController {
 	return &PostController{
 		ps: ps,
+		l:  l.Named("post/controller"),
 	}
 }
 

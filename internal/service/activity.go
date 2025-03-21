@@ -8,6 +8,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
+	"go.uber.org/zap"
 	"strings"
 	"time"
 )
@@ -27,13 +28,15 @@ type ActivityService struct {
 	ad *dao.ActDao
 	ch *cache.Cache
 	ud *dao.UserDao
+	l  *zap.Logger
 }
 
-func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao) *ActivityService {
+func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger) *ActivityService {
 	return &ActivityService{
 		ad: ad,
 		ch: ch,
 		ud: ud,
+		l:  l.Named("activity/service"),
 	}
 }
 
@@ -42,9 +45,16 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 
 	err := as.ad.CreateAct(c, act)
 	if err != nil {
+		as.l.Error("Failed to create act", zap.Error(err))
 		return resp.CreateActivityResp{}, err
 	}
-
+	as.l.Info("create activity",
+		zap.String("act", act.Bid),
+		zap.String("student", act.StudentID),
+		zap.String("host", act.HolderType),
+		zap.String("formfile", act.ActiveForm),
+		zap.String("signer", act.Signer),
+	)
 	return as.toCreateResp(c, act), nil
 
 }
@@ -55,8 +65,10 @@ func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActReq) (resp.C
 
 	err := as.ad.CreateDraft(c, d)
 	if err != nil {
+		as.l.Error("Failed to create draft", zap.Error(err))
 		return resp.CreateActivityResp{}, err
 	}
+	as.l.Info("create draft", zap.String("draft", d.Bid), zap.String("student", d.StudentID))
 
 	return as.toCreateResp(c, d), nil
 }
@@ -73,6 +85,7 @@ func (as *ActivityService) LoadDraft(c *gin.Context, sid string) (model.Activity
 func (as *ActivityService) FindActBySearches(c *gin.Context, req *req.ActSearchReq) ([]resp.ListActivitiesResp, error) {
 	acts, err := as.ad.FindActBySearches(c, req)
 	if err != nil {
+		as.l.Error("Failed to search acts", zap.Error(err))
 		return nil, err
 	}
 	res := as.ToListResp(c, acts)

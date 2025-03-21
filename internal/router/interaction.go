@@ -20,7 +20,7 @@ func NewInteractionRouter(e *gin.Engine, ic *controller.InteractionController, j
 	}
 }
 
-func (ir *InteractionRouter) RegisterInteractionRouters() error {
+func (ir *InteractionRouter) RegisterInteractionRouters() {
 	i := ir.e.Group("interaction")
 	i.Use(ir.j.WrapCheckToken())
 	{
@@ -30,5 +30,4 @@ func (ir *InteractionRouter) RegisterInteractionRouters() error {
 		i.POST("/collect", ir.ic.Collect())
 		i.POST("/discollect", ir.ic.Discollect())
 	}
-	return nil
 }

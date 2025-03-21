@@ -10,4 +10,5 @@ type User struct {
 	LikeAct     string `gorm:"column:like_act;type:text" json:"likeact"`
 	CollectPost string `gorm:"column:collect_post;type:text" json:"collectpost"`
 	LikePost    string `gorm:"column:like_post;type:text" json:"likepost"`
+	LikeComment string `gorm:"column:like_comment;type:text" json:"likecomment"`
 }

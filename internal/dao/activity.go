@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/model"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -24,16 +25,19 @@ type ActDaoHdl interface {
 
 type ActDao struct {
 	db *gorm.DB
+	l  *zap.Logger
 }
 
-func NewActDao(db *gorm.DB) *ActDao {
+func NewActDao(db *gorm.DB, l *zap.Logger) *ActDao {
 	return &ActDao{
 		db: db,
+		l:  l.Named("activity/dao"),
 	}
 }
 
 func (ad *ActDao) CreateAct(c *gin.Context, a *model.Activity) error {
 	if ad.CheckExist(c, a) {
+		ad.l.Warn("tried to create an exist activity", zap.Any("act-bid", a.Bid))
 		return errors.New("activity exist")
 	} else {
 		ad.db.Where("student_id = ?", a.StudentID).Delete(model.ActivityDraft{})

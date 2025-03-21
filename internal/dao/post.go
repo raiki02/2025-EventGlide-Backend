@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -21,11 +22,13 @@ type PostDaoHdl interface {
 
 type PostDao struct {
 	db *gorm.DB
+	l  *zap.Logger
 }
 
-func NewPostDao(db *gorm.DB) *PostDao {
+func NewPostDao(db *gorm.DB, l *zap.Logger) *PostDao {
 	return &PostDao{
 		db: db,
+		l:  l.Named("post/dao"),
 	}
 }
 

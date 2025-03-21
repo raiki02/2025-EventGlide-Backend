@@ -6,6 +6,7 @@ import (
 	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
+	"go.uber.org/zap"
 )
 
 type UserControllerHdl interface {
@@ -26,12 +27,14 @@ type UserControllerHdl interface {
 type UserController struct {
 	e   *gin.Engine
 	ush *service.UserService
+	l   *zap.Logger
 }
 
-func NewUserController(e *gin.Engine, ush *service.UserService) *UserController {
+func NewUserController(e *gin.Engine, ush *service.UserService, l *zap.Logger) *UserController {
 	return &UserController{
 		e:   e,
 		ush: ush,
+		l:   l.Named("user/controller"),
 	}
 }
 
@@ -67,6 +70,7 @@ func (uc *UserController) Login() gin.HandlerFunc {
 			School: user.School,
 			Token:  token,
 		}
+
 		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }

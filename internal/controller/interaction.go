@@ -5,15 +5,18 @@ import (
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
+	"go.uber.org/zap"
 )
 
 type InteractionController struct {
 	is *service.InteractionService
+	l  *zap.Logger
 }
 
-func NewInteractionController(is *service.InteractionService) *InteractionController {
+func NewInteractionController(is *service.InteractionService, l *zap.Logger) *InteractionController {
 	return &InteractionController{
 		is: is,
+		l:  l.Named("interaction/controller"),
 	}
 }
 

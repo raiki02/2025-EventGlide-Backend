@@ -600,6 +600,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/feed/list": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "获取feed列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.FeedResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/feed/total": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "获取用户的消息总数",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.BriefFeedResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/interaction/collect": {
             "post": {
                 "consumes": [
@@ -1695,6 +1775,9 @@ const docTemplate = `{
                 "likeact": {
                     "type": "string"
                 },
+                "likecomment": {
+                    "type": "string"
+                },
                 "likepost": {
                     "type": "string"
                 },
@@ -1909,6 +1992,9 @@ const docTemplate = `{
         "req.NumReq": {
             "type": "object",
             "properties": {
+                "action": {
+                    "type": "string"
+                },
                 "object": {
                     "type": "string"
                 },
@@ -1917,9 +2003,6 @@ const docTemplate = `{
                 },
                 "target_id": {
                     "type": "string"
-                },
-                "type": {
-                    "type": "integer"
                 }
             }
         },
@@ -1956,6 +2039,20 @@ const docTemplate = `{
                 }
             }
         },
+        "resp.BriefFeedResp": {
+            "type": "object",
+            "properties": {
+                "commentandat": {
+                    "type": "integer"
+                },
+                "likeandcollect": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "resp.CommentResp": {
             "type": "object",
             "properties": {
@@ -1985,41 +2082,16 @@ const docTemplate = `{
                         }
                     }
                 },
+                "isLike": {
+                    "type": "string"
+                },
                 "likeNum": {
                     "type": "integer"
                 },
                 "reply": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "bid": {
-                                "type": "string"
-                            },
-                            "reply_content": {
-                                "type": "string"
-                            },
-                            "reply_creator": {
-                                "type": "object",
-                                "properties": {
-                                    "avatar": {
-                                        "type": "string"
-                                    },
-                                    "studentid": {
-                                        "type": "string"
-                                    },
-                                    "username": {
-                                        "type": "string"
-                                    }
-                                }
-                            },
-                            "reply_pos": {
-                                "type": "string"
-                            },
-                            "reply_time": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/definitions/resp.ReplyResp"
                     }
                 },
                 "replyNum": {
@@ -2030,6 +2102,9 @@ const docTemplate = `{
         "resp.CreateActivityResp": {
             "type": "object",
             "properties": {
+                "activeForm": {
+                    "type": "string"
+                },
                 "bid": {
                     "type": "string"
                 },
@@ -2049,6 +2124,20 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
+                    }
+                },
+                "signer": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "studentid": {
+                                "type": "string"
+                            }
+                        }
                     }
                 },
                 "title": {
@@ -2072,6 +2161,115 @@ const docTemplate = `{
                         "username": {
                             "type": "string"
                         }
+                    }
+                }
+            }
+        },
+        "resp.FeedAtResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
+        "resp.FeedCollectResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
+        "resp.FeedCommentResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
+        "resp.FeedLikeResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
+        "resp.FeedResp": {
+            "type": "object",
+            "properties": {
+                "ats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedAtResp"
+                    }
+                },
+                "collects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedCollectResp"
+                    }
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedCommentResp"
+                    }
+                },
+                "likes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedLikeResp"
                     }
                 }
             }
@@ -2243,6 +2441,18 @@ const docTemplate = `{
                 "bid": {
                     "type": "string"
                 },
+                "likeNum": {
+                    "type": "integer"
+                },
+                "parentUserName": {
+                    "type": "string"
+                },
+                "parentid": {
+                    "type": "string"
+                },
+                "replyNum": {
+                    "type": "integer"
+                },
                 "reply_content": {
                     "type": "string"
                 },
@@ -2276,6 +2486,20 @@ const docTemplate = `{
                 },
                 "data": {},
                 "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "resp.UserInfo": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "studentid": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

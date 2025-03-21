@@ -121,6 +121,8 @@ definitions:
         type: integer
       likeact:
         type: string
+      likecomment:
+        type: string
       likepost:
         type: string
       name:
@@ -259,14 +261,14 @@ definitions:
     type: object
   req.NumReq:
     properties:
+      action:
+        type: string
       object:
         type: string
       studentid:
         type: string
       target_id:
         type: string
-      type:
-        type: integer
     type: object
   req.UpdateNameReq:
     properties:
@@ -289,6 +291,15 @@ definitions:
       studentid:
         type: string
     type: object
+  resp.BriefFeedResp:
+    properties:
+      commentandat:
+        type: integer
+      likeandcollect:
+        type: integer
+      total:
+        type: integer
+    type: object
   resp.CommentResp:
     properties:
       bid:
@@ -308,35 +319,21 @@ definitions:
           username:
             type: string
         type: object
+      isLike:
+        type: string
       likeNum:
         type: integer
       reply:
         items:
-          properties:
-            bid:
-              type: string
-            reply_content:
-              type: string
-            reply_creator:
-              properties:
-                avatar:
-                  type: string
-                studentid:
-                  type: string
-                username:
-                  type: string
-              type: object
-            reply_pos:
-              type: string
-            reply_time:
-              type: string
-          type: object
+          $ref: '#/definitions/resp.ReplyResp'
         type: array
       replyNum:
         type: integer
     type: object
   resp.CreateActivityResp:
     properties:
+      activeForm:
+        type: string
       bid:
         type: string
       if_register:
@@ -350,6 +347,15 @@ definitions:
       showImg:
         items:
           type: string
+        type: array
+      signer:
+        items:
+          properties:
+            name:
+              type: string
+            studentid:
+              type: string
+          type: object
         type: array
       title:
         type: string
@@ -366,6 +372,77 @@ definitions:
           username:
             type: string
         type: object
+    type: object
+  resp.FeedAtResp:
+    properties:
+      message:
+        type: string
+      published_at:
+        type: string
+      status:
+        type: string
+      target_bid:
+        type: string
+      userInfo:
+        $ref: '#/definitions/resp.UserInfo'
+    type: object
+  resp.FeedCollectResp:
+    properties:
+      message:
+        type: string
+      published_at:
+        type: string
+      status:
+        type: string
+      target_bid:
+        type: string
+      userInfo:
+        $ref: '#/definitions/resp.UserInfo'
+    type: object
+  resp.FeedCommentResp:
+    properties:
+      message:
+        type: string
+      published_at:
+        type: string
+      status:
+        type: string
+      target_bid:
+        type: string
+      userInfo:
+        $ref: '#/definitions/resp.UserInfo'
+    type: object
+  resp.FeedLikeResp:
+    properties:
+      message:
+        type: string
+      published_at:
+        type: string
+      status:
+        type: string
+      target_bid:
+        type: string
+      userInfo:
+        $ref: '#/definitions/resp.UserInfo'
+    type: object
+  resp.FeedResp:
+    properties:
+      ats:
+        items:
+          $ref: '#/definitions/resp.FeedAtResp'
+        type: array
+      collects:
+        items:
+          $ref: '#/definitions/resp.FeedCollectResp'
+        type: array
+      comments:
+        items:
+          $ref: '#/definitions/resp.FeedCommentResp'
+        type: array
+      likes:
+        items:
+          $ref: '#/definitions/resp.FeedLikeResp'
+        type: array
     type: object
   resp.ImgBedResp:
     properties:
@@ -476,6 +553,12 @@ definitions:
     properties:
       bid:
         type: string
+      likeNum:
+        type: integer
+      parentUserName:
+        type: string
+      parentid:
+        type: string
       reply_content:
         type: string
       reply_creator:
@@ -491,6 +574,8 @@ definitions:
         type: string
       reply_time:
         type: string
+      replyNum:
+        type: integer
     type: object
   resp.Resp:
     properties:
@@ -498,6 +583,15 @@ definitions:
         type: integer
       data: {}
       msg:
+        type: string
+    type: object
+  resp.UserInfo:
+    properties:
+      avatar:
+        type: string
+      studentid:
+        type: string
+      username:
         type: string
     type: object
 info:
@@ -855,6 +949,52 @@ paths:
       summary: 加载评论
       tags:
       - Comment
+  /feed/list:
+    get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.FeedResp'
+              type: object
+      summary: 获取feed列表
+      tags:
+      - feed
+  /feed/total:
+    get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.BriefFeedResp'
+              type: object
+      summary: 获取用户的消息总数
+      tags:
+      - feed
   /interaction/collect:
     post:
       consumes:

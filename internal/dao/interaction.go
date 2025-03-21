@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -14,15 +15,17 @@ type InteractionDao struct {
 	ud *UserDao
 	ad *ActDao
 	pd *PostDao
+	l  *zap.Logger
 }
 
-func NewInteractionDao(db *gorm.DB, cd *CommentDao, ud *UserDao, ad *ActDao, pd *PostDao) *InteractionDao {
+func NewInteractionDao(db *gorm.DB, cd *CommentDao, ud *UserDao, ad *ActDao, pd *PostDao, l *zap.Logger) *InteractionDao {
 	return &InteractionDao{
 		db: db,
 		cd: cd,
 		ud: ud,
 		ad: ad,
 		pd: pd,
+		l:  l.Named("interaction/dao"),
 	}
 }
 
@@ -45,7 +48,12 @@ func (id *InteractionDao) LikePost(c *gin.Context, studentID, targetID string) e
 }
 
 func (id *InteractionDao) LikeComment(c *gin.Context, studentID, targetID string) error {
-	return id.db.Model(&model.Comment{}).Where("bid = ?", targetID).Update("like_num", gorm.Expr("like_num + ?", 1)).Error
+	err1 := id.db.Model(&model.User{}).Where("student_id = ?", studentID).Update("like_cmt", gorm.Expr("CONCAT(COALESCE(like_cmt, ''), ?)", fmt.Sprintf("%s,", targetID)))
+	err2 := id.db.Model(&model.Comment{}).Where("bid = ?", targetID).Update("like_num", gorm.Expr("like_num + ?", 1))
+	if err1.Error != nil || err2.Error != nil {
+		return errors.New("like comment error")
+	}
+	return nil
 }
 
 func (id *InteractionDao) DislikeActivity(c *gin.Context, studentID, targetID string) error {

@@ -14,20 +14,9 @@ type CommentResp struct {
 	Content       string `json:"content"`
 	LikeNum       int    `json:"likeNum"`
 	ReplyNum      int    `json:"replyNum"`
+	IsLike        string `json:"isLike"`
 
-	Reply []struct {
-		Bid string `json:"bid"`
-
-		ReplyCreator struct {
-			StudentID string `json:"studentid"`
-			Username  string `json:"username"`
-			Avatar    string `json:"avatar"`
-		} `json:"reply_creator"`
-
-		ReplyContent string `json:"reply_content"`
-		ReplyTime    string `json:"reply_time"`
-		ReplyPos     string `json:"reply_pos"`
-	} `json:"reply"`
+	Reply []ReplyResp `json:"reply"`
 }
 
 type ReplyResp struct {
@@ -43,7 +32,9 @@ type ReplyResp struct {
 	ReplyTime    string `json:"reply_time"`
 	ReplyPos     string `json:"reply_pos"`
 
-	//ParentID string `json:"parentid"`
-	//LikeNum  int    `json:"likeNum"`
-	//ReplyNum int    `json:"replyNum"`
+	ParentID       string `json:"parentid"`
+	ParentUserName string `json:"parentUserName"`
+
+	LikeNum  int `json:"likeNum"`
+	ReplyNum int `json:"replyNum"`
 }

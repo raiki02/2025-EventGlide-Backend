@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -17,10 +18,14 @@ type UserDaoHdl interface {
 
 type UserDao struct {
 	db *gorm.DB
+	l  *zap.Logger
 }
 
-func NewUserDao(db *gorm.DB) *UserDao {
-	return &UserDao{db: db}
+func NewUserDao(db *gorm.DB, l *zap.Logger) *UserDao {
+	return &UserDao{
+		db: db,
+		l:  l.Named("user/dao"),
+	}
 }
 
 func (ud *UserDao) UpdateAvatar(ctx *gin.Context, student_id string, imgurl string) error {

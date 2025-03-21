@@ -6,20 +6,30 @@ import (
 	"github.com/raiki02/EG/internal/middleware"
 )
 
-type NumberRouterHdl interface {
-	RegisterNumberRouters()
+type FeedRouterHdl interface {
+	RegisterFeedRouters()
 }
 
-type NumberRouter struct {
-	nc *controller.NumberController
+type FeedRouter struct {
+	fc *controller.FeedController
 	j  *middleware.Jwt
 	e  *gin.Engine
 }
 
-func NewNumberRouter(nc *controller.NumberController, e *gin.Engine, j *middleware.Jwt) *NumberRouter {
-	return &NumberRouter{
-		nc: nc,
+func NewFeedRouter(fc *controller.FeedController, e *gin.Engine, j *middleware.Jwt) *FeedRouter {
+	return &FeedRouter{
+		fc: fc,
 		e:  e,
 		j:  j,
 	}
+}
+
+func (fr *FeedRouter) RegisterFeedRouters() {
+	feed := fr.e.Group("/feed")
+	feed.Use(fr.j.WrapCheckToken())
+	{
+		feed.GET("/total", fr.fc.GetTotalCnt())
+		feed.GET("/list", fr.fc.GetFeedList())
+	}
+
 }

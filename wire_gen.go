@@ -13,6 +13,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/ioc"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/internal/mq"
 	"github.com/raiki02/EG/internal/router"
 	"github.com/raiki02/EG/internal/server"
 	"github.com/raiki02/EG/internal/service"
@@ -22,33 +23,39 @@ import (
 
 func InitApp(e *gin.Engine) *server.Server {
 	db := ioc.InitDB()
-	userDao := dao.NewUserDao(db)
-	actDao := dao.NewActDao(db)
-	postDao := dao.NewPostDao(db)
-	commentDao := dao.NewCommentDao(db)
+	logger := ioc.Newlogger()
+	userDao := dao.NewUserDao(db, logger)
+	actDao := dao.NewActDao(db, logger)
+	postDao := dao.NewPostDao(db, logger)
+	commentDao := dao.NewCommentDao(db, logger)
 	client := ioc.InitRedis()
 	jwt := middleware.NewJwt(client)
 	ccnuService := service.NewCCNUService()
 	imgUploader := service.NewImgUploader()
 	cacheCache := cache.NewCache(client)
-	activityService := service.NewActivityService(actDao, cacheCache, userDao)
-	postService := service.NewPostService(postDao, userDao)
-	userService := service.NewUserService(userDao, actDao, postDao, commentDao, jwt, ccnuService, imgUploader, activityService, postService)
-	userController := controller.NewUserController(e, userService)
+	activityService := service.NewActivityService(actDao, cacheCache, userDao, logger)
+	postService := service.NewPostService(postDao, userDao, logger)
+	userService := service.NewUserService(userDao, actDao, postDao, commentDao, jwt, ccnuService, imgUploader, activityService, postService, logger)
+	userController := controller.NewUserController(e, userService, logger)
 	userRouter := router.NewUserRouter(e, userController, jwt)
-	actController := controller.NewActController(activityService, imgUploader)
+	actController := controller.NewActController(activityService, imgUploader, logger)
 	actRouter := router.NewActRouter(e, actController, jwt)
-	postController := controller.NewPostController(postService)
+	postController := controller.NewPostController(postService, logger)
 	postRouter := router.NewPostRouter(e, postController, jwt)
-	interactionDao := dao.NewInteractionDao(db, commentDao, userDao, actDao, postDao)
-	commentService := service.NewCommentService(commentDao, userDao, interactionDao)
-	commentController := controller.NewCommentController(commentService)
+	interactionDao := dao.NewInteractionDao(db, commentDao, userDao, actDao, postDao, logger)
+	mqMQ := mq.NewMQ(client)
+	commentService := service.NewCommentService(commentDao, userDao, interactionDao, logger, mqMQ)
+	commentController := controller.NewCommentController(commentService, logger)
 	commentRouter := router.NewCommentRouter(commentController, e, jwt)
-	interactionService := service.NewInteractionService(interactionDao)
-	interactionController := controller.NewInteractionController(interactionService)
+	feedDao := dao.NewFeedDao(db, logger)
+	feedService := service.NewFeedService(feedDao, mqMQ, userDao, logger)
+	feedController := controller.NewFeedController(feedService, logger)
+	feedRouter := router.NewFeedRouter(feedController, e, jwt)
+	interactionService := service.NewInteractionService(interactionDao, mqMQ, logger)
+	interactionController := controller.NewInteractionController(interactionService, logger)
 	interactionRouter := router.NewInteractionRouter(e, interactionController, jwt)
 	cors := middleware.NewCors(e)
-	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, interactionRouter, cors)
-	serverServer := server.NewServer(routerRouter)
+	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, feedRouter, interactionRouter, cors)
+	serverServer := server.NewServer(routerRouter, logger)
 	return serverServer
 }

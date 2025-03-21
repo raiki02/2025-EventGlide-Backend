@@ -38,5 +38,6 @@ func migrate(db *gorm.DB) error {
 		&model.Comment{},
 		&model.Post{},
 		&model.PostDraft{},
+		&model.Feed{},
 	)
 }

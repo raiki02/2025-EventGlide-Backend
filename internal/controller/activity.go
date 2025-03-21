@@ -5,6 +5,7 @@ import (
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
+	"go.uber.org/zap"
 )
 
 type ActControllerHdl interface {
@@ -21,12 +22,14 @@ type ActControllerHdl interface {
 type ActController struct {
 	as *service.ActivityService
 	iu *service.ImgUploader
+	l  *zap.Logger
 }
 
-func NewActController(as *service.ActivityService, iu *service.ImgUploader) *ActController {
+func NewActController(as *service.ActivityService, iu *service.ImgUploader, l *zap.Logger) *ActController {
 	return &ActController{
 		as: as,
 		iu: iu,
+		l:  l.Named("activity/controller"),
 	}
 }
 
@@ -68,6 +71,7 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 
 		a, err := ac.as.NewAct(c, &act)
 		if err != nil {
+			ac.l.Error("create activity failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦！请稍后尝试！", nil))
 			return
 		}
@@ -97,6 +101,7 @@ func (ac *ActController) NewDraft() gin.HandlerFunc {
 
 		_, err = ac.as.NewDraft(c, &d)
 		if err != nil {
+			ac.l.Error("create draft failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -115,11 +120,13 @@ func (ac *ActController) LoadDraft() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sid := tools.GetSid(c)
 		if sid == "" {
+			ac.l.Warn("request id is empty when load draft")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		d, err := ac.as.LoadDraft(c, sid)
 		if err != nil {
+			ac.l.Error("load draft failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -143,11 +150,13 @@ func (ac *ActController) FindActByName() gin.HandlerFunc {
 			return
 		}
 		if r.Name == "" {
+			ac.l.Warn("request name is empty when find act by name")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		as, err := ac.as.FindActByName(c, r.Name)
 		if err != nil {
+			ac.l.Error("find act by name failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -172,6 +181,7 @@ func (ac *ActController) FindActBySearches() gin.HandlerFunc {
 		}
 		as, err := ac.as.FindActBySearches(c, &actReq)
 		if err != nil {
+			ac.l.Error("find act by searches failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -198,11 +208,13 @@ func (ac *ActController) FindActByDate() gin.HandlerFunc {
 		}
 
 		if r.Date == "" {
+			ac.l.Warn("request date is empty when find act by date")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		as, err := ac.as.FindActByDate(c, r.Date)
 		if err != nil {
+			ac.l.Error("find act by date failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -221,11 +233,13 @@ func (ac *ActController) FindActByOwnerID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		if id == "" {
+			ac.l.Warn("request id is empty when find act by ownerid")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		as, err := ac.as.FindActByOwnerID(c, id)
 		if err != nil {
+			ac.l.Error("find act by ownerid failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
@@ -244,11 +258,13 @@ func (ac *ActController) ListAllActs() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		if id == "" {
+			ac.l.Warn("request id is empty when list all acts")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
 		as, err := ac.as.ListAllActs(c, id)
 		if err != nil {
+			ac.l.Error("list all acts failed", zap.Error(err))
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}

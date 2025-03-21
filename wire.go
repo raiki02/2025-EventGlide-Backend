@@ -10,6 +10,7 @@ import (
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/ioc"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/internal/mq"
 	"github.com/raiki02/EG/internal/router"
 	"github.com/raiki02/EG/internal/server"
 	"github.com/raiki02/EG/internal/service"
@@ -19,13 +20,16 @@ func InitApp(e *gin.Engine) *server.Server {
 	wire.Build(
 		ioc.InitDB,
 		ioc.InitRedis,
+		ioc.Newlogger,
 		//ioc.NewKafkaClient,
 		//ioc.NewProducer,
 		//ioc.NewConsumer,
 		//ioc.NewKafka,
 
 		cache.NewCache,
+		mq.NewMQ,
 
+		dao.NewFeedDao,
 		dao.NewInteractionDao,
 		dao.NewActDao,
 		dao.NewUserDao,
@@ -33,31 +37,31 @@ func InitApp(e *gin.Engine) *server.Server {
 		dao.NewCommentDao,
 		//dao.NewNumberDao,
 
+		service.NewFeedService,
 		service.NewInteractionService,
 		service.NewImgUploader,
 		service.NewPostService,
 		service.NewUserService,
 		service.NewCCNUService,
 		service.NewCommentService,
-		//service.NewNumberService,
 		service.NewActivityService,
 
 		middleware.NewJwt,
 		middleware.NewCors,
 
+		controller.NewFeedController,
 		controller.NewInteractionController,
 		controller.NewActController,
 		controller.NewPostController,
 		controller.NewUserController,
 		controller.NewCommentController,
-		//controller.NewNumberController,
 
 		router.NewInteractionRouter,
 		router.NewActRouter,
 		router.NewCommentRouter,
 		router.NewPostRouter,
 		router.NewUserRouter,
-		//router.NewNumberRouter,
+		router.NewFeedRouter,
 		router.NewRouter,
 
 		server.NewServer,
