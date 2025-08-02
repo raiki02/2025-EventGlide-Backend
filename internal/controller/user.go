@@ -55,11 +55,13 @@ func (uc *UserController) Login() gin.HandlerFunc {
 
 		if lr.StudentID == "" || lr.Password == "" {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("账号或者密码为空", zap.String("studentID", lr.StudentID))
 			return
 		}
 		user, token, err := uc.ush.Login(c, lr.StudentID, lr.Password)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("ccnu登录失败", zap.Error(err))
 			return
 		}
 		res := resp.LoginResp{
@@ -87,6 +89,7 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 		err := uc.ush.Logout(c, token)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("ccnu登出失败", zap.Error(err))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -105,11 +108,13 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 		sid := c.Param("id")
 		if sid == "" {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("学生id为空", zap.String("sid", sid))
 			return
 		}
 		user, err := uc.ush.GetUserInfo(c, sid)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("获取学生信息失败", zap.Error(err))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", user))
@@ -134,11 +139,13 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 		}
 		if userAvatarReq.StudentID == "" || userAvatarReq.AvatarUrl == "" {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("学生id或头像url为空", zap.String("sid", userAvatarReq.StudentID), zap.String("avatarUrl", userAvatarReq.AvatarUrl))
 			return
 		}
 		err = uc.ush.UpdateAvatar(c, userAvatarReq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("更新头像失败", zap.Error(err))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -158,15 +165,18 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 		err := c.ShouldBind(&unr)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			uc.l.Error("绑定请求失败", zap.Error(err))
 			return
 		}
 		if unr.Name == "" {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("用户名为空", zap.String("studentID", unr.StudentID))
 			return
 		}
 		err = uc.ush.UpdateUsername(c, unr.StudentID, unr.Name)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("更新用户名失败", zap.Error(err))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
@@ -187,15 +197,18 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 		err := c.ShouldBindJSON(&ureq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			uc.l.Error("绑定请求失败", zap.Error(err))
 			return
 		}
 		if ureq.StudentID == "" {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("学生id为空", zap.String("studentID", ureq.StudentID))
 			return
 		}
 		acts, err := uc.ush.SearchUserAct(c, ureq.StudentID, ureq.Keyword)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("搜索用户活动失败", zap.Error(err))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", acts))
@@ -215,15 +228,18 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 		err := c.ShouldBindJSON(&ureq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			uc.l.Error("绑定请求失败", zap.Error(err))
 			return
 		}
 		if ureq.StudentID == "" {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("学生id为空", zap.String("studentID", ureq.StudentID))
 			return
 		}
 		posts, err := uc.ush.SearchUserPost(c, ureq.StudentID, ureq.Keyword)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("搜索用户帖子失败", zap.Error(err))
 			return
 		}
 		c.JSON(200, tools.ReturnMSG(c, "success", posts))
@@ -239,6 +255,7 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		res := uc.ush.GenQINIUToken(c)
+		uc.l.Info("生成七牛云token", zap.String("token", res.AccessToken), zap.String("dn", res.DomainName))
 		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
@@ -256,15 +273,18 @@ func (uc *UserController) LoadCollectAct() gin.HandlerFunc {
 		err := context.ShouldBindJSON(&cr)
 		if err != nil {
 			context.JSON(200, tools.ReturnMSG(context, err.Error(), nil))
+			uc.l.Error("绑定请求失败", zap.Error(err))
 			return
 		}
 		if cr.StudentID == "" {
 			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("学生id为空", zap.String("studentID", cr.StudentID))
 			return
 		}
 		res, err := uc.ush.LoadCollectAct(context, cr.StudentID)
 		if err != nil {
 			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("加载活动收藏失败", zap.Error(err))
 			return
 		}
 		context.JSON(200, tools.ReturnMSG(context, "success", res))
@@ -284,15 +304,79 @@ func (uc *UserController) LoadCollectPost() gin.HandlerFunc {
 		err := context.ShouldBindJSON(&cr)
 		if err != nil {
 			context.JSON(200, tools.ReturnMSG(context, err.Error(), nil))
+			uc.l.Error("绑定请求失败", zap.Error(err))
 			return
 		}
 		if cr.StudentID == "" {
 			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("学生id为空", zap.String("studentID", cr.StudentID))
 			return
 		}
 		res, err := uc.ush.LoadCollectPost(context, cr.StudentID)
 		if err != nil {
 			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("加载帖子收藏失败", zap.Error(err))
+			return
+		}
+		context.JSON(200, tools.ReturnMSG(context, "success", res))
+	}
+}
+
+// @Tags User
+// @Summary 加载点赞过的帖子
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param cr body req.NumReq true "点赞请求"
+// @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
+// @Router /user/like/post [post]
+func (uc *UserController) LoadLikePost() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var cr req.NumReq
+		err := context.ShouldBindJSON(&cr)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, err.Error(), nil))
+			uc.l.Error("绑定请求失败", zap.Error(err))
+			return
+		}
+		if cr.StudentID == "" {
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("学生id为空", zap.String("studentID", cr.StudentID))
+			return
+		}
+		res, err := uc.ush.LoadLikePost(context, cr.StudentID)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("加载帖子点赞失败", zap.Error(err))
+			return
+		}
+		context.JSON(200, tools.ReturnMSG(context, "success", res))
+	}
+}
+
+// @Tags User
+// @Summary 加载点赞过的活动
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param cr body req.NumReq true "点赞请求"
+// @Success 200 {object} resp.Resp{data=[]resp.ListActivitiesResp}
+// @Router /user/like/act [post]
+func (uc *UserController) LoadLikeAct() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var cr req.NumReq
+		err := context.ShouldBindJSON(&cr)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, err.Error(), nil))
+			return
+		}
+		if cr.StudentID == "" {
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Warn("学生id为空", zap.String("studentID", cr.StudentID))
+			return
+		}
+		res, err := uc.ush.LoadLikeAct(context, cr.StudentID)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("加载活动点赞失败", zap.Error(err))
 			return
 		}
 		context.JSON(200, tools.ReturnMSG(context, "success", res))

@@ -48,7 +48,7 @@ func (id *InteractionDao) LikePost(c *gin.Context, studentID, targetID string) e
 }
 
 func (id *InteractionDao) LikeComment(c *gin.Context, studentID, targetID string) error {
-	err1 := id.db.Model(&model.User{}).Where("student_id = ?", studentID).Update("like_cmt", gorm.Expr("CONCAT(COALESCE(like_cmt, ''), ?)", fmt.Sprintf("%s,", targetID)))
+	err1 := id.db.Model(&model.User{}).Where("student_id = ?", studentID).Update("like_comment", gorm.Expr("CONCAT(COALESCE(like_comment, ''), ?)", fmt.Sprintf("%s,", targetID)))
 	err2 := id.db.Model(&model.Comment{}).Where("bid = ?", targetID).Update("like_num", gorm.Expr("like_num + ?", 1))
 	if err1.Error != nil || err2.Error != nil {
 		return errors.New("like comment error")
@@ -75,7 +75,13 @@ func (id *InteractionDao) DislikePost(c *gin.Context, studentID, targetID string
 }
 
 func (id *InteractionDao) DislikeComment(c *gin.Context, studentID, targetID string) error {
-	return id.db.Model(&model.Comment{}).Where("bid = ?", targetID).Update("like_num", gorm.Expr("like_num - ?", 1)).Error
+	err1 := id.db.Model(&model.User{}).Where("student_id = ?", studentID).Update("like_comment", gorm.Expr("REPLACE(like_comment, ?, '')", fmt.Sprintf("%s,", targetID)))
+	err2 := id.db.Model(&model.Comment{}).Where("bid = ?", targetID).Update("like_num", gorm.Expr("like_num - ?", 1)).Error
+	if err1.Error != nil || err2 != nil {
+
+		return errors.New("dislike comment error")
+	}
+	return nil
 }
 
 func (id *InteractionDao) CommentActivity(c *gin.Context, studentID, targetID string) error {

@@ -213,6 +213,46 @@ func (us *UserService) LoadCollectPost(ctx *gin.Context, studentId string) ([]re
 	return res, nil
 }
 
+func (us *UserService) LoadLikePost(ctx *gin.Context, studentId string) ([]resp.ListPostsResp, error) {
+	user, err := us.udh.GetUserInfo(ctx, studentId)
+	if err != nil {
+		return nil, err
+	}
+	var res []resp.ListPostsResp
+	PostIDs := tools.StringToSlice(user.LikePost)
+	for _, id := range PostIDs {
+		if id == "" {
+			continue
+		}
+		posts, err := us.pdh.FindPostByBid(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, us.ps.toListPostResp(ctx, posts))
+	}
+	return res, nil
+}
+
+func (us *UserService) LoadLikeAct(ctx *gin.Context, studentId string) ([]resp.ListActivitiesResp, error) {
+	user, err := us.udh.GetUserInfo(ctx, studentId)
+	if err != nil {
+		return nil, err
+	}
+	var res []resp.ListActivitiesResp
+	ActIDs := tools.StringToSlice(user.LikeAct)
+	for _, id := range ActIDs {
+		if id == "" {
+			continue
+		}
+		acts, err := us.adh.FindActByBid(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, us.as.toListActResp(ctx, &acts))
+	}
+	return res, nil
+}
+
 //---一站式账号登录------------------------------------------------------------
 
 type ccnuService struct {

@@ -37,4 +37,26 @@ type ReplyResp struct {
 
 	LikeNum  int `json:"likeNum"`
 	ReplyNum int `json:"replyNum"`
+
+	SubReply []SubReplyResp `json:"sub_reply"`
+}
+
+type SubReplyResp struct {
+	Bid string `json:"bid"`
+
+	ReplyCreator struct {
+		StudentID string `json:"studentid"`
+		Username  string `json:"username"`
+		Avatar    string `json:"avatar"`
+	} `json:"reply_creator"`
+
+	ReplyContent string `json:"reply_content"`
+	ReplyTime    string `json:"reply_time"`
+	ReplyPos     string `json:"reply_pos"`
+
+	ParentID       string `json:"parentid"`
+	ParentUserName string `json:"parentUserName"`
+
+	LikeNum  int `json:"likeNum"`
+	ReplyNum int `json:"replyNum"`
 }

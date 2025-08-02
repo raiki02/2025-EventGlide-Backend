@@ -576,6 +576,10 @@ definitions:
         type: string
       replyNum:
         type: integer
+      sub_reply:
+        items:
+          $ref: '#/definitions/resp.SubReplyResp'
+        type: array
     type: object
   resp.Resp:
     properties:
@@ -584,6 +588,34 @@ definitions:
       data: {}
       msg:
         type: string
+    type: object
+  resp.SubReplyResp:
+    properties:
+      bid:
+        type: string
+      likeNum:
+        type: integer
+      parentUserName:
+        type: string
+      parentid:
+        type: string
+      reply_content:
+        type: string
+      reply_creator:
+        properties:
+          avatar:
+            type: string
+          studentid:
+            type: string
+          username:
+            type: string
+        type: object
+      reply_pos:
+        type: string
+      reply_time:
+        type: string
+      replyNum:
+        type: integer
     type: object
   resp.UserInfo:
     properties:
@@ -1398,6 +1430,68 @@ paths:
                   $ref: '#/definitions/model.User'
               type: object
       summary: 获取用户信息
+      tags:
+      - User
+  /user/like/act:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 点赞请求
+        in: body
+        name: cr
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/resp.ListActivitiesResp'
+                  type: array
+              type: object
+      summary: 加载点赞过的活动
+      tags:
+      - User
+  /user/like/post:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 点赞请求
+        in: body
+        name: cr
+        required: true
+        schema:
+          $ref: '#/definitions/req.NumReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/resp.ListPostsResp'
+                  type: array
+              type: object
+      summary: 加载点赞过的帖子
       tags:
       - User
   /user/login:
