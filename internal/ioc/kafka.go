@@ -5,42 +5,43 @@ import (
 	"github.com/spf13/viper"
 )
 
-type KafkaHdl interface {
-	Produce(topic string, key string, value []byte) error
-	Consume(topic string, group string, handler func([]byte) error) error
-}
-
 type Kafka struct {
-	producer *sarama.AsyncProducer
-	consumer *sarama.ConsumerGroup
+	P sarama.SyncProducer
+	C sarama.Consumer
 }
 
-func NewKafka(producer *sarama.AsyncProducer, consumer *sarama.ConsumerGroup) *Kafka {
-	return &Kafka{
-		producer: producer,
-		consumer: consumer,
-	}
-}
-
-func NewAsyncProducer() (*sarama.AsyncProducer, error) {
+func NewKafkaClient() *sarama.Client {
+	addr := []string{viper.GetString("kafka.addr")}
 	config := sarama.NewConfig()
-	config.Producer.Return.Successes = true
-	config.Producer.Return.Errors = true
 	config.Producer.RequiredAcks = sarama.WaitForAll
-	addr := viper.GetString("kafka.addr")
-	producer, err := sarama.NewAsyncProducer([]string{addr}, config)
+	config.Producer.Partitioner = sarama.NewRandomPartitioner
+	config.Producer.Return.Successes = true
+	client, err := sarama.NewClient(addr, config)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &producer, nil
+	return &client
 }
 
-func NewConsumerGroup() (*sarama.ConsumerGroup, error) {
-	config := sarama.NewConfig()
-	addr := viper.GetString("kafka.addr")
-	consumer, err := sarama.NewConsumerGroup([]string{addr}, "EG-group", config)
+func NewProducer(client *sarama.Client) sarama.SyncProducer {
+	producer, err := sarama.NewSyncProducerFromClient(*client)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &consumer, nil
+	return producer
+}
+
+func NewConsumer(client *sarama.Client) sarama.Consumer {
+	consumer, err := sarama.NewConsumerFromClient(*client)
+	if err != nil {
+		panic(err)
+	}
+	return consumer
+}
+
+func NewKafka(p sarama.SyncProducer, c sarama.Consumer) *Kafka {
+	return &Kafka{
+		P: p,
+		C: c,
+	}
 }

@@ -1,40 +1,58 @@
 package tools
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/raiki02/EG/api/resp"
+	"math/rand"
+	"strings"
+	"time"
 )
 
-func GenUUID(c *gin.Context) string {
-	u, _ := uuid.NewUUID()
-	return u.String()
+var (
+	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+)
+
+func GenUUID() string {
+	var b strings.Builder
+	for i := 0; i < 4; i++ {
+		b.WriteRune(letterRunes[rand.Intn(len(letterRunes))])
+	}
+	return b.String()
 }
 
-func Marshal(v interface{}) string {
-	res, err := json.Marshal(v)
-	if err != nil {
+func SliceToString(s []string) string {
+	if len(s) == 0 {
 		return ""
 	}
-	return string(res)
+	return strings.Join(s, ",")
 }
 
-func Unmarshal(data []byte, v interface{}) interface{} {
-	err := json.Unmarshal(data, v)
-	if err != nil {
+func StringToSlice(s string) []string {
+	if s == "" {
 		return nil
 	}
-	return v
+	return strings.Split(s, ",")
 }
 
-func ReturnMSG(c *gin.Context, msg string, res ...interface{}) map[string]interface{} {
-	re := resp.Resp{
-		Code: c.Writer.Status(),
-		Msg:  msg,
-		Data: res,
-	}
+func ReturnMSG(c *gin.Context, msg string, res interface{}) map[string]interface{} {
 	return gin.H{
-		"response": re,
+		"code": c.Writer.Status(),
+		"msg":  msg,
+		"data": res,
 	}
+}
+
+func GetSid(c *gin.Context) string {
+	sid, ok := c.Get("studentid")
+	if !ok {
+		return ""
+	}
+	res, ok := sid.(string)
+	if !ok {
+		return ""
+	}
+	return res
+}
+
+func ParseTime(t time.Time) string {
+	return t.Format("2006-01-02 15:04:05")
 }

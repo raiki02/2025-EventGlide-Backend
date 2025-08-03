@@ -1,25 +1,27 @@
 package model
 
-import (
-	"time"
-)
+import "time"
 
 type Post struct {
-	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间"`
-	CreatorID string    `json:"creator_id" gorm:"column:creator_id; type:string; comment:创建者id"`
-	Bid       string    `json:"bid" gorm:"column:bid; type:string; comment:绑定id"`
-	Title     string    `json:"title" gorm:"column:title; type:varchar(255); comment:标题; not null"`
-	Content   string    `json:"content" gorm:"column:content; type:text; comment:详细内容; not null"`
-	ImgUrls   string    `json:"img_urls" gorm:"column:img_urls; type:text; comment:图片链接"`
+	Bid       string    `gorm:"type: varchar(255);comment:绑定id;column:bid;not null"`
+	CreatedAt time.Time `gorm:"type: datetime;comment:创建时间;column:created_at;not null"`
 
-	Comments int `json:"comments" gorm:"column:comments; type:int; comment:评论数;default:0"`
-	Likes    int `json:"likes" gorm:"column:likes; type:int; comment:点赞数;default:0"`
+	StudentID string `gorm:"type: varchar(255);comment:学生id;column:student_id;not null"`
+	Title     string `gorm:"type: varchar(255);comment:标题;column:title;not null"`
+	Introduce string `gorm:"type: text;comment:帖子描述;column:introduce;not null"`
+	ShowImg   string `gorm:"type: text;comment:图片链接;column:show_img"`
+
+	LikeNum    int `gorm:"type: int;comment:点赞数;column:like_num;default:0"`
+	CollectNum int `gorm:"type: int;comment:收藏数;column:collect_num;default:0"`
+	CommentNum int `gorm:"type: int;comment:评论数;column:comment_num;default:0"`
 }
 
 type PostDraft struct {
-	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间"`
-	CreatorID string    `json:"creator_id" gorm:"column:creator_id; type:string; comment:创建者id"`
-	Bid       string    `json:"bid" gorm:"column:bid; type:string; comment:绑定id"`
-	Title     string    `json:"title" gorm:"column:title; type:varchar(255); comment:标题; not null"`
-	Content   string    `json:"content" gorm:"column:content; type:text; comment:详细内容; not null"`
+	Bid       string    `gorm:"type: varchar(255);comment:绑定id;column:bid"`
+	CreatedAt time.Time `gorm:"type: datetime;comment:创建时间;column:created_at"`
+
+	StudentID string `gorm:"type: varchar(255);comment:学生id;column:student_id"`
+	Title     string `gorm:"type: varchar(255);comment:标题;column:title"`
+	Introduce string `gorm:"type: text;comment:帖子描述;column:introduce"`
+	ShowImg   string `gorm:"type: text;comment:图片链接;column:show_img"`
 }

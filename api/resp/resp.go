@@ -5,3 +5,8 @@ type Resp struct {
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
+
+type ImgBedResp struct {
+	DomainName  string `json:"domain_name"`
+	AccessToken string `json:"access_token"`
+}

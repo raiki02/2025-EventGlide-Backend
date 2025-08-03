@@ -6,6 +6,53 @@
         "contact": {}
     },
     "paths": {
+        "/act/all/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Activity"
+                ],
+                "summary": "列出所有活动",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/act/create": {
             "post": {
                 "consumes": [
@@ -25,22 +72,41 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Activity"
+                            "$ref": "#/definitions/req.CreateActReq"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.CreateActivityResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
         "/act/date": {
-            "get": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -51,17 +117,38 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "日期",
-                        "name": "date",
-                        "in": "query",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "日期查找",
+                        "name": "date",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.FindActByDateReq"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -87,22 +174,41 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ActivityDraft"
+                            "$ref": "#/definitions/req.CreateActReq"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/req.CreateActReq"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
         "/act/load": {
-            "post": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -115,27 +221,37 @@
                 "summary": "加载活动草稿",
                 "parameters": [
                     {
-                        "description": "加载草稿",
-                        "name": "draft",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.DraftReq"
-                        }
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ActivityDraft"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
         "/act/name": {
-            "get": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -146,9 +262,68 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "名称查找",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "活动名称",
                         "name": "name",
-                        "in": "query",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.FindActByNameReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListActivitiesResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/act/own/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Activity"
+                ],
+                "summary": "通过创建者id查找活动",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "创建者id",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -156,7 +331,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -173,6 +360,13 @@
                 "summary": "通过搜索条件查找活动",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "搜索条件",
                         "name": "actSearchReq",
                         "in": "body",
@@ -186,7 +380,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.ListActivitiesResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -203,12 +409,19 @@
                 "summary": "回复评论",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "回复",
                         "name": "CommentReq",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.CommentReq"
+                            "$ref": "#/definitions/req.CreateCommentReq"
                         }
                     }
                 ],
@@ -216,7 +429,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.ReplyResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -233,12 +458,19 @@
                 "summary": "创建评论",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "评论",
                         "name": "CommentReq",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.CommentReq"
+                            "$ref": "#/definitions/req.CreateCommentReq"
                         }
                     }
                 ],
@@ -246,7 +478,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.CommentResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -271,9 +515,53 @@
                     },
                     {
                         "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "删除评论",
+                        "name": "DeleteCommentReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.DeleteCommentReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/comment/load/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Comment"
+                ],
+                "summary": "加载评论",
+                "parameters": [
+                    {
+                        "type": "string",
                         "description": "目标id",
-                        "name": "target_id",
-                        "in": "formData",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -281,29 +569,131 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.CommentResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
-        "/number/comment": {
+        "/feed/list": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "获取feed列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.FeedResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/feed/total": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "获取用户的消息总数",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.BriefFeedResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/interaction/collect": {
             "post": {
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "number"
+                    "Interaction"
                 ],
-                "summary": "增加评论数",
+                "summary": "收藏",
                 "parameters": [
                     {
-                        "description": "评论入参",
-                        "name": "number",
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Number"
+                            "$ref": "#/definitions/req.InteractionReq"
                         }
                     }
                 ],
@@ -317,23 +707,30 @@
                 }
             }
         },
-        "/number/like": {
+        "/interaction/discollect": {
             "post": {
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "number"
+                    "Interaction"
                 ],
-                "summary": "增加点赞数",
+                "summary": "取消收藏",
                 "parameters": [
                     {
-                        "description": "点赞入参",
-                        "name": "number",
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Number"
+                            "$ref": "#/definitions/req.InteractionReq"
                         }
                     }
                 ],
@@ -347,23 +744,30 @@
                 }
             }
         },
-        "/number/unlike": {
+        "/interaction/dislike": {
             "post": {
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "number"
+                    "Interaction"
                 ],
-                "summary": "减少点赞数",
+                "summary": "取消点赞",
                 "parameters": [
                     {
-                        "description": "点赞入参",
-                        "name": "number",
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Number"
+                            "$ref": "#/definitions/req.InteractionReq"
                         }
                     }
                 ],
@@ -377,23 +781,30 @@
                 }
             }
         },
-        "/number/update": {
+        "/interaction/like": {
             "post": {
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "number"
+                    "Interaction"
                 ],
-                "summary": "更新点赞数和评论数",
+                "summary": "点赞",
                 "parameters": [
                     {
-                        "description": "更新入参",
-                        "name": "number",
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Number"
+                            "$ref": "#/definitions/req.InteractionReq"
                         }
                     }
                 ],
@@ -416,11 +827,35 @@
                     "Post"
                 ],
                 "summary": "获取所有帖子",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListPostsResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -440,12 +875,19 @@
                 "summary": "创建帖子",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "帖子",
                         "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Post"
+                            "$ref": "#/definitions/req.CreatePostReq"
                         }
                     }
                 ],
@@ -472,6 +914,13 @@
                 ],
                 "summary": "删除帖子",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "帖子",
                         "name": "post",
@@ -506,12 +955,19 @@
                 "summary": "创建草稿",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "草稿",
                         "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.PostDraft"
+                            "$ref": "#/definitions/req.CreatePostReq"
                         }
                     }
                 ],
@@ -519,14 +975,26 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/req.CreatePostReq"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
         "/post/find": {
-            "get": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -537,24 +1005,48 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "帖子名",
                         "name": "name",
-                        "in": "query",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.FindPostReq"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListPostsResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
         "/post/load": {
-            "post": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -567,20 +1059,80 @@
                 "summary": "加载草稿",
                 "parameters": [
                     {
-                        "description": "草稿请求",
-                        "name": "draft",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/req.DraftReq"
-                        }
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.PostDraft"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/post/own/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Post"
+                ],
+                "summary": "通过用户ID查找帖子",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListPostsResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -597,6 +1149,13 @@
                 ],
                 "summary": "更新头像",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "用户头像更改",
                         "name": "userAvatarReq",
@@ -617,7 +1176,111 @@
                 }
             }
         },
-        "/user/info": {
+        "/user/collect/act": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "加载活动收藏",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "加载收藏请求",
+                        "name": "cr",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.NumReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListActivitiesResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/collect/post": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "加载帖子收藏",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "加载收藏请求",
+                        "name": "cr",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.NumReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListPostsResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/info/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -629,9 +1292,16 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "学号",
-                        "name": "sid",
-                        "in": "query",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -639,7 +1309,123 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/like/act": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "加载点赞过的活动",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "点赞请求",
+                        "name": "cr",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.NumReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListActivitiesResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/like/post": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "加载点赞过的帖子",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "点赞请求",
+                        "name": "cr",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.NumReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resp.ListPostsResp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -656,25 +1442,32 @@
                 "summary": "登录",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "学号",
-                        "name": "studentid",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密码",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
+                        "description": "登录请求",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.LoginReq"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.LoginResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -719,6 +1512,13 @@
                 "summary": "搜索用户活动",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "搜索请求",
                         "name": "ureq",
                         "in": "body",
@@ -732,7 +1532,22 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Activity"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -749,6 +1564,13 @@
                 "summary": "搜索用户帖子",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "搜索请求",
                         "name": "ureq",
                         "in": "body",
@@ -762,7 +1584,22 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Post"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -777,11 +1614,32 @@
                     "User"
                 ],
                 "summary": "获取七牛云token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/resp.Resp"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.ImgBedResp"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -799,17 +1657,19 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "学号",
-                        "name": "sid",
-                        "in": "formData",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "新用户名",
-                        "name": "newname",
-                        "in": "formData",
-                        "required": true
+                        "description": "更新用户名",
+                        "name": "unr",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UpdateNameReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -827,64 +1687,61 @@
         "model.Activity": {
             "type": "object",
             "properties": {
-                "audition": {
+                "activeForm": {
                     "type": "string"
                 },
                 "bid": {
                     "type": "string"
                 },
-                "capacity": {
-                    "description": "descriptive",
+                "collectNum": {
                     "type": "integer"
                 },
-                "comments": {
+                "commentNum": {
                     "type": "integer"
                 },
-                "created_at": {
-                    "description": "活动id",
+                "createdAt": {
                     "type": "string"
                 },
-                "creator_id": {
+                "endTime": {
                     "type": "string"
                 },
-                "description": {
+                "holderType": {
                     "type": "string"
                 },
-                "end_time": {
+                "ifRegister": {
                     "type": "string"
                 },
-                "host": {
+                "introduce": {
                     "type": "string"
                 },
-                "identification": {
-                    "description": "audit",
+                "isChecking": {
                     "type": "string"
                 },
-                "if_register": {
-                    "type": "string"
-                },
-                "img_urls": {
-                    "type": "string"
-                },
-                "likes": {
-                    "description": "interactive",
+                "likeNum": {
                     "type": "integer"
                 },
-                "location": {
+                "position": {
                     "type": "string"
                 },
-                "name": {
+                "registerMethod": {
                     "type": "string"
                 },
-                "register_method": {
+                "showImg": {
                     "type": "string"
                 },
-                "start_time": {
-                    "description": "complex",
+                "signer": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "studentID": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 },
                 "type": {
-                    "description": "divided by function\nbasic",
                     "type": "string"
                 }
             }
@@ -892,57 +1749,49 @@
         "model.ActivityDraft": {
             "type": "object",
             "properties": {
+                "activeForm": {
+                    "type": "string"
+                },
                 "bid": {
                     "type": "string"
                 },
-                "capacity": {
-                    "type": "integer"
-                },
-                "creator_id": {
+                "createdAt": {
                     "type": "string"
                 },
-                "description": {
+                "endTime": {
                     "type": "string"
                 },
-                "end_time": {
+                "holderType": {
                     "type": "string"
                 },
-                "host": {
+                "ifRegister": {
                     "type": "string"
                 },
-                "if_register": {
+                "introduce": {
                     "type": "string"
                 },
-                "location": {
+                "position": {
                     "type": "string"
                 },
-                "name": {
+                "registerMethod": {
                     "type": "string"
                 },
-                "register_method": {
+                "showImg": {
                     "type": "string"
                 },
-                "start_time": {
+                "signer": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "studentID": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Number": {
-            "type": "object",
-            "properties": {
-                "bid": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "sid": {
-                    "type": "string"
-                },
-                "topic": {
                     "type": "string"
                 }
             }
@@ -953,23 +1802,26 @@
                 "bid": {
                     "type": "string"
                 },
-                "comments": {
+                "collectNum": {
                     "type": "integer"
                 },
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "creator_id": {
-                    "type": "string"
-                },
-                "img_urls": {
-                    "type": "string"
-                },
-                "likes": {
+                "commentNum": {
                     "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "introduce": {
+                    "type": "string"
+                },
+                "likeNum": {
+                    "type": "integer"
+                },
+                "showImg": {
+                    "type": "string"
+                },
+                "studentID": {
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"
@@ -982,13 +1834,16 @@
                 "bid": {
                     "type": "string"
                 },
-                "content": {
+                "createdAt": {
                     "type": "string"
                 },
-                "created_at": {
+                "introduce": {
                     "type": "string"
                 },
-                "creator_id": {
+                "showImg": {
+                    "type": "string"
+                },
+                "studentID": {
                     "type": "string"
                 },
                 "title": {
@@ -996,36 +1851,182 @@
                 }
             }
         },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "collectact": {
+                    "type": "string"
+                },
+                "collectpost": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "likeact": {
+                    "type": "string"
+                },
+                "likecomment": {
+                    "type": "string"
+                },
+                "likepost": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "school": {
+                    "type": "string"
+                },
+                "student_id": {
+                    "type": "string"
+                }
+            }
+        },
         "req.ActSearchReq": {
             "type": "object",
             "properties": {
-                "end_time": {
-                    "type": "string"
+                "detailTime": {
+                    "type": "object",
+                    "properties": {
+                        "end_time": {
+                            "type": "string"
+                        },
+                        "start_time": {
+                            "type": "string"
+                        }
+                    }
                 },
-                "host": {
-                    "type": "string"
+                "holderType": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "if_register": {
                     "type": "string"
                 },
                 "location": {
-                    "type": "string"
-                },
-                "start_time": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "req.CreateActReq": {
+            "type": "object",
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "labelform": {
+                    "type": "object",
+                    "properties": {
+                        "activeForm": {
+                            "type": "string"
+                        },
+                        "endTime": {
+                            "type": "string"
+                        },
+                        "holderType": {
+                            "type": "string"
+                        },
+                        "if_register": {
+                            "type": "string"
+                        },
+                        "position": {
+                            "type": "string"
+                        },
+                        "register_method": {
+                            "type": "string"
+                        },
+                        "signer": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "studentid": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "startTime": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "showImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "studentid": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }
         },
-        "req.CommentReq": {
+        "req.CreateCommentReq": {
             "type": "object",
             "properties": {
                 "content": {
                     "type": "string"
                 },
-                "creator_id": {
+                "parent_id": {
+                    "type": "string"
+                },
+                "studentid": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.CreatePostReq": {
+            "type": "object",
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "showImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "studentid": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.DeleteCommentReq": {
+            "type": "object",
+            "properties": {
+                "studentid": {
                     "type": "string"
                 },
                 "target_id": {
@@ -1033,13 +2034,79 @@
                 }
             }
         },
-        "req.DraftReq": {
+        "req.FindActByDateReq": {
             "type": "object",
             "properties": {
-                "bid": {
+                "date": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.FindActByNameReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.FindPostReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.InteractionReq": {
+            "type": "object",
+            "properties": {
+                "studentid": {
                     "type": "string"
                 },
-                "sid": {
+                "subject": {
+                    "type": "string"
+                },
+                "targetid": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.LoginReq": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "studentid": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.NumReq": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "object": {
+                    "type": "string"
+                },
+                "studentid": {
+                    "type": "string"
+                },
+                "target_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.UpdateNameReq": {
+            "type": "object",
+            "properties": {
+                "new_name": {
+                    "type": "string"
+                },
+                "studentid": {
                     "type": "string"
                 }
             }
@@ -1050,7 +2117,7 @@
                 "avatar_url": {
                     "type": "string"
                 },
-                "sid": {
+                "studentid": {
                     "type": "string"
                 }
             }
@@ -1061,8 +2128,453 @@
                 "keyword": {
                     "type": "string"
                 },
+                "studentid": {
+                    "type": "string"
+                }
+            }
+        },
+        "resp.BriefFeedResp": {
+            "type": "object",
+            "properties": {
+                "commentandat": {
+                    "type": "integer"
+                },
+                "likeandcollect": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "resp.CommentResp": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "commented_pos": {
+                    "type": "string"
+                },
+                "commented_time": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "creator": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "studentid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "isLike": {
+                    "type": "string"
+                },
+                "likeNum": {
+                    "type": "integer"
+                },
+                "reply": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.ReplyResp"
+                    }
+                },
+                "replyNum": {
+                    "type": "integer"
+                }
+            }
+        },
+        "resp.CreateActivityResp": {
+            "type": "object",
+            "properties": {
+                "activeForm": {
+                    "type": "string"
+                },
+                "bid": {
+                    "type": "string"
+                },
+                "if_register": {
+                    "type": "string"
+                },
+                "introduce": {
+                    "type": "string"
+                },
+                "isChecking": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "string"
+                },
+                "showImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "signer": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "studentid": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "school": {
+                            "type": "string"
+                        },
+                        "studentid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "resp.FeedAtResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
+        "resp.FeedCollectResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
+        "resp.FeedCommentResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
+        "resp.FeedLikeResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
+        "resp.FeedResp": {
+            "type": "object",
+            "properties": {
+                "ats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedAtResp"
+                    }
+                },
+                "collects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedCollectResp"
+                    }
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedCommentResp"
+                    }
+                },
+                "likes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedLikeResp"
+                    }
+                }
+            }
+        },
+        "resp.ImgBedResp": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "domain_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ListActivitiesResp": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "collectNum": {
+                    "type": "integer"
+                },
+                "commentNum": {
+                    "type": "integer"
+                },
+                "detailTime": {
+                    "type": "object",
+                    "properties": {
+                        "endTime": {
+                            "type": "string"
+                        },
+                        "startTime": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "holderType": {
+                    "type": "string"
+                },
+                "if_register": {
+                    "type": "string"
+                },
+                "introduce": {
+                    "type": "string"
+                },
+                "isCollect": {
+                    "type": "string"
+                },
+                "isLike": {
+                    "type": "string"
+                },
+                "likeNum": {
+                    "type": "integer"
+                },
+                "position": {
+                    "type": "string"
+                },
+                "showImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "school": {
+                            "type": "string"
+                        },
+                        "studentid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "resp.ListPostsResp": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "collectNum": {
+                    "type": "integer"
+                },
+                "commentNum": {
+                    "type": "integer"
+                },
+                "introduce": {
+                    "type": "string"
+                },
+                "isCollect": {
+                    "type": "string"
+                },
+                "isLike": {
+                    "type": "string"
+                },
+                "likeNum": {
+                    "type": "integer"
+                },
+                "showImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "school": {
+                            "type": "string"
+                        },
+                        "studentid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "resp.LoginResp": {
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "integer"
+                },
+                "avatar": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "school": {
+                    "type": "string"
+                },
                 "sid": {
                     "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReplyResp": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "likeNum": {
+                    "type": "integer"
+                },
+                "parentUserName": {
+                    "type": "string"
+                },
+                "parentid": {
+                    "type": "string"
+                },
+                "replyNum": {
+                    "type": "integer"
+                },
+                "reply_content": {
+                    "type": "string"
+                },
+                "reply_creator": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "studentid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "reply_pos": {
+                    "type": "string"
+                },
+                "reply_time": {
+                    "type": "string"
+                },
+                "sub_reply": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.SubReplyResp"
+                    }
                 }
             }
         },
@@ -1074,6 +2586,63 @@
                 },
                 "data": {},
                 "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "resp.SubReplyResp": {
+            "type": "object",
+            "properties": {
+                "bid": {
+                    "type": "string"
+                },
+                "likeNum": {
+                    "type": "integer"
+                },
+                "parentUserName": {
+                    "type": "string"
+                },
+                "parentid": {
+                    "type": "string"
+                },
+                "replyNum": {
+                    "type": "integer"
+                },
+                "reply_content": {
+                    "type": "string"
+                },
+                "reply_creator": {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "studentid": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "reply_pos": {
+                    "type": "string"
+                },
+                "reply_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "resp.UserInfo": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "studentid": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

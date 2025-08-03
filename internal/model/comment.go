@@ -2,33 +2,16 @@ package model
 
 import "time"
 
-/*
-	post -> comment -> subcomment 独立
-
-在一个帖子下评论，获取帖子id，制作评论发布：评论id，发布者id，评论内容
-回复评论，获取帖子id，评论id，制作回复：回复id，回复者id，回复内容
-
-act-post -> comment -> subcomment 共享
-获取bid，制作评论发布：评论id，发布者id，评论内容
-回复评论，获取bid，评论id，制作回复：回复id，回复者id，回复内容
-*/
-//for post/act
 type Comment struct {
-	CreatedAt   time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间; not null"`
-	Bid         string    `json:"bid" gorm:"column:bid; type:varchar(255); comment:绑定id ;not null"`
-	CreatorID   string    `json:"creator_id" gorm:"column:creator_id; type:varchar(255); comment:创建者id ;not null"`
-	TargetID    string    `json:"target_id" gorm:"column:target_id; type:varchar(255); comment:目标id ;not null"`
-	Likes       int       `json:"likes" gorm:"column:likes; type:int; comment:点赞数;default:0"`
-	SubComments int       `json:"sub_comments" gorm:"column:sub_comments; type:int; comment:回复数;default:0; not null"`
-	Content     string    `json:"content" gorm:"column:content; type:text; comment:评论内容; not null"`
-}
+	Bid       string    `gorm:"unique;primaryKey;not null;type:varchar(255);comment:评论ID;column:bid"`
+	CreatedAt time.Time `gorm:"not null;type:datetime;comment:创建时间;column:created_at"`
 
-// for comment
-type SubComment struct {
-	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间 ;not null"`
-	Bid       string    `json:"bid" gorm:"column:bid; type:varchar(255); comment:绑定id ;not null"`
-	CreatorID string    `json:"creator_id" gorm:"column:creator_id; type:varchar(255); comment:创建者id ;not null"`
-	TargetID  string    `json:"target_id" gorm:"column:target_id; type:varchar(255); comment:目标id ;not null"`
-	Likes     int       `json:"likes" gorm:"column:likes; type:int; comment:点赞数;default:0"`
-	Content   string    `json:"content" gorm:"column:content; type:text; comment:回复内容 ;not null"`
+	StudentID string `gorm:"not null;type:varchar(255);comment:学生ID;column:student_id"`
+	Content   string `gorm:"not null;type:text;comment:评论内容;column:content"`
+	ParentID  string `gorm:"type:varchar(255);comment:父评论ID;column:parent_id"`
+	Position  string `gorm:"not null;type:varchar(255);comment:位置;column:position"`
+	Type      int    `gorm:"not null;default:0;comment:评论类型;column:type"`
+
+	LikeNum  int `gorm:"not null;default:0;comment:点赞数;column:like_num"`
+	ReplyNum int `gorm:"not null;default:0;comment:回复数;column:reply_num"`
 }

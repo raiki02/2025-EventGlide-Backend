@@ -1,52 +1,46 @@
 package model
 
-import (
-	"time"
-)
+import "time"
 
 type Activity struct {
-	// 活动id
-	CreatedAt time.Time `json:"created_at" gorm:"column:created_at; type:datetime; comment:创建时间"`
-	CreatorId string    `json:"creator_id" gorm:"not null;type: varchar(255);comment:创建者id;column:creator_id"`
-	Bid       string    `json:"bid" gorm:"not null;type: varchar(255);comment:绑定id;column:bid"`
-	//divided by function
-	//basic
-	Type           string `json:"type" gorm:"not null;type: varchar(255);comment:活动类型;column:type"`
-	Host           string `json:"host" gorm:"not null;type: varchar(255);comment:活动主办方;column:host"`
-	Location       string `json:"location" gorm:"not null;type: varchar(255);comment:活动地点;column:location"`
-	IfRegister     string `json:"if_register" gorm:"null;type: enum('yes','no');comment:是否需要报名;column:if_register"`
-	RegisterMethod string `json:"register_method" gorm:"null;type: text;comment:报名方式;column:register_method"`
+	Bid        string    `gorm:"type:varchar(255);primary_key;not null;unique;column:bid"`
+	CreatedAt  time.Time `gorm:"type:datetime;column:created_at; not null"`
+	IsChecking string    `gorm:"type:varchar(255);column:is_checking"`
 
-	//complex
-	StartTime string `json:"start_time" gorm:"not null;type: datetime;comment:活动开始时间;column:start_time"`
-	EndTime   string `json:"end_time" gorm:"not null;type: datetime;comment:活动结束时间;column:end_time"`
-	Name      string `json:"name" gorm:"not null;type: varchar(255);comment:活动名称;column:name"`
+	StudentID      string `gorm:"type:varchar(255);column:student_id;not null"`
+	Title          string `gorm:"type:varchar(255);column:title;not null"`
+	Introduce      string `gorm:"type:text;column:introduce;not null"`
+	ShowImg        string `gorm:"type:text;column:show_img"`
+	HolderType     string `gorm:"type:varchar(255);column:holder_type;not null"`
+	Position       string `gorm:"type:varchar(255);column:position;not null"`
+	IfRegister     string `gorm:"type:enum('是','否');column:if_register;not null"`
+	RegisterMethod string `gorm:"type:varchar(255);column:register_method"`
+	StartTime      string `gorm:"type:datetime;column:start_time;not null"`
+	EndTime        string `gorm:"type:datetime;column:end_time;not null"`
+	Type           string `gorm:"type:varchar(255);column:type;not null"`
+	ActiveForm     string `gorm:"type:varchar(255);column:active_form"`
+	Signer         string `gorm:"type:text;column:signer;not null"`
 
-	//descriptive
-	Capacity int    `json:"capacity" gorm:"not null;type: int;comment:活动容量;column:capacity"`
-	ImgUrls  string `json:"img_urls" gorm:"column:img_urls; type:text; comment:图片链接，可选;null"`
-	//interactive
-	Likes    int `json:"likes" gorm:"default:0;type: int;comment:活动点赞数;column:likes"`
-	Comments int `json:"comments" gorm:"default:0;type: int;comment:活动评论数;column:comments"`
-
-	//audit
-	Identification string `json:"identification"`
-	Audition       string `json:"audition"`
-
-	Description string `json:"description" gorm:"null;type: text;comment:活动描述;column:description"`
+	LikeNum    int `gorm:"type:int;column:like_num;default:0"`
+	CollectNum int `gorm:"type:int;column:collect_num;default:0"`
+	CommentNum int `gorm:"type:int;column:comment_num;default:0"`
 }
 
 type ActivityDraft struct {
-	CreatorID      string `json:"creator_id" gorm:"type: varchar(255);comment:创建者id;column:creator_id"`
-	Bid            string `json:"bid" gorm:"type: varchar(255);comment:绑定id;column:bid"`
-	Description    string `json:"description" gorm:"type: text;comment:活动描述;column:description"`
-	Capacity       int    `json:"capacity" gorm:"type: int;comment:活动容量;column:capacity"`
-	Type           string `json:"type" gorm:"type: varchar(255);comment:活动类型;column:type"`
-	Host           string `json:"host" gorm:"type: varchar(255);comment:活动主办方;column:host"`
-	Location       string `json:"location" gorm:"type: varchar(255);comment:活动地点;column:location"`
-	IfRegister     string `json:"if_register" gorm:"type: enum('yes','no');comment:是否需要报名;column:if_register"`
-	RegisterMethod string `json:"register_method" gorm:"type: text;comment:报名方式;column:register_method"`
-	StartTime      string `json:"start_time" gorm:"type: datetime;comment:活动开始时间;column:start_time"`
-	EndTime        string `json:"end_time" gorm:"type: datetime;comment:活动结束时间;column:end_time"`
-	Name           string `json:"name" gorm:"type: varchar(255);comment:活动名称;column:name"`
+	Bid       string    `gorm:"type:varchar(255);primary_key;not null;unique;column:bid"`
+	CreatedAt time.Time `gorm:"type:datetime;column:created_at;not null" `
+
+	StudentID      string `gorm:"type:varchar(255);column:student_id"`
+	Title          string `gorm:"type:varchar(255);column:title"`
+	Introduce      string `gorm:"type:text;column:introduce"`
+	ShowImg        string `gorm:"type:text;column:show_img"`
+	HolderType     string `gorm:"type:varchar(255);column:holder_type"`
+	Position       string `gorm:"type:varchar(255);column:position"`
+	IfRegister     string `gorm:"type:varchar(32);column:if_register"`
+	RegisterMethod string `gorm:"type:varchar(255);column:register_method"`
+	StartTime      string `gorm:"type:varchar(255);column:start_time"`
+	EndTime        string `gorm:"type:varchar(255);column:end_time"`
+	Type           string `gorm:"type:varchar(255);column:type"`
+	ActiveForm     string `gorm:"type:varchar(255);column:active_form"`
+	Signer         string `gorm:"type:text;column:signer"`
 }

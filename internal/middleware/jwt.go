@@ -39,16 +39,16 @@ func (c *Jwt) GenToken(ctx *gin.Context, sid string) string {
 		Subject:   sid,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, _ := token.SignedString(c.jwtKey)
-	t = "Bearer " + t
-	return t // "bearer token"
+	t, err := token.SignedString(c.jwtKey)
+	if err != nil {
+		return ""
+	}
+	return t
 }
 
 func (c *Jwt) StoreInRedis(ctx *gin.Context, sid string, token string) error {
-	//把token解析出对应id 存入redis中
 	id := c.parseTokenId(token)
 	key := "token:" + id
-	//id -> sid
 	err := c.rdb.Set(ctx, key, sid, setTTL()).Err()
 	if err != nil {
 		return err
@@ -62,7 +62,6 @@ func (c *Jwt) CheckToken(ctx *gin.Context, token string) error {
 		return errors.New("token is invalid")
 	}
 	id = "token:" + id
-	//token -> id -> sid
 	_, err := c.rdb.Get(ctx, id).Result()
 	if err != nil {
 		return err
@@ -81,11 +80,18 @@ func (c *Jwt) ClearToken(ctx *gin.Context, token string) error {
 }
 
 func (c *Jwt) parseTokenId(token string) string {
-	// "Bearer token" to token
-	_, token, _ = strings.Cut(token, " ")
-	t, _ := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+	if token == "" {
+		return ""
+	}
+	if strings.HasPrefix(token, "Bearer") {
+		_, token, _ = strings.Cut(token, " ")
+	}
+	t, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return c.jwtKey, nil
 	})
+	if err != nil {
+		return ""
+	}
 	if c, ok := t.Claims.(*jwt.RegisteredClaims); ok && t.Valid {
 		return c.ID
 	}
@@ -100,12 +106,37 @@ func setTTL() time.Duration {
 func (c *Jwt) WrapCheckToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("Authorization")
+		if token == "" {
+			ctx.JSON(401, tools.ReturnMSG(ctx, "token is empty", nil))
+			ctx.Abort()
+			return
+		}
 		err := c.CheckToken(ctx, token)
 		if err != nil {
 			ctx.JSON(401, tools.ReturnMSG(ctx, "token is invalid", nil))
 			ctx.Abort()
 			return
 		}
+		ctx.Set("studentid", c.parseSid(token))
 		ctx.Next()
 	}
+}
+
+func (c *Jwt) parseSid(token string) string {
+	if token == "" {
+		return ""
+	}
+	if strings.HasPrefix(token, "Bearer") {
+		_, token, _ = strings.Cut(token, " ")
+	}
+	t, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return c.jwtKey, nil
+	})
+	if err != nil {
+		return ""
+	}
+	if c, ok := t.Claims.(*jwt.RegisteredClaims); ok && t.Valid {
+		return c.Subject
+	}
+	return ""
 }

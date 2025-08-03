@@ -19,12 +19,13 @@ type ImgUploader struct {
 }
 
 func NewImgUploader() *ImgUploader {
-	return &ImgUploader{
-		AccessKey: viper.GetString("imgbed.accecssKey"),
+	img := &ImgUploader{
+		AccessKey: viper.GetString("imgbed.accessKey"),
 		SerectKey: viper.GetString("imgbed.secretKey"),
 		Bucket:    viper.GetString("imgbed.bucket"),
 		ImgUrl:    viper.GetString("imgbed.imgUrl"),
 	}
+	return img
 }
 
 func (iu *ImgUploader) GenQINIUToken(c *gin.Context) string {
