@@ -29,5 +29,8 @@ func (ir *InteractionRouter) RegisterInteractionRouters() {
 
 		i.POST("/collect", ir.ic.Collect())
 		i.POST("/discollect", ir.ic.Discollect())
+
+		i.POST("/approve", ir.ic.Approve())
+		i.POST("/disapprove", ir.ic.Reject())
 	}
 }
