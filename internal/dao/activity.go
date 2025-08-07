@@ -142,7 +142,7 @@ func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]mode
 		q = q.Where("start_time >= ? AND end_time <= ?", a.DetailTime.StartTime, a.DetailTime.EndTime)
 	}
 
-	err := q.Find(&as).Error
+	err := q.WithContext(c).Where("is_checking = ?", "pass").Find(&as).Error
 	return as, err
 }
 
@@ -157,7 +157,7 @@ func (ad *ActDao) FindActByOwnerID(c *gin.Context, s string) ([]model.Activity, 
 
 func (ad *ActDao) ListAllActs(c *gin.Context) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.Find(&as).Error
+	err := ad.db.WithContext(c).Where("is_checking = ?", "pass").Find(&as).Error
 	if err != nil {
 		return nil, err
 	}
