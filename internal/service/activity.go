@@ -28,20 +28,30 @@ type ActivityService struct {
 	ad *dao.ActDao
 	ch *cache.Cache
 	ud *dao.UserDao
+	id *dao.InteractionDao
 	l  *zap.Logger
 }
 
-func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger) *ActivityService {
+func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger, id *dao.InteractionDao) *ActivityService {
 	return &ActivityService{
 		ad: ad,
 		ch: ch,
 		ud: ud,
+		id: id,
 		l:  l.Named("activity/service"),
 	}
 }
 
 func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.CreateActivityResp, error) {
 	act := toAct(r)
+	// TODO: 异步增加
+	signers := r.LabelForm.Signer
+	for _, s := range signers {
+		if err := as.id.InsertApprovement(c, s.StudentID, s.Name, act.Bid); err != nil {
+			as.l.Error("Failed to insert approvement", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
+			return resp.CreateActivityResp{}, err
+		}
+	}
 
 	err := as.ad.CreateAct(c, act)
 	if err != nil {

@@ -18,8 +18,8 @@ type Activity struct {
 	StartTime      string `gorm:"type:datetime;column:start_time;not null"`
 	EndTime        string `gorm:"type:datetime;column:end_time;not null"`
 	Type           string `gorm:"type:varchar(255);column:type;not null"`
-	ActiveForm     string `gorm:"type:varchar(255);column:active_form"`
-	Signer         string `gorm:"type:text;column:signer;not null"`
+	ActiveForm     string `gorm:"type:varchar(255);column:active_form"` // 表单url
+	Signer         string `gorm:"type:text;column:signer;not null"`     // 报名人 >= 5的 []slice
 
 	LikeNum    int `gorm:"type:int;column:like_num;default:0"`
 	CollectNum int `gorm:"type:int;column:collect_num;default:0"`
