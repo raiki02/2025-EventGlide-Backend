@@ -7,10 +7,11 @@ type BriefFeedResp struct {
 }
 
 type FeedResp struct {
-	Likes    []FeedLikeResp    `json:"likes"`
-	Ats      []FeedAtResp      `json:"ats"`
-	Comments []FeedCommentResp `json:"comments"`
-	Collects []FeedCollectResp `json:"collects"`
+	Likes       []FeedLikeResp       `json:"likes"`
+	Ats         []FeedAtResp         `json:"ats"`
+	Comments    []FeedCommentResp    `json:"comments"`
+	Collects    []FeedCollectResp    `json:"collects"`
+	Invitations []FeedInvitationResp `json:"invitations"`
 }
 
 type UserInfo struct {
@@ -46,6 +47,15 @@ type FeedAtResp struct {
 }
 
 type FeedCollectResp struct {
+	Userinfo UserInfo `json:"userInfo"`
+
+	Message     string `json:"message"`
+	PubLishedAt string `json:"published_at"`
+	TargetBid   string `json:"target_bid"`
+	Status      string `json:"status"`
+}
+
+type FeedInvitationResp struct {
 	Userinfo UserInfo `json:"userInfo"`
 
 	Message     string `json:"message"`

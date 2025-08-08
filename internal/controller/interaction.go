@@ -163,7 +163,7 @@ func (ic *InteractionController) Discollect() gin.HandlerFunc {
 // @Tags Interaction
 // @Summary 作为活动填表人批准发表此活动
 // @Accept json
-// @Param Authorization header string
+// @Param Authorization header string true "token"
 // @Param interaction body req.InteractionReq true "互动"
 // @Success 200 {object} resp.Resp
 // @Router /interaction/approve [post]
@@ -176,7 +176,7 @@ func (ic *InteractionController) Approve() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		if ireq.TargetID == "" || ireq.Subject == "" {
+		if ireq.TargetID == "" {
 			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
 			return
 		}

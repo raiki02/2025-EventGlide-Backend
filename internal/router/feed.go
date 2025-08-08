@@ -30,6 +30,6 @@ func (fr *FeedRouter) RegisterFeedRouters() {
 	{
 		feed.GET("/total", fr.fc.GetTotalCnt())
 		feed.GET("/list", fr.fc.GetFeedList())
+		feed.GET("/auditor", fr.fc.GetAuditorFeedList())
 	}
-
 }

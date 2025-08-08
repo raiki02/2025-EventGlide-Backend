@@ -71,3 +71,27 @@ func (fc *FeedController) GetFeedList() func(c *gin.Context) {
 		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
+
+// @Summary 获取审核员feed列表
+// @Tags feed
+// @Produce json
+// @Param Authorization header string true "token"
+// @Success 200 {object} resp.Resp{data=resp.FeedResp}
+// @Router /feed/auditor [get]
+func (fc *FeedController) GetAuditorFeedList() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		sid := tools.GetSid(c)
+		if sid == "" {
+			fc.l.Warn("request studentid or content or parentid is empty when create comment")
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
+			return
+		}
+		res, err := fc.fs.GetAuditorFeedList(c, sid)
+		if err != nil {
+			fc.l.Error("get feed list failed", zap.Error(err))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
+	}
+}

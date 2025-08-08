@@ -23,6 +23,7 @@ type FeedServiceHdl interface {
 	GetCollectFeed(ctx *gin.Context, sid string) ([]resp.FeedCollectResp, error)
 	GetCommentFeed(ctx *gin.Context, sid string) ([]resp.FeedCommentResp, error)
 	GetAtFeed(ctx *gin.Context, sid string) ([]resp.FeedAtResp, error)
+	GetAuditorFeedList(ctx *gin.Context, sid string) ([]resp.FeedInvitationResp, error)
 }
 
 type FeedService struct {
@@ -229,6 +230,35 @@ func (fs *FeedService) GetAtFeed(ctx *gin.Context, sid string) ([]resp.FeedAtRes
 	return res, nil
 }
 
+func (fs *FeedService) GetAuditorFeedList(ctx *gin.Context, sid string) (resp.FeedResp, error) {
+	invites, err := fs.fd.GetAuditorFeed(ctx, sid)
+	if err != nil {
+		fs.l.Error("Get Auditor Feed List Failed", zap.Error(err))
+		return resp.FeedResp{}, err
+	}
+	var res []resp.FeedInvitationResp
+	for _, v := range invites {
+		user, err := fs.ud.GetUserInfo(ctx, v.StudentId)
+		if err != nil {
+			fs.l.Error("Get User Info when get auditor feed Failed", zap.Error(err))
+			return resp.FeedResp{}, err
+		}
+		res = append(res, resp.FeedInvitationResp{
+			Userinfo: resp.UserInfo{
+				StudentID: user.StudentID,
+				Avatar:    user.Avatar,
+				Username:  user.Name,
+			},
+			Message: processMsg(&model.Feed{
+				Action: "invitation",
+			}, v.StudentName),
+			PubLishedAt: tools.ParseTime(v.CreatedAt),
+			TargetBid:   v.ActivityId,
+		})
+	}
+	return resp.FeedResp{Invitations: res}, nil
+}
+
 func processMsg(f *model.Feed, name string) string {
 	switch f.Action {
 	case "like":
@@ -261,6 +291,8 @@ func processMsg(f *model.Feed, name string) string {
 		case "comment":
 			return name + "在评论中@了你"
 		}
+	case "invitation":
+		return name + "邀请你批准活动发布"
 	}
 	return "消息加载中......"
 }
