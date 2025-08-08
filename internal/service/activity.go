@@ -7,6 +7,7 @@ import (
 	"github.com/raiki02/EG/internal/cache"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/internal/mq"
 	"github.com/raiki02/EG/tools"
 	"go.uber.org/zap"
 	"strings"
@@ -29,15 +30,17 @@ type ActivityService struct {
 	ch *cache.Cache
 	ud *dao.UserDao
 	id *dao.InteractionDao
+	mq *mq.MQ
 	l  *zap.Logger
 }
 
-func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger, id *dao.InteractionDao) *ActivityService {
+func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger, id *dao.InteractionDao, mq *mq.MQ) *ActivityService {
 	return &ActivityService{
 		ad: ad,
 		ch: ch,
 		ud: ud,
 		id: id,
+		mq: mq,
 		l:  l.Named("activity/service"),
 	}
 }
@@ -49,6 +52,16 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 	for _, s := range signers {
 		if err := as.id.InsertApprovement(c, s.StudentID, s.Name, act.Bid); err != nil {
 			as.l.Error("Failed to insert approvement", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
+			return resp.CreateActivityResp{}, err
+		}
+		f := model.Feed{
+			StudentId: s.StudentID,
+			TargetBid: act.Bid,
+			Object:    "activity",
+			Action:    "invitation",
+		}
+		if err := as.mq.Publish(c, "feed", f); err != nil {
+			as.l.Error("Failed to publish feed", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
 			return resp.CreateActivityResp{}, err
 		}
 	}

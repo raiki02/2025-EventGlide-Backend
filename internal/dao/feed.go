@@ -15,6 +15,7 @@ type FeedDaoHdl interface {
 	GetCollectFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
 	GetCommentFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
 	GetAtFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
+	GetInvitationFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
 }
 
 type FeedDao struct {
@@ -85,4 +86,13 @@ func (fd *FeedDao) GetAtFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
 		return nil, err1
 	}
 	return feeds, nil
+}
+
+func (fd *FeedDao) GetAuditorFeed(ctx *gin.Context, id string) ([]*model.Approvement, error) {
+	var a []*model.Approvement
+	if err := fd.db.WithContext(ctx).Where("student_id = ?", id).Find(&a).Error; err != nil {
+		fd.l.Error("Get Auditor Feed Failed", zap.Error(err))
+		return nil, err
+	}
+	return a, nil
 }
