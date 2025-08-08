@@ -599,6 +599,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/feed/auditor": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "获取审核员feed列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.FeedResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/feed/list": {
             "get": {
                 "produces": [
@@ -674,6 +714,43 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/interaction/approve": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Interaction"
+                ],
+                "summary": "作为活动填表人批准发表此活动",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.InteractionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
                         }
                     }
                 }
@@ -799,6 +876,43 @@ const docTemplate = `{
                     "Interaction"
                 ],
                 "summary": "点赞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "互动",
+                        "name": "interaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.InteractionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/interaction/reject": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Interaction"
+                ],
+                "summary": "作为活动填表人拒绝发表此活动",
                 "parameters": [
                     {
                         "type": "string",
@@ -1697,6 +1811,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "activeForm": {
+                    "description": "表单url // 通过条件2",
                     "type": "string"
                 },
                 "bid": {
@@ -1724,6 +1839,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "isChecking": {
+                    "description": "pending or pass or reject // 是否显示",
                     "type": "string"
                 },
                 "likeNum": {
@@ -1739,6 +1855,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "signer": {
+                    "description": "报名人 \u003e= 5的 []slice // 通过条件1",
                     "type": "string"
                 },
                 "startTime": {
@@ -2328,6 +2445,26 @@ const docTemplate = `{
                 }
             }
         },
+        "resp.FeedInvitationResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "target_bid": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/resp.UserInfo"
+                }
+            }
+        },
         "resp.FeedLikeResp": {
             "type": "object",
             "properties": {
@@ -2367,6 +2504,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/resp.FeedCommentResp"
+                    }
+                },
+                "invitations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.FeedInvitationResp"
                     }
                 },
                 "likes": {
