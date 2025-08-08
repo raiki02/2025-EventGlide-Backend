@@ -2,6 +2,7 @@ definitions:
   model.Activity:
     properties:
       activeForm:
+        description: 表单url // 通过条件2
         type: string
       bid:
         type: string
@@ -20,6 +21,7 @@ definitions:
       introduce:
         type: string
       isChecking:
+        description: pending or pass or reject // 是否显示
         type: string
       likeNum:
         type: integer
@@ -30,6 +32,7 @@ definitions:
       showImg:
         type: string
       signer:
+        description: 报名人 >= 5的 []slice // 通过条件1
         type: string
       startTime:
         type: string
@@ -412,6 +415,19 @@ definitions:
       userInfo:
         $ref: '#/definitions/resp.UserInfo'
     type: object
+  resp.FeedInvitationResp:
+    properties:
+      message:
+        type: string
+      published_at:
+        type: string
+      status:
+        type: string
+      target_bid:
+        type: string
+      userInfo:
+        $ref: '#/definitions/resp.UserInfo'
+    type: object
   resp.FeedLikeResp:
     properties:
       message:
@@ -438,6 +454,10 @@ definitions:
       comments:
         items:
           $ref: '#/definitions/resp.FeedCommentResp'
+        type: array
+      invitations:
+        items:
+          $ref: '#/definitions/resp.FeedInvitationResp'
         type: array
       likes:
         items:
@@ -981,6 +1001,29 @@ paths:
       summary: 加载评论
       tags:
       - Comment
+  /feed/auditor:
+    get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.FeedResp'
+              type: object
+      summary: 获取审核员feed列表
+      tags:
+      - feed
   /feed/list:
     get:
       parameters:
@@ -1027,6 +1070,30 @@ paths:
       summary: 获取用户的消息总数
       tags:
       - feed
+  /interaction/approve:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 互动
+        in: body
+        name: interaction
+        required: true
+        schema:
+          $ref: '#/definitions/req.InteractionReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 作为活动填表人批准发表此活动
+      tags:
+      - Interaction
   /interaction/collect:
     post:
       consumes:
@@ -1121,6 +1188,30 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 点赞
+      tags:
+      - Interaction
+  /interaction/reject:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 互动
+        in: body
+        name: interaction
+        required: true
+        schema:
+          $ref: '#/definitions/req.InteractionReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 作为活动填表人拒绝发表此活动
       tags:
       - Interaction
   /post/all:
