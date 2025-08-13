@@ -56,3 +56,19 @@ func GetSid(c *gin.Context) string {
 func ParseTime(t time.Time) string {
 	return t.Format("2006-01-02 15:04:05")
 }
+
+func StatusMapper(auditStatus string) string {
+	//  0: "未审核",
+	//    1: "通过",
+	//    2: "不通过",
+	switch auditStatus {
+	case "未审核":
+		return "pending"
+	case "通过":
+		return "pass"
+	case "不通过":
+		return "reject"
+	default:
+		return "unknown error"
+	}
+}

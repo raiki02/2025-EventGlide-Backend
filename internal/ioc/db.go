@@ -40,6 +40,6 @@ func migrate(db *gorm.DB) error {
 		&model.PostDraft{},
 		&model.Feed{},
 		&model.Approvement{},
-		&model.ActivityForm{},
+		&model.AuditorForm{},
 	)
 }

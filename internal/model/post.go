@@ -3,6 +3,7 @@ package model
 import "time"
 
 type Post struct {
+	Id        uint      `gorm:"primaryKey;autoIncrement;comment:主键id;column:id"`
 	Bid       string    `gorm:"type: varchar(255);comment:绑定id;column:bid;not null"`
 	CreatedAt time.Time `gorm:"type: datetime;comment:创建时间;column:created_at;not null"`
 

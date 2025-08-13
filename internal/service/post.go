@@ -23,15 +23,17 @@ type PostServiceHdl interface {
 }
 
 type PostService struct {
+	aud AuditorService
 	pdh *dao.PostDao
 	ud  *dao.UserDao
 	l   *zap.Logger
 }
 
-func NewPostService(pdh *dao.PostDao, ud *dao.UserDao, l *zap.Logger) *PostService {
+func NewPostService(pdh *dao.PostDao, ud *dao.UserDao, l *zap.Logger, aud AuditorService) *PostService {
 	return &PostService{
 		pdh: pdh,
 		ud:  ud,
+		aud: aud,
 		l:   l.Named("post/service"),
 	}
 }
@@ -46,10 +48,20 @@ func (ps *PostService) GetAllPost(c *gin.Context) ([]resp.ListPostsResp, error) 
 }
 
 func (ps *PostService) CreatePost(c *gin.Context, r *req.CreatePostReq) (resp.CreatePostResp, error) {
-
 	post := toPost(r)
 
-	err := ps.pdh.CreatePost(c, post)
+	form, err := ps.aud.CreateAuditorForm(c, post.Bid, "", SubjectPost)
+	if err != nil {
+		ps.l.Error("Failed to create auditor form", zap.Error(err), zap.String("bid", post.Bid))
+		return resp.CreatePostResp{}, err
+	}
+	err = ps.aud.UploadForm(c, r, form.Id)
+	if err != nil {
+		ps.l.Error("Failed to upload form", zap.Error(err), zap.String("bid", post.Bid), zap.Uint("formID", form.Id))
+		return resp.CreatePostResp{}, err
+	}
+
+	err = ps.pdh.CreatePost(c, post)
 	if err != nil {
 		return resp.CreatePostResp{}, err
 	}

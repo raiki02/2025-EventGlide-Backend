@@ -26,27 +26,34 @@ type ActivityServiceHdl interface {
 }
 
 type ActivityService struct {
-	ad *dao.ActDao
-	ch *cache.Cache
-	ud *dao.UserDao
-	id *dao.InteractionDao
-	mq *mq.MQ
-	l  *zap.Logger
+	ad  *dao.ActDao
+	ch  *cache.Cache
+	ud  *dao.UserDao
+	id  *dao.InteractionDao
+	mq  *mq.MQ
+	aud AuditorService
+	l   *zap.Logger
 }
 
-func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger, id *dao.InteractionDao, mq *mq.MQ) *ActivityService {
+func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger, id *dao.InteractionDao, mq *mq.MQ, aud AuditorService) *ActivityService {
 	return &ActivityService{
-		ad: ad,
-		ch: ch,
-		ud: ud,
-		id: id,
-		mq: mq,
-		l:  l.Named("activity/service"),
+		ad:  ad,
+		ch:  ch,
+		ud:  ud,
+		id:  id,
+		aud: aud,
+		mq:  mq,
+		l:   l.Named("activity/service"),
 	}
 }
 
 func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.CreateActivityResp, error) {
+	var (
+		form *model.AuditorForm
+		err  error
+	)
 	act := toAct(r)
+
 	// TODO: 异步增加
 	signers := r.LabelForm.Signer
 	for _, s := range signers {
@@ -66,7 +73,20 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 		}
 	}
 
-	err := as.ad.CreateAct(c, act)
+	// TODO: 异步
+	form, err = as.aud.CreateAuditorForm(c, act.Bid, act.ActiveForm, SubjectActivity)
+	if err != nil {
+		as.l.Error("Failed to create activity form", zap.Error(err))
+		return resp.CreateActivityResp{}, err
+	}
+
+	err = as.aud.UploadForm(c, *r, form.Id)
+	if err != nil {
+		as.l.Error("Failed to upload form to auditor", zap.Error(err))
+		return resp.CreateActivityResp{}, err
+	}
+
+	err = as.ad.CreateAct(c, act)
 	if err != nil {
 		as.l.Error("Failed to create act", zap.Error(err))
 		return resp.CreateActivityResp{}, err

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -24,14 +25,16 @@ type ActDaoHdl interface {
 }
 
 type ActDao struct {
-	db *gorm.DB
-	l  *zap.Logger
+	db     *gorm.DB
+	effect string
+	l      *zap.Logger
 }
 
 func NewActDao(db *gorm.DB, l *zap.Logger) *ActDao {
 	return &ActDao{
-		db: db,
-		l:  l.Named("activity/dao"),
+		db:     db,
+		effect: viper.GetString("auditor.effect"),
+		l:      l.Named("activity/dao"),
 	}
 }
 
@@ -79,7 +82,7 @@ func (ad *ActDao) FindActByUser(c *gin.Context, s string, keyword string) ([]mod
 
 func (ad *ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.Where("title like ?", fmt.Sprintf("%%%s%%", n)).Find(&as).Error
+	err := ad.db.Scopes(ad.SetEffect()).Where("title like ?", fmt.Sprintf("%%%s%%", n)).Find(&as).Error
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +91,7 @@ func (ad *ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, err
 
 func (ad *ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.Where("start_time like ?", fmt.Sprintf("%%%s%%", d)).Find(&as).Error
+	err := ad.db.Scopes(ad.SetEffect()).Where("start_time like ?", fmt.Sprintf("%%%s%%", d)).Find(&as).Error
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +145,11 @@ func (ad *ActDao) FindActBySearches(c *gin.Context, a *req.ActSearchReq) ([]mode
 		q = q.Where("start_time >= ? AND end_time <= ?", a.DetailTime.StartTime, a.DetailTime.EndTime)
 	}
 
-	err := q.WithContext(c).Where("is_checking = ?", "pass").Find(&as).Error
+	err := q.Scopes(ad.SetEffect()).Find(&as).Error
+	if err != nil {
+		ad.l.Error("Failed to find activities by searches", zap.Error(err))
+	}
+
 	return as, err
 }
 
@@ -157,7 +164,8 @@ func (ad *ActDao) FindActByOwnerID(c *gin.Context, s string) ([]model.Activity, 
 
 func (ad *ActDao) ListAllActs(c *gin.Context) ([]model.Activity, error) {
 	var as []model.Activity
-	err := ad.db.WithContext(c).Where("is_checking = ?", "pass").Find(&as).Error
+
+	err := ad.db.Scopes(ad.SetEffect()).Find(&as).Error
 	if err != nil {
 		return nil, err
 	}
@@ -171,4 +179,17 @@ func (ad *ActDao) FindActByBid(c *gin.Context, bid string) (model.Activity, erro
 		return model.Activity{}, err
 	}
 	return act, nil
+}
+
+func (ad *ActDao) SetEffect() func(*gorm.DB) *gorm.DB {
+	if ad.effect == "slow" {
+		return func(db *gorm.DB) *gorm.DB {
+			return db.Where("is_checking = ?", "pass")
+		}
+	} else if ad.effect == "fast" {
+		return func(db *gorm.DB) *gorm.DB {
+			return db.Where("is_checking != ?", "reject")
+		}
+	}
+	return nil
 }

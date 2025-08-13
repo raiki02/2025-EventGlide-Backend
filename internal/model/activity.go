@@ -5,7 +5,7 @@ import "time"
 type Activity struct {
 	Bid        string    `gorm:"type:varchar(255);primary_key;not null;unique;column:bid"`
 	CreatedAt  time.Time `gorm:"type:datetime;column:created_at; not null"`
-	IsChecking string    `gorm:"type:varchar(255);column:is_checking"` // pending or pass or reject // 是否显示
+	IsChecking string    `gorm:"type:enum('pass','pending','reject');default:'pending';column:is_checking"` // pending or pass or reject // 是否显示
 
 	StudentID      string `gorm:"type:varchar(255);column:student_id;not null"`
 	Title          string `gorm:"type:varchar(255);column:title;not null"`
