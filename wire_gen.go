@@ -57,7 +57,9 @@ func InitApp(e *gin.Engine) *server.Server {
 	cors := middleware.NewCors(e)
 	listener := ioc.InitListener(e)
 	callbackAuditorService := service.NewCallbackAuditor(auditorRepository, listener, logger)
-	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, feedRouter, interactionRouter, cors, callbackAuditorService)
+	keyGet := ioc.InitApiKeyGetter(e)
+	apiKeyRouter := router.NewApiKeyRouter(keyGet)
+	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, feedRouter, interactionRouter, cors, callbackAuditorService, apiKeyRouter)
 	serverServer := server.NewServer(routerRouter, logger)
 	return serverServer
 }
