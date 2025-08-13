@@ -11,6 +11,7 @@ var Provider = wire.NewSet(
 	InitRedis,
 	Newlogger,
 	InitListener,
+	InitApiKeyGetter,
 	mq.NewMQ,
 	cache.NewCache,
 )
