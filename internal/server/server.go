@@ -1,8 +1,13 @@
 package server
 
 import (
+	"github.com/google/wire"
 	"github.com/raiki02/EG/internal/router"
 	"go.uber.org/zap"
+)
+
+var Provider = wire.NewSet(
+	NewServer,
 )
 
 type Server struct {
