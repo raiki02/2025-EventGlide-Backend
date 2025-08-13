@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"io"
@@ -29,13 +30,28 @@ func Init() error {
 	viper.SetDefault("mysql.maxOpenConns", 100)
 	viper.SetDefault("redis.addr", "127.0.0.1:6379")
 
-	return viper.ReadInConfig()
+	if err := viper.ReadInConfig(); err != nil {
+		panic(err)
+	}
+
+	go dynamicConfig()
+
+	return nil
 }
 
 func setGinLog() {
+	os.MkdirAll("./log", 0755)
+
 	f, err := os.OpenFile("./log/gin.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatalf("无法创建日志文件: %v", err)
 	}
-	gin.DefaultWriter = io.MultiWriter(f)
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+}
+
+func dynamicConfig() {
+	viper.OnConfigChange(func(in fsnotify.Event) {
+		log.Printf("配置文件 %s 已更改, 重新加载配置", in.Name)
+	})
+	viper.WatchConfig()
 }
