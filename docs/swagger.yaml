@@ -1,4 +1,27 @@
 definitions:
+  github_com_raiki02_EG_internal_model.User:
+    properties:
+      avatar:
+        type: string
+      collectact:
+        type: string
+      collectpost:
+        type: string
+      id:
+        type: integer
+      likeact:
+        type: string
+      likecomment:
+        type: string
+      likepost:
+        type: string
+      name:
+        type: string
+      school:
+        type: string
+      student_id:
+        type: string
+    type: object
   model.Activity:
     properties:
       activeForm:
@@ -86,6 +109,8 @@ definitions:
         type: integer
       createdAt:
         type: string
+      id:
+        type: integer
       introduce:
         type: string
       likeNum:
@@ -110,29 +135,6 @@ definitions:
       studentID:
         type: string
       title:
-        type: string
-    type: object
-  model.User:
-    properties:
-      avatar:
-        type: string
-      collectact:
-        type: string
-      collectpost:
-        type: string
-      id:
-        type: integer
-      likeact:
-        type: string
-      likecomment:
-        type: string
-      likepost:
-        type: string
-      name:
-        type: string
-      school:
-        type: string
-      student_id:
         type: string
     type: object
   req.ActSearchReq:
@@ -1518,7 +1520,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/model.User'
+                  $ref: '#/definitions/github_com_raiki02_EG_internal_model.User'
               type: object
       summary: 获取用户信息
       tags:

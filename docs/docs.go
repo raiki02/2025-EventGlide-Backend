@@ -1440,7 +1440,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.User"
+                                            "$ref": "#/definitions/github_com_raiki02_EG_internal_model.User"
                                         }
                                     }
                                 }
@@ -1807,6 +1807,41 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "github_com_raiki02_EG_internal_model.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "collectact": {
+                    "type": "string"
+                },
+                "collectpost": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "likeact": {
+                    "type": "string"
+                },
+                "likecomment": {
+                    "type": "string"
+                },
+                "likepost": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "school": {
+                    "type": "string"
+                },
+                "student_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Activity": {
             "type": "object",
             "properties": {
@@ -1937,6 +1972,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "introduce": {
                     "type": "string"
                 },
@@ -1973,41 +2011,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.User": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "collectact": {
-                    "type": "string"
-                },
-                "collectpost": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "likeact": {
-                    "type": "string"
-                },
-                "likecomment": {
-                    "type": "string"
-                },
-                "likepost": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "school": {
-                    "type": "string"
-                },
-                "student_id": {
                     "type": "string"
                 }
             }
