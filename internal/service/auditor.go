@@ -84,14 +84,8 @@ func (a *auditorService) toUploadReq(creq any, id uint) request.UploadReq {
 			},
 		}
 		if actReq.LabelForm.IfRegister == "是" {
-			res.Extra = map[string]string{
-				"申报表":    actReq.LabelForm.ActiveForm,
-				"是否需要报名": "是",
-			}
-		} else {
-			res.Extra = map[string]string{
-				"是否需要报名": "否",
-			}
+			res.Tags = append(res.Tags, "含报名表需要审核")
+			res.Content.Topic.Pictures = append(res.Content.Topic.Pictures, actReq.LabelForm.ActiveForm)
 		}
 
 	case req.CreatePostReq:
@@ -116,7 +110,7 @@ func extractAuthors(signers []struct {
 }) string {
 	builder := strings.Builder{}
 	for _, s := range signers {
-		builder.WriteString(s.Name)
+		builder.WriteString(s.Name + "-")
 	}
 	return builder.String()
 }
