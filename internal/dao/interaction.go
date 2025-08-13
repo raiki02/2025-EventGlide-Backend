@@ -153,7 +153,7 @@ func (id *InteractionDao) InsertApprovement(c *gin.Context, studentID, studentNa
 	approvement := &model.Approvement{
 		StudentId:   studentID,
 		StudentName: studentName,
-		ActivityId:  targetID,
+		Bid:         targetID,
 	}
 	if err := id.db.WithContext(c).Create(approvement).Error; err != nil {
 		id.l.Error("Failed to insert approvement", zap.Error(err), zap.String("student_id", studentID), zap.String("activity_id", targetID))

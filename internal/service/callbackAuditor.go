@@ -10,6 +10,7 @@ import (
 )
 
 type CallbackAuditorService interface {
+	RegisterCallbackAuditorRouters()
 }
 
 type callbackAuditorService struct {
@@ -35,11 +36,14 @@ func NewCallbackAuditor(repo dao.AuditorRepository, listener *webhook.Listener, 
 		}
 	})
 	listener.Handler = f
-	listener.RegisterRoutes()
 
 	return &callbackAuditorService{
 		repo:     repo,
 		listener: listener,
 		l:        l.Named("auditor/callback"),
 	}
+}
+
+func (ad *callbackAuditorService) RegisterCallbackAuditorRouters() {
+	ad.listener.RegisterRoutes()
 }

@@ -55,4 +55,5 @@ func (af *AuditorForm) AfterUpdate(tx *gorm.DB) (err error) {
 			}
 		}
 	}
+	return nil
 }
