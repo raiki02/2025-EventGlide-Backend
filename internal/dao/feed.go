@@ -90,7 +90,7 @@ func (fd *FeedDao) GetAtFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
 
 func (fd *FeedDao) GetAuditorFeed(ctx *gin.Context, id string) ([]*model.Approvement, error) {
 	var a []*model.Approvement
-	if err := fd.db.WithContext(ctx).Where("student_id = ?", id).Find(&a).Error; err != nil {
+	if err := fd.db.WithContext(ctx).Where("student_id = ? AND stance = ?", id, "pending").Find(&a).Error; err != nil {
 		fd.l.Error("Get Auditor Feed Failed", zap.Error(err))
 		return nil, err
 	}

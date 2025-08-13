@@ -253,7 +253,8 @@ func (fs *FeedService) GetAuditorFeedList(ctx *gin.Context, sid string) (resp.Fe
 				Action: "invitation",
 			}, v.StudentName),
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
-			TargetBid:   v.ActivityId,
+			TargetBid:   v.Bid,
+			Status:      v.Stance,
 		})
 	}
 	return resp.FeedResp{Invitations: res}, nil
