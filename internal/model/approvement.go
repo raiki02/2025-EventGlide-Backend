@@ -2,6 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"log"
 	"time"
 )
 
@@ -34,11 +35,13 @@ func (a *Approvement) AfterUpdate(tx *gorm.DB) (err error) {
 				WHERE bid = ?
 				AND status = 'approve'
 			)
-		`, a.Bid, a.Bid)
+		`, a.Bid, a.Bid, a.Bid)
 		if passUpdate.Error != nil {
+			log.Println("approvement AfterUpdate error when passing:", passUpdate.Error)
 			return passUpdate.Error
 		}
 		if passUpdate.RowsAffected > 0 {
+			log.Println("approvement AfterUpdate passed successfully for bid:", a.Bid)
 			return nil
 		}
 	} else if a.Stance == "reject" {
@@ -48,9 +51,11 @@ func (a *Approvement) AfterUpdate(tx *gorm.DB) (err error) {
 			WHERE bid = ?
 		`, a.Bid)
 		if rejectUpdate.Error != nil {
+			log.Println("approvement AfterUpdate error when rejecting:", rejectUpdate.Error)
 			return rejectUpdate.Error
 		}
 		if rejectUpdate.RowsAffected > 0 {
+			log.Println("approvement AfterUpdate rejected successfully for bid:", a.Bid)
 			return nil
 		}
 	}

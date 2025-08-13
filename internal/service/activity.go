@@ -305,8 +305,10 @@ func (as *ActivityService) toCreateResp(c *gin.Context, act any) resp.CreateActi
 		res.ShowImg = tools.StringToSlice(act.ShowImg)
 		res.Type = act.Type
 		res.Bid = act.Bid
+		res.ActiveForm = act.ActiveForm
 		res.Position = act.Position
 		res.IfRegister = act.IfRegister
+		res.Signer = separateSigners(tools.StringToSlice(act.Signer))
 		res.IsChecking = act.IsChecking
 		res.UserInfo.School = user.School
 		res.UserInfo.Username = user.Name

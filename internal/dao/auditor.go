@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -15,11 +16,14 @@ type AuditorRepository interface {
 }
 type AuditorRepo struct {
 	db *gorm.DB
+
+	l *zap.Logger
 }
 
-func NewAuditorRepo(db *gorm.DB) AuditorRepository {
+func NewAuditorRepo(db *gorm.DB, l *zap.Logger) AuditorRepository {
 	return &AuditorRepo{
 		db: db,
+		l:  l,
 	}
 }
 
@@ -37,7 +41,17 @@ func (a *AuditorRepo) Insert(c *gin.Context, bid string, formUrl string, sub str
 }
 
 func (a *AuditorRepo) Update(c *gin.Context, formId uint, status string) error {
-	return a.db.WithContext(c).Model(&model.AuditorForm{}).Where("id = ?", formId).Update("status", status).Error
+	var form model.AuditorForm
+	if err := a.db.WithContext(c).Model(&model.AuditorForm{}).Where("id = ?", formId).First(&form).Error; err != nil {
+		a.l.Error("auditor form not found", zap.Error(err))
+		return err
+	}
+	form.Status = status
+	if err := a.db.WithContext(c).Save(&form).Error; err != nil {
+		a.l.Error("failed to update auditor form", zap.Error(err))
+		return err
+	}
+	return nil
 }
 
 func (a *AuditorRepo) Get(c *gin.Context, bid string) (model.AuditorForm, error) {

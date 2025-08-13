@@ -134,16 +134,28 @@ func (id *InteractionDao) DiscollectPost(c *gin.Context, studentID, targetID str
 }
 
 func (id *InteractionDao) ApproveActivity(c *gin.Context, studentID, targetID string) error {
-	if err := id.db.WithContext(c).Model(&model.Approvement{}).Where("student_id = ? AND activity_id = ?", studentID, targetID).Update("stance", "赞同").Error; err != nil {
-		id.l.Error("Failed to approve activity", zap.Error(err), zap.String("student_id", studentID), zap.String("activity_id", targetID))
+	var approvement model.Approvement
+	if err := id.db.WithContext(c).Model(&model.Approvement{}).Where("student_id = ? AND bid = ?", studentID, targetID).First(&approvement).Error; err != nil {
+		id.l.Error("Failed to find activity", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
+		return fmt.Errorf("failed to find activity: %w", err)
+	}
+	approvement.Stance = "approve"
+	if err := id.db.WithContext(c).Save(&approvement).Error; err != nil {
+		id.l.Error("Failed to approve activity", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
 		return fmt.Errorf("failed to approve activity: %w", err)
 	}
 	return nil
 }
 
 func (id *InteractionDao) RejectActivity(c *gin.Context, studentID, targetID string) error {
-	if err := id.db.WithContext(c).Model(&model.Approvement{}).Where("student_id = ? AND activity_id = ?", studentID, targetID).Update("stance", "反对").Error; err != nil {
-		id.l.Error("Failed to reject activity", zap.Error(err), zap.String("student_id", studentID), zap.String("activity_id", targetID))
+	var approvement model.Approvement
+	if err := id.db.WithContext(c).Model(&model.Approvement{}).Where("student_id = ? AND bid = ?", studentID, targetID).First(&approvement).Error; err != nil {
+		id.l.Error("Failed to find activity", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
+		return fmt.Errorf("failed to find activity: %w", err)
+	}
+	approvement.Stance = "reject"
+	if err := id.db.WithContext(c).Save(&approvement).Error; err != nil {
+		id.l.Error("Failed to reject activity", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
 		return fmt.Errorf("failed to reject activity: %w", err)
 	}
 	return nil
@@ -156,7 +168,7 @@ func (id *InteractionDao) InsertApprovement(c *gin.Context, studentID, studentNa
 		Bid:         targetID,
 	}
 	if err := id.db.WithContext(c).Create(approvement).Error; err != nil {
-		id.l.Error("Failed to insert approvement", zap.Error(err), zap.String("student_id", studentID), zap.String("activity_id", targetID))
+		id.l.Error("Failed to insert approvement", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
 		return fmt.Errorf("failed to insert approvement: %w", err)
 	}
 	return nil
