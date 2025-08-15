@@ -176,10 +176,6 @@ func (ic *InteractionController) Approve() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		if ireq.TargetID == "" {
-			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
-			return
-		}
 		err = ic.is.Approve(c, studendId, &ireq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
@@ -203,10 +199,6 @@ func (ic *InteractionController) Reject() gin.HandlerFunc {
 		err := c.ShouldBindJSON(&ireq)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		if ireq.TargetID == "" || ireq.Subject == "" {
-			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
 			return
 		}
 		err = ic.is.Reject(c, studendId, &ireq)
