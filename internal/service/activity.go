@@ -79,8 +79,12 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 		as.l.Error("Failed to create activity form", zap.Error(err))
 		return resp.CreateActivityResp{}, err
 	}
+	aw := &req.AuditWrapper{
+		Subject: SubjectActivity,
+		CactReq: r,
+	}
 
-	err = as.aud.UploadForm(c, *r, form.Id)
+	err = as.aud.UploadForm(c, aw, form.Id)
 	if err != nil {
 		as.l.Error("Failed to upload form to auditor", zap.Error(err))
 		return resp.CreateActivityResp{}, err

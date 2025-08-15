@@ -55,7 +55,12 @@ func (ps *PostService) CreatePost(c *gin.Context, r *req.CreatePostReq) (resp.Cr
 		ps.l.Error("Failed to create auditor form", zap.Error(err), zap.String("bid", post.Bid))
 		return resp.CreatePostResp{}, err
 	}
-	err = ps.aud.UploadForm(c, r, form.Id)
+
+	aw := &req.AuditWrapper{
+		Subject:  SubjectPost,
+		CpostReq: r,
+	}
+	err = ps.aud.UploadForm(c, aw, form.Id)
 	if err != nil {
 		ps.l.Error("Failed to upload form", zap.Error(err), zap.String("bid", post.Bid), zap.Uint("formID", form.Id))
 		return resp.CreatePostResp{}, err

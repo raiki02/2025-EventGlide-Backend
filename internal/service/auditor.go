@@ -8,6 +8,7 @@ import (
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/tools"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"net/http"
@@ -23,7 +24,7 @@ const (
 )
 
 type AuditorService interface {
-	UploadForm(c *gin.Context, creq any, FormId uint) error
+	UploadForm(c *gin.Context, aw *req.AuditWrapper, FormId uint) error
 	CreateAuditorForm(c *gin.Context, ActId, FormUrl, Sub string) (*model.AuditorForm, error)
 }
 
@@ -48,8 +49,8 @@ func NewAuditorService(repo dao.AuditorRepository, l *zap.Logger) AuditorService
 	return c
 }
 
-func (a *auditorService) UploadForm(c *gin.Context, creq any, id uint) error {
-	uploadReq := a.toUploadReq(creq, id)
+func (a *auditorService) UploadForm(c *gin.Context, aw *req.AuditWrapper, id uint) error {
+	uploadReq := a.toUploadReq(aw, id)
 	_, err := a.MuxiCli.UploadItem(a.ApiKey, uploadReq)
 	if err != nil {
 		a.l.Error("Upload to auditor failed", zap.Error(err))
@@ -62,7 +63,7 @@ func (a *auditorService) CreateAuditorForm(c *gin.Context, ActId, FormUrl string
 	return a.AuditorRepo.Insert(c, ActId, FormUrl, sub)
 }
 
-func (a *auditorService) toUploadReq(creq any, id uint) request.UploadReq {
+func (a *auditorService) toUploadReq(aw *req.AuditWrapper, id uint) request.UploadReq {
 	res := request.UploadReq{
 		HookUrl:    a.HookUrl,
 		Id:         id,
@@ -70,34 +71,28 @@ func (a *auditorService) toUploadReq(creq any, id uint) request.UploadReq {
 		PublicTime: time.Now().Unix(),
 	}
 
-	switch creq.(type) {
-	case req.CreateActReq:
-		actReq := creq.(req.CreateActReq)
-
-		res.Author = extractAuthors(actReq.LabelForm.Signer)
-		res.Tags = append(res.Tags, "活动")
+	if aw.Subject == SubjectActivity {
+		res.Author = extractAuthors(aw.CactReq.LabelForm.Signer)
+		res.Tags = append(res.Tags, aw.CactReq.LabelForm.Type, "活动")
 		res.Content = response.Contents{
 			Topic: response.Topics{
-				Title:    actReq.Title,
-				Content:  actReq.Introduce,
-				Pictures: actReq.ShowImg,
+				Title:    aw.CactReq.Title,
+				Content:  aw.CactReq.Introduce,
+				Pictures: aw.CactReq.ShowImg,
 			},
 		}
-		if actReq.LabelForm.IfRegister == "是" {
+		if tools.IfRegisterMapper(aw.CactReq.LabelForm.IfRegister) {
 			res.Tags = append(res.Tags, "含报名表需要审核")
-			res.Content.Topic.Pictures = append(res.Content.Topic.Pictures, actReq.LabelForm.ActiveForm)
+			res.Content.Topic.Pictures = append(res.Content.Topic.Pictures, aw.CactReq.LabelForm.ActiveForm)
 		}
-
-	case req.CreatePostReq:
-		postReq := creq.(req.CreatePostReq)
-
-		res.Author = postReq.StudentID
+	} else if aw.Subject == SubjectPost {
+		res.Author = aw.CpostReq.StudentID
 		res.Tags = append(res.Tags, "帖子")
 		res.Content = response.Contents{
 			Topic: response.Topics{
-				Title:    postReq.Title,
-				Content:  postReq.Introduce,
-				Pictures: postReq.ShowImg,
+				Title:    aw.CpostReq.Title,
+				Content:  aw.CpostReq.Introduce,
+				Pictures: aw.CpostReq.ShowImg,
 			},
 		}
 	}
