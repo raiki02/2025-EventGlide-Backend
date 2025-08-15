@@ -72,3 +72,7 @@ func StatusMapper(auditStatus string) string {
 		return "unknown error"
 	}
 }
+
+func IfRegisterMapper(_if string) bool {
+	return _if == "是"
+}

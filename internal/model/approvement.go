@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+const (
+	StanceApprove = "approve"
+	StanceReject  = "reject"
+)
+
 type Approvement struct {
 	Id  uint   `gorm:"primary_key;auto_increment"`
 	Bid string `gorm:"type:varchar(255);not null;column:bid"`
@@ -18,7 +23,7 @@ type Approvement struct {
 }
 
 func (a *Approvement) AfterUpdate(tx *gorm.DB) (err error) {
-	if a.Stance == "approve" {
+	if a.Stance == StanceApprove {
 		passUpdate := tx.Exec(`
 			UPDATE activities
 			SET is_checking = 'pass'
@@ -44,7 +49,7 @@ func (a *Approvement) AfterUpdate(tx *gorm.DB) (err error) {
 			log.Println("approvement AfterUpdate passed successfully for bid:", a.Bid)
 			return nil
 		}
-	} else if a.Stance == "reject" {
+	} else if a.Stance == StanceReject {
 		rejectUpdate := tx.Exec(`
 			UPDATE activities
 			SET is_checking = 'reject'

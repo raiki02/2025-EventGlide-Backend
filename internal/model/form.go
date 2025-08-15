@@ -2,6 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"log"
 	"time"
 )
 
@@ -21,7 +22,7 @@ type AuditorForm struct {
 }
 
 func (af *AuditorForm) AfterUpdate(tx *gorm.DB) (err error) {
-	if af.Status == "approve" {
+	if af.Status == StanceApprove {
 		table := af.Subject
 		if table == SubjectActivity {
 			update := tx.Exec(`
@@ -36,9 +37,11 @@ func (af *AuditorForm) AfterUpdate(tx *gorm.DB) (err error) {
 				)
 			`, af.Bid, af.Bid)
 			if update.Error != nil {
+				log.Println("auditorform AfterUpdate error when passing activity:", update.Error)
 				return update.Error
 			}
 			if update.RowsAffected > 0 {
+				log.Println("auditorform AfterUpdate passed successfully for activity bid:", af.Bid)
 				return nil
 			}
 		} else if table == SubjectPost {
@@ -48,9 +51,43 @@ func (af *AuditorForm) AfterUpdate(tx *gorm.DB) (err error) {
 				WHERE bid = ?
 			`, af.Bid)
 			if update.Error != nil {
+				log.Println("auditorform AfterUpdate error when passing post:", update.Error)
 				return update.Error
 			}
 			if update.RowsAffected > 0 {
+				log.Println("auditorform AfterUpdate passed successfully for post bid:", af.Bid)
+				return nil
+			}
+		}
+	}
+
+	if af.Status == StanceReject {
+		if af.Subject == SubjectActivity {
+			update := tx.Exec(`
+				UPDATE activities
+				SET is_checking = 'reject'
+				WHERE bid = ?
+			`, af.Bid)
+			if update.Error != nil {
+				log.Println("auditorform AfterUpdate error when rejecting activity:", update.Error)
+				return update.Error
+			}
+			if update.RowsAffected > 0 {
+				log.Println("auditorform AfterUpdate rejected successfully for activity bid:", af.Bid)
+				return nil
+			}
+		} else if af.Subject == SubjectPost {
+			update := tx.Exec(`
+				UPDATE posts
+				SET is_checking = 'reject'
+				WHERE bid = ?
+			`, af.Bid)
+			if update.Error != nil {
+				log.Println("auditorform AfterUpdate error when rejecting post:", update.Error)
+				return update.Error
+			}
+			if update.RowsAffected > 0 {
+				log.Println("auditorform AfterUpdate rejected successfully for post bid:", af.Bid)
 				return nil
 			}
 		}
