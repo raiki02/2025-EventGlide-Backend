@@ -11,8 +11,9 @@ var Provider = wire.NewSet(
 )
 
 type Server struct {
-	r *router.Router
-	l *zap.Logger
+	r        *router.Router
+	l        *zap.Logger
+	Shutdown func()
 }
 
 func NewServer(r *router.Router, l *zap.Logger) *Server {
@@ -22,7 +23,8 @@ func NewServer(r *router.Router, l *zap.Logger) *Server {
 	}
 }
 
-func (s *Server) Run() error {
+func (s *Server) Run() (err error) {
 	s.r.RegisterRouters()
-	return s.r.Run()
+	err, s.Shutdown = s.r.Run()
+	return
 }

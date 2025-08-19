@@ -2,9 +2,17 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/fsnotify/fsnotify"
 	"github.com/raiki02/EG/config"
+	"github.com/raiki02/EG/internal/server"
+	"github.com/spf13/viper"
 	"log"
+	"sync"
+)
+
+var (
+	app *server.Server
+	mu  sync.Mutex
 )
 
 // @Title EventGlide API
@@ -12,10 +20,28 @@ import (
 // @verstion 1.0
 func main() {
 	config.Init()
-	e := gin.Default()
-	app := InitApp(e)
-	err := app.Run()
-	if err != nil {
-		log.Fatal(err)
+	app = InitApp()
+
+	if err := app.Run(); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
 	}
+
+	go hotLoad()
+
+	select {}
+}
+
+func hotLoad() {
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		if app.Shutdown != nil {
+			app.Shutdown()
+		}
+		app = InitApp()
+		if err := app.Run(); err != nil {
+			log.Printf("Hot reload failed: %v", err)
+		} else {
+			log.Println("Hot reload successful")
+		}
+	})
+	viper.WatchConfig()
 }

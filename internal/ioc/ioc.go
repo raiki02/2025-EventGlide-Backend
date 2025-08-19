@@ -14,4 +14,5 @@ var Provider = wire.NewSet(
 	InitApiKeyGetter,
 	mq.NewMQ,
 	cache.NewCache,
+	InitGinHandler,
 )

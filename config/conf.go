@@ -2,7 +2,6 @@ package config
 
 import (
 	"flag"
-	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"io"
@@ -34,8 +33,6 @@ func Init() error {
 		panic(err)
 	}
 
-	go dynamicConfig()
-
 	return nil
 }
 
@@ -47,11 +44,4 @@ func setGinLog() {
 		log.Fatalf("无法创建日志文件: %v", err)
 	}
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
-}
-
-func dynamicConfig() {
-	viper.OnConfigChange(func(in fsnotify.Event) {
-		log.Printf("配置文件 %s 已更改, 重新加载配置", in.Name)
-	})
-	viper.WatchConfig()
 }

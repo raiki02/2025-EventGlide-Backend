@@ -3,7 +3,6 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 	"github.com/raiki02/EG/internal/controller"
 	"github.com/raiki02/EG/internal/dao"
@@ -14,7 +13,7 @@ import (
 	"github.com/raiki02/EG/internal/service"
 )
 
-func InitApp(e *gin.Engine) *server.Server {
+func InitApp() *server.Server {
 	panic(wire.Build(
 		ioc.Provider,
 		middleware.Provider,

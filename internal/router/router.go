@@ -1,12 +1,14 @@
 package router
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	_ "github.com/raiki02/EG/docs"
 	"github.com/raiki02/EG/internal/middleware"
 	"github.com/raiki02/EG/internal/service"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
+	"net/http"
 )
 
 type RouterHdl interface {
@@ -56,8 +58,22 @@ func (r *Router) RegisterRouters() {
 	r.RegisterSwagger()
 }
 
-func (r *Router) Run() error {
-	return r.e.Run()
+func (r *Router) Run() (error, func()) {
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r.e.Handler(),
+	}
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
+
+	return nil, func() {
+		if err := srv.Shutdown(context.Background()); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (r *Router) RegisterSwagger() {
