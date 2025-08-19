@@ -147,6 +147,7 @@ func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.List
 
 	res.Title = post.Title
 	res.Introduce = post.Introduce
+	res.IsChecking = post.IsChecking
 	res.ShowImg = tools.StringToSlice(post.ShowImg)
 	res.LikeNum = post.LikeNum
 	res.CommentNum = post.CommentNum
@@ -189,6 +190,7 @@ func (ps *PostService) toCreateResp(c *gin.Context, p any) resp.CreatePostResp {
 		res.UserInfo.StudentID = user.StudentID
 		res.Title = post.Title
 		res.Bid = post.Bid
+		res.IsChecking = post.IsChecking
 		res.Introduce = post.Introduce
 		res.ShowImg = tools.StringToSlice(post.ShowImg)
 		return res

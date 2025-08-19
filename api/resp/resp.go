@@ -10,3 +10,8 @@ type ImgBedResp struct {
 	DomainName  string `json:"domain_name"`
 	AccessToken string `json:"access_token"`
 }
+
+type CheckingResp struct {
+	Acts  []ListActivitiesResp
+	Posts []ListPostsResp
+}

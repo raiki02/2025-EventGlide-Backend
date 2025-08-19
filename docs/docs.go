@@ -1299,6 +1299,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/checking": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "获取用户处于审核状态中的活动和帖子",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/resp.Resp"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/resp.CheckingResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/user/collect/act": {
             "post": {
                 "produces": [
@@ -1978,6 +2018,9 @@ const docTemplate = `{
                 "introduce": {
                     "type": "string"
                 },
+                "isChecking": {
+                    "type": "string"
+                },
                 "likeNum": {
                     "type": "integer"
                 },
@@ -2189,6 +2232,9 @@ const docTemplate = `{
         },
         "req.InteractionReq": {
             "type": "object",
+            "required": [
+                "targetid"
+            ],
             "properties": {
                 "studentid": {
                     "type": "string"
@@ -2273,6 +2319,23 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "resp.CheckingResp": {
+            "type": "object",
+            "properties": {
+                "acts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.ListActivitiesResp"
+                    }
+                },
+                "posts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.ListPostsResp"
+                    }
                 }
             }
         },
@@ -2566,6 +2629,9 @@ const docTemplate = `{
                 "introduce": {
                     "type": "string"
                 },
+                "isChecking": {
+                    "type": "string"
+                },
                 "isCollect": {
                     "type": "string"
                 },
@@ -2622,6 +2688,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "introduce": {
+                    "type": "string"
+                },
+                "isChecking": {
                     "type": "string"
                 },
                 "isCollect": {

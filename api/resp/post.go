@@ -1,11 +1,12 @@
 package resp
 
 type CreatePostResp struct {
-	Bid       string   `json:"bid"`
-	StudentID string   `json:"studentid"`
-	Title     string   `json:"title"`
-	Introduce string   `json:"introduce"`
-	ShowImg   []string `json:"showImg"`
+	Bid        string   `json:"bid"`
+	StudentID  string   `json:"studentid"`
+	Title      string   `json:"title"`
+	Introduce  string   `json:"introduce"`
+	ShowImg    []string `json:"showImg"`
+	IsChecking string   `json:"isChecking"`
 
 	UserInfo struct {
 		StudentID string `json:"studentid"`
@@ -32,6 +33,7 @@ type ListPostsResp struct {
 	CollectNum int `json:"collectNum"`
 	CommentNum int `json:"commentNum"`
 
-	IsLike    string `json:"isLike"`
-	IsCollect string `json:"isCollect"`
+	IsLike     string `json:"isLike"`
+	IsCollect  string `json:"isCollect"`
+	IsChecking string `json:"isChecking"`
 }

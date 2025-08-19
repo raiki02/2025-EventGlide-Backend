@@ -113,6 +113,8 @@ definitions:
         type: integer
       introduce:
         type: string
+      isChecking:
+        type: string
       likeNum:
         type: integer
       showImg:
@@ -256,6 +258,8 @@ definitions:
         type: string
       targetid:
         type: string
+    required:
+    - targetid
     type: object
   req.LoginReq:
     properties:
@@ -304,6 +308,17 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  resp.CheckingResp:
+    properties:
+      acts:
+        items:
+          $ref: '#/definitions/resp.ListActivitiesResp'
+        type: array
+      posts:
+        items:
+          $ref: '#/definitions/resp.ListPostsResp'
+        type: array
     type: object
   resp.CommentResp:
     properties:
@@ -494,6 +509,8 @@ definitions:
         type: string
       introduce:
         type: string
+      isChecking:
+        type: string
       isCollect:
         type: string
       isLike:
@@ -531,6 +548,8 @@ definitions:
       commentNum:
         type: integer
       introduce:
+        type: string
+      isChecking:
         type: string
       isCollect:
         type: string
@@ -1433,6 +1452,29 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 更新头像
+      tags:
+      - User
+  /user/checking:
+    get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.CheckingResp'
+              type: object
+      summary: 获取用户处于审核状态中的活动和帖子
       tags:
       - User
   /user/collect/act:

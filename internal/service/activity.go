@@ -202,6 +202,7 @@ func (as *ActivityService) toListActResp(c *gin.Context, act *model.Activity) re
 	res.UserInfo.School = user.School
 	res.UserInfo.Username = user.Name
 	res.Bid = act.Bid
+	res.IsChecking = act.IsChecking
 	res.UserInfo.Avatar = user.Avatar
 	res.UserInfo.StudentID = user.StudentID
 	res.DetailTime.StartTime = act.StartTime

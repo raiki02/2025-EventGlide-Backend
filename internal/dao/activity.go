@@ -193,3 +193,13 @@ func (ad *ActDao) SetEffect() func(*gorm.DB) *gorm.DB {
 	}
 	return nil
 }
+
+func (ad *ActDao) GetChecking(c *gin.Context, sid string) ([]model.Activity, error) {
+	var acts []model.Activity
+	err := ad.db.WithContext(c).Where("student_id = ? AND is_checking = ?", sid, "pending").Find(&acts).Error
+	if err != nil {
+		ad.l.Error("Failed to get checking activities", zap.Error(err), zap.String("student_id", sid))
+		return nil, err
+	}
+	return acts, nil
+}
