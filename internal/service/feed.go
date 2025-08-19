@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/dao"
@@ -11,7 +13,6 @@ import (
 	"github.com/raiki02/EG/internal/mq"
 	"github.com/raiki02/EG/tools"
 	"go.uber.org/zap"
-	"time"
 )
 
 type FeedServiceHdl interface {
@@ -26,19 +27,19 @@ type FeedServiceHdl interface {
 
 type FeedService struct {
 	fd *dao.FeedDao
-	mq *mq.MQ
+	mq mq.MQHdl
 	ud *dao.UserDao
 	l  *zap.Logger
 }
 
-func NewFeedService(fd *dao.FeedDao, mq *mq.MQ, ud *dao.UserDao, l *zap.Logger) *FeedService {
+func NewFeedService(fd *dao.FeedDao, mq mq.MQHdl, ud *dao.UserDao, l *zap.Logger) *FeedService {
 	fs := &FeedService{
 		fd: fd,
 		mq: mq,
 		ud: ud,
 		l:  l.Named("feed/service"),
 	}
-	fs.SubsribeTopics()
+	fs.ConsumeFeedStream()
 	return fs
 }
 
@@ -74,38 +75,45 @@ func (fs *FeedService) GetFeedList(ctx *gin.Context, sid string) (resp.FeedResp,
 	}, nil
 }
 
-func (fs *FeedService) SubsribeTopics() {
+func (fs *FeedService) ConsumeFeedStream() {
 	go func() {
 		ctx := context.Background()
-		lc := fs.mq.Subscribe(ctx, "feed")
+		lastIDKey := "feed_last_id"
 
-		for msg := range lc.Channel() {
-			var r struct {
-				StudentID string `json:"studentid"`
-				TargetId  string `json:"target_id"`
-				Object    string `json:"object"`
-				Action    string `json:"action"`
-			}
-
-			json.Unmarshal([]byte(msg.Payload), &r)
-			feed := model.Feed{
-				TargetBid: r.TargetId,
-				StudentId: r.StudentID,
-				Object:    r.Object,
-				CreatedAt: time.Now(),
-				Status:    "未读",
-				Action:    r.Action,
-			}
-			err := fs.fd.CreateFeed(ctx, &feed)
+		for {
+			msgs, err := fs.mq.Consume(ctx, "feed_stream", lastIDKey, 15, 30*time.Second)
 			if err != nil {
-				fs.l.Error("Consume Feed Failed", zap.Error(err))
+				fs.l.Error("Failed to read feed stream", zap.Error(err))
+				time.Sleep(time.Second)
+				continue
 			}
-			fs.l.Info("Consume Feed Success",
-				zap.String("bid", feed.TargetBid),
-				zap.String("studentid", feed.StudentId),
-				zap.String("object", feed.Object),
-				zap.String("action", feed.Action),
-			)
+
+			if len(msgs) == 0 {
+				continue
+			}
+
+			for _, msg := range msgs {
+				data, ok := msg.Values["data"].(string)
+				if !ok {
+					fs.l.Warn("Message data is not string", zap.Any("msg", msg))
+					continue
+				}
+
+				var feed model.Feed
+				if err := json.Unmarshal([]byte(data), &feed); err != nil {
+					fs.l.Error("Failed to unmarshal feed", zap.Error(err))
+					continue
+				}
+
+				feed.CreatedAt = time.Now()
+				feed.Status = "未读"
+
+				if err := fs.fd.CreateFeed(ctx, &feed); err != nil {
+					fs.l.Error("Failed to consume feed", zap.Error(err), zap.String("msgID", msg.ID))
+				} else {
+					fs.l.Info("Feed processed", zap.Any("feed", feed))
+				}
+			}
 		}
 	}()
 }
@@ -132,6 +140,7 @@ func (fs *FeedService) GetLikeFeed(ctx *gin.Context, sid string) ([]resp.FeedLik
 			Message:     processMsg(v, user.Name),
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
 			TargetBid:   v.TargetBid,
+			Status:      v.Status,
 		})
 	}
 	return res, nil
@@ -159,6 +168,7 @@ func (fs *FeedService) GetCollectFeed(ctx *gin.Context, sid string) ([]resp.Feed
 			Message:     processMsg(v, user.Name),
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
 			TargetBid:   v.TargetBid,
+			Status:      v.Status,
 		})
 	}
 	return res, nil
@@ -186,6 +196,7 @@ func (fs *FeedService) GetCommentFeed(ctx *gin.Context, sid string) ([]resp.Feed
 			Message:     processMsg(v, user.Name),
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
 			TargetBid:   v.TargetBid,
+			Status:      v.Status,
 		})
 	}
 	return res, nil

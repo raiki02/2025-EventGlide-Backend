@@ -20,11 +20,11 @@ type CommentService struct {
 	cd *dao.CommentDao
 	ud *dao.UserDao
 	id *dao.InteractionDao
-	mq *mq.MQ
+	mq mq.MQHdl
 	l  *zap.Logger
 }
 
-func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao, id *dao.InteractionDao, l *zap.Logger, mq *mq.MQ) *CommentService {
+func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao, id *dao.InteractionDao, l *zap.Logger, mq mq.MQHdl) *CommentService {
 	return &CommentService{
 		cd: cd,
 		ud: ud,
@@ -60,15 +60,19 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 	}
 
 	f := model.Feed{
-		StudentId: r.StudentID,
-		TargetBid: r.ParentID,
-		Object:    r.Subject,
-		Action:    "comment",
+        StudentId: r.StudentID,
+        TargetBid: r.ParentID,
+        Object:    r.Subject,
+        Action:    "comment",
+    }
+
+	err=cs.mq.Publish(c.Request.Context(),"feed_stream",f)
+	if err != nil{
+		cs.l.Error("Publish Comment Feed Failed",zap.Error(err),zap.Any("feed",f))
+	}else{
+		cs.l.Info("Publish Comment Feed Success", zap.Any("feed", f))
 	}
-	err = cs.mq.Publish(c.Request.Context(), "feed", f)
-	if err != nil {
-		cs.l.Error("Error Publish Comment Feed Failed", zap.Error(err))
-	}
+
 	switch r.Subject {
 	case "activity":
 		err = cs.id.CommentActivity(c, r.StudentID, r.ParentID)
@@ -105,15 +109,19 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) 
 		zap.String("bid", cmt.Bid),
 		zap.String("studentid", cmt.StudentID),
 	)
+
 	f := model.Feed{
-		StudentId: r.StudentID,
-		TargetBid: r.ParentID,
-		Object:    "comment",
-		Action:    "at",
-	}
-	err = cs.mq.Publish(c.Request.Context(), "feed", f)
-	if err != nil {
-		cs.l.Error("Error Publish Comment Feed Failed", zap.Error(err))
+        StudentId: r.StudentID,
+        TargetBid: r.ParentID,
+        Object:    "comment",
+        Action:    "at",
+    }
+
+	err=cs.mq.Publish(c.Request.Context(),"feed_stream",f)
+	if err != nil{
+		cs.l.Error("Publish Comment Feed Failed",zap.Error(err),zap.Any("feed",f))
+	}else{
+		cs.l.Info("Publish Comment Feed Success", zap.Any("feed", f))
 	}
 
 	return cs.toReply(c, cmt), nil
@@ -241,3 +249,4 @@ func (cs *CommentService) toSubReply(c *gin.Context, cmt *model.Comment) resp.Su
 	res.ParentUserName = pu.Name
 	return res
 }
+
