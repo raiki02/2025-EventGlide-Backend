@@ -35,6 +35,8 @@ func (mq *MQ) Publish(ctx context.Context, stream string, message interface{}) e
 		Values: map[string]interface{}{
 			"data": jsonReq,
 		},
+		MaxLen: 10000,
+		Approx: true,
 	}).Err()
 }
 
