@@ -43,6 +43,7 @@ type ListActivitiesResp struct {
 	HolderType string   `json:"holderType"`
 	IfRegister string   `json:"if_register"`
 	ShowImg    []string `json:"showImg"`
+	IsChecking string   `json:"isChecking"`
 
 	LikeNum    int `json:"likeNum"`
 	CollectNum int `json:"collectNum"`

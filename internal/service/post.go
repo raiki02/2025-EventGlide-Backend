@@ -23,15 +23,17 @@ type PostServiceHdl interface {
 }
 
 type PostService struct {
+	aud AuditorService
 	pdh *dao.PostDao
 	ud  *dao.UserDao
 	l   *zap.Logger
 }
 
-func NewPostService(pdh *dao.PostDao, ud *dao.UserDao, l *zap.Logger) *PostService {
+func NewPostService(pdh *dao.PostDao, ud *dao.UserDao, l *zap.Logger, aud AuditorService) *PostService {
 	return &PostService{
 		pdh: pdh,
 		ud:  ud,
+		aud: aud,
 		l:   l.Named("post/service"),
 	}
 }
@@ -46,10 +48,25 @@ func (ps *PostService) GetAllPost(c *gin.Context) ([]resp.ListPostsResp, error) 
 }
 
 func (ps *PostService) CreatePost(c *gin.Context, r *req.CreatePostReq) (resp.CreatePostResp, error) {
-
 	post := toPost(r)
 
-	err := ps.pdh.CreatePost(c, post)
+	form, err := ps.aud.CreateAuditorForm(c, post.Bid, "", SubjectPost)
+	if err != nil {
+		ps.l.Error("Failed to create auditor form", zap.Error(err), zap.String("bid", post.Bid))
+		return resp.CreatePostResp{}, err
+	}
+
+	aw := &req.AuditWrapper{
+		Subject:  SubjectPost,
+		CpostReq: r,
+	}
+	err = ps.aud.UploadForm(c, aw, form.Id)
+	if err != nil {
+		ps.l.Error("Failed to upload form", zap.Error(err), zap.String("bid", post.Bid), zap.Uint("formID", form.Id))
+		return resp.CreatePostResp{}, err
+	}
+
+	err = ps.pdh.CreatePost(c, post)
 	if err != nil {
 		return resp.CreatePostResp{}, err
 	}
@@ -130,6 +147,7 @@ func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.List
 
 	res.Title = post.Title
 	res.Introduce = post.Introduce
+	res.IsChecking = post.IsChecking
 	res.ShowImg = tools.StringToSlice(post.ShowImg)
 	res.LikeNum = post.LikeNum
 	res.CommentNum = post.CommentNum
@@ -172,6 +190,7 @@ func (ps *PostService) toCreateResp(c *gin.Context, p any) resp.CreatePostResp {
 		res.UserInfo.StudentID = user.StudentID
 		res.Title = post.Title
 		res.Bid = post.Bid
+		res.IsChecking = post.IsChecking
 		res.Introduce = post.Introduce
 		res.ShowImg = tools.StringToSlice(post.ShowImg)
 		return res

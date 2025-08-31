@@ -1,7 +1,31 @@
 definitions:
+  github_com_raiki02_EG_internal_model.User:
+    properties:
+      avatar:
+        type: string
+      collectact:
+        type: string
+      collectpost:
+        type: string
+      id:
+        type: integer
+      likeact:
+        type: string
+      likecomment:
+        type: string
+      likepost:
+        type: string
+      name:
+        type: string
+      school:
+        type: string
+      student_id:
+        type: string
+    type: object
   model.Activity:
     properties:
       activeForm:
+        description: 表单url // 通过条件2
         type: string
       bid:
         type: string
@@ -20,6 +44,7 @@ definitions:
       introduce:
         type: string
       isChecking:
+        description: pending or pass or reject // 是否显示
         type: string
       likeNum:
         type: integer
@@ -30,6 +55,7 @@ definitions:
       showImg:
         type: string
       signer:
+        description: 报名人 >= 5的 []slice // 通过条件1
         type: string
       startTime:
         type: string
@@ -83,7 +109,11 @@ definitions:
         type: integer
       createdAt:
         type: string
+      id:
+        type: integer
       introduce:
+        type: string
+      isChecking:
         type: string
       likeNum:
         type: integer
@@ -107,29 +137,6 @@ definitions:
       studentID:
         type: string
       title:
-        type: string
-    type: object
-  model.User:
-    properties:
-      avatar:
-        type: string
-      collectact:
-        type: string
-      collectpost:
-        type: string
-      id:
-        type: integer
-      likeact:
-        type: string
-      likecomment:
-        type: string
-      likepost:
-        type: string
-      name:
-        type: string
-      school:
-        type: string
-      student_id:
         type: string
     type: object
   req.ActSearchReq:
@@ -251,6 +258,8 @@ definitions:
         type: string
       targetid:
         type: string
+    required:
+    - targetid
     type: object
   req.LoginReq:
     properties:
@@ -299,6 +308,17 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  resp.CheckingResp:
+    properties:
+      acts:
+        items:
+          $ref: '#/definitions/resp.ListActivitiesResp'
+        type: array
+      posts:
+        items:
+          $ref: '#/definitions/resp.ListPostsResp'
+        type: array
     type: object
   resp.CommentResp:
     properties:
@@ -412,6 +432,19 @@ definitions:
       userInfo:
         $ref: '#/definitions/resp.UserInfo'
     type: object
+  resp.FeedInvitationResp:
+    properties:
+      message:
+        type: string
+      published_at:
+        type: string
+      status:
+        type: string
+      target_bid:
+        type: string
+      userInfo:
+        $ref: '#/definitions/resp.UserInfo'
+    type: object
   resp.FeedLikeResp:
     properties:
       message:
@@ -438,6 +471,10 @@ definitions:
       comments:
         items:
           $ref: '#/definitions/resp.FeedCommentResp'
+        type: array
+      invitations:
+        items:
+          $ref: '#/definitions/resp.FeedInvitationResp'
         type: array
       likes:
         items:
@@ -471,6 +508,8 @@ definitions:
       if_register:
         type: string
       introduce:
+        type: string
+      isChecking:
         type: string
       isCollect:
         type: string
@@ -509,6 +548,8 @@ definitions:
       commentNum:
         type: integer
       introduce:
+        type: string
+      isChecking:
         type: string
       isCollect:
         type: string
@@ -981,6 +1022,29 @@ paths:
       summary: 加载评论
       tags:
       - Comment
+  /feed/auditor:
+    get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.FeedResp'
+              type: object
+      summary: 获取审核员feed列表
+      tags:
+      - feed
   /feed/list:
     get:
       parameters:
@@ -1027,6 +1091,30 @@ paths:
       summary: 获取用户的消息总数
       tags:
       - feed
+  /interaction/approve:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 互动
+        in: body
+        name: interaction
+        required: true
+        schema:
+          $ref: '#/definitions/req.InteractionReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 作为活动填表人批准发表此活动
+      tags:
+      - Interaction
   /interaction/collect:
     post:
       consumes:
@@ -1121,6 +1209,30 @@ paths:
           schema:
             $ref: '#/definitions/resp.Resp'
       summary: 点赞
+      tags:
+      - Interaction
+  /interaction/reject:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 互动
+        in: body
+        name: interaction
+        required: true
+        schema:
+          $ref: '#/definitions/req.InteractionReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.Resp'
+      summary: 作为活动填表人拒绝发表此活动
       tags:
       - Interaction
   /post/all:
@@ -1342,6 +1454,29 @@ paths:
       summary: 更新头像
       tags:
       - User
+  /user/checking:
+    get:
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/resp.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/resp.CheckingResp'
+              type: object
+      summary: 获取用户处于审核状态中的活动和帖子
+      tags:
+      - User
   /user/collect/act:
     post:
       parameters:
@@ -1427,7 +1562,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/model.User'
+                  $ref: '#/definitions/github_com_raiki02_EG_internal_model.User'
               type: object
       summary: 获取用户信息
       tags:

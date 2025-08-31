@@ -5,3 +5,4 @@
 /config/dev-conf.yml
 EG
 docker-compose.yml
+.DS_Store

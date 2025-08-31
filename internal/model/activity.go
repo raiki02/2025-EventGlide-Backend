@@ -5,7 +5,7 @@ import "time"
 type Activity struct {
 	Bid        string    `gorm:"type:varchar(255);primary_key;not null;unique;column:bid"`
 	CreatedAt  time.Time `gorm:"type:datetime;column:created_at; not null"`
-	IsChecking string    `gorm:"type:varchar(255);column:is_checking"`
+	IsChecking string    `gorm:"type:enum('pass','pending','reject');default:'pending';column:is_checking"` // pending or pass or reject // 是否显示
 
 	StudentID      string `gorm:"type:varchar(255);column:student_id;not null"`
 	Title          string `gorm:"type:varchar(255);column:title;not null"`
@@ -18,8 +18,8 @@ type Activity struct {
 	StartTime      string `gorm:"type:datetime;column:start_time;not null"`
 	EndTime        string `gorm:"type:datetime;column:end_time;not null"`
 	Type           string `gorm:"type:varchar(255);column:type;not null"`
-	ActiveForm     string `gorm:"type:varchar(255);column:active_form"`
-	Signer         string `gorm:"type:text;column:signer;not null"`
+	ActiveForm     string `gorm:"type:varchar(255);column:active_form"` // 表单url // 通过条件2
+	Signer         string `gorm:"type:text;column:signer;not null"`     // 报名人 >= 5的 []slice // 通过条件1
 
 	LikeNum    int `gorm:"type:int;column:like_num;default:0"`
 	CollectNum int `gorm:"type:int;column:collect_num;default:0"`

@@ -7,6 +7,7 @@ import (
 	"github.com/raiki02/EG/internal/cache"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/internal/mq"
 	"github.com/raiki02/EG/tools"
 	"go.uber.org/zap"
 	"strings"
@@ -25,25 +26,71 @@ type ActivityServiceHdl interface {
 }
 
 type ActivityService struct {
-	ad *dao.ActDao
-	ch *cache.Cache
-	ud *dao.UserDao
-	l  *zap.Logger
+	ad  *dao.ActDao
+	ch  *cache.Cache
+	ud  *dao.UserDao
+	id  *dao.InteractionDao
+	mq  *mq.MQ
+	aud AuditorService
+	l   *zap.Logger
 }
 
-func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger) *ActivityService {
+func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger, id *dao.InteractionDao, mq *mq.MQ, aud AuditorService) *ActivityService {
 	return &ActivityService{
-		ad: ad,
-		ch: ch,
-		ud: ud,
-		l:  l.Named("activity/service"),
+		ad:  ad,
+		ch:  ch,
+		ud:  ud,
+		id:  id,
+		aud: aud,
+		mq:  mq,
+		l:   l.Named("activity/service"),
 	}
 }
 
 func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.CreateActivityResp, error) {
+	var (
+		form *model.AuditorForm
+		err  error
+	)
 	act := toAct(r)
 
-	err := as.ad.CreateAct(c, act)
+	// TODO: 异步增加
+	signers := r.LabelForm.Signer
+	for _, s := range signers {
+		if err := as.id.InsertApprovement(c, s.StudentID, s.Name, act.Bid); err != nil {
+			as.l.Error("Failed to insert approvement", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
+			return resp.CreateActivityResp{}, err
+		}
+		f := model.Feed{
+			StudentId: s.StudentID,
+			TargetBid: act.Bid,
+			Object:    "activity",
+			Action:    "invitation",
+		}
+		if err := as.mq.Publish(c, "feed", f); err != nil {
+			as.l.Error("Failed to publish feed", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
+			return resp.CreateActivityResp{}, err
+		}
+	}
+
+	// TODO: 异步
+	form, err = as.aud.CreateAuditorForm(c, act.Bid, act.ActiveForm, SubjectActivity)
+	if err != nil {
+		as.l.Error("Failed to create activity form", zap.Error(err))
+		return resp.CreateActivityResp{}, err
+	}
+	aw := &req.AuditWrapper{
+		Subject: SubjectActivity,
+		CactReq: r,
+	}
+
+	err = as.aud.UploadForm(c, aw, form.Id)
+	if err != nil {
+		as.l.Error("Failed to upload form to auditor", zap.Error(err))
+		return resp.CreateActivityResp{}, err
+	}
+
+	err = as.ad.CreateAct(c, act)
 	if err != nil {
 		as.l.Error("Failed to create act", zap.Error(err))
 		return resp.CreateActivityResp{}, err
@@ -155,6 +202,7 @@ func (as *ActivityService) toListActResp(c *gin.Context, act *model.Activity) re
 	res.UserInfo.School = user.School
 	res.UserInfo.Username = user.Name
 	res.Bid = act.Bid
+	res.IsChecking = act.IsChecking
 	res.UserInfo.Avatar = user.Avatar
 	res.UserInfo.StudentID = user.StudentID
 	res.DetailTime.StartTime = act.StartTime
@@ -262,8 +310,10 @@ func (as *ActivityService) toCreateResp(c *gin.Context, act any) resp.CreateActi
 		res.ShowImg = tools.StringToSlice(act.ShowImg)
 		res.Type = act.Type
 		res.Bid = act.Bid
+		res.ActiveForm = act.ActiveForm
 		res.Position = act.Position
 		res.IfRegister = act.IfRegister
+		res.Signer = separateSigners(tools.StringToSlice(act.Signer))
 		res.IsChecking = act.IsChecking
 		res.UserInfo.School = user.School
 		res.UserInfo.Username = user.Name

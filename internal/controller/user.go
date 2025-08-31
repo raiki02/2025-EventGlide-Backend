@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/api/resp"
+	//"github.com/raiki02/EG/internal/model" // 不知道为什么swag 识别不了model,非得加上
 	"github.com/raiki02/EG/internal/service"
 	"github.com/raiki02/EG/tools"
 	"go.uber.org/zap"
@@ -392,6 +393,26 @@ func (uc *UserController) LoadLikeAct() gin.HandlerFunc {
 			uc.l.Error("加载活动点赞失败", zap.Error(err))
 			return
 		}
+		context.JSON(200, tools.ReturnMSG(context, "success", res))
+	}
+}
+
+// @Tags User
+// @Summary 获取用户处于审核状态中的活动和帖子
+// @Produce json
+// @Param Authorization header string true "token"
+// @Success 200 {object} resp.Resp{data=resp.CheckingResp}
+// @Router /user/checking [get]
+func (uc *UserController) Checking() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		studentId := tools.GetSid(context)
+		res, err := uc.ush.GetChecking(context, studentId)
+		if err != nil {
+			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
+			uc.l.Error("获取签到状态失败", zap.Error(err))
+			return
+		}
+
 		context.JSON(200, tools.ReturnMSG(context, "success", res))
 	}
 }

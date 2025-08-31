@@ -1,11 +1,14 @@
 package router
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	_ "github.com/raiki02/EG/docs"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/internal/service"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
+	"net/http"
 )
 
 type RouterHdl interface {
@@ -22,9 +25,12 @@ type Router struct {
 	fr   *FeedRouter
 	ir   *InteractionRouter
 	cors *middleware.Cors
+
+	kgr ApiKeyRouter
+	cba service.CallbackAuditorService
 }
 
-func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr *CommentRouter, fr *FeedRouter, ir *InteractionRouter, cors *middleware.Cors) *Router {
+func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr *CommentRouter, fr *FeedRouter, ir *InteractionRouter, cors *middleware.Cors, cba service.CallbackAuditorService, kgr ApiKeyRouter) *Router {
 	return &Router{
 		e:    e,
 		ur:   ur,
@@ -34,6 +40,8 @@ func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr 
 		fr:   fr,
 		ir:   ir,
 		cors: cors,
+		cba:  cba,
+		kgr:  kgr,
 	}
 }
 
@@ -45,11 +53,27 @@ func (r *Router) RegisterRouters() {
 	r.cr.RegisterCommentRouter()
 	r.ir.RegisterInteractionRouters()
 	r.fr.RegisterFeedRouters()
+	r.cba.RegisterCallbackAuditorRouters()
+	r.kgr.RegisterApiKeyRouters()
 	r.RegisterSwagger()
 }
 
-func (r *Router) Run() error {
-	return r.e.Run()
+func (r *Router) Run() (error, func()) {
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r.e.Handler(),
+	}
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
+
+	return nil, func() {
+		if err := srv.Shutdown(context.Background()); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (r *Router) RegisterSwagger() {

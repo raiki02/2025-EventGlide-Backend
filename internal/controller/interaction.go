@@ -159,3 +159,53 @@ func (ic *InteractionController) Discollect() gin.HandlerFunc {
 		c.JSON(200, tools.ReturnMSG(c, "success", nil))
 	}
 }
+
+// @Tags Interaction
+// @Summary 作为活动填表人批准发表此活动
+// @Accept json
+// @Param Authorization header string true "token"
+// @Param interaction body req.InteractionReq true "互动"
+// @Success 200 {object} resp.Resp
+// @Router /interaction/approve [post]
+func (ic *InteractionController) Approve() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		studendId := tools.GetSid(c)
+		var ireq req.InteractionReq
+		err := c.ShouldBindJSON(&ireq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		err = ic.is.Approve(c, studendId, &ireq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+	}
+}
+
+// @Tags Interaction
+// @Summary 作为活动填表人拒绝发表此活动
+// @Accept json
+// @Param Authorization header string true "token"
+// @Param interaction body req.InteractionReq true "互动"
+// @Success 200 {object} resp.Resp
+// @Router /interaction/reject [post]
+func (ic *InteractionController) Reject() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		studendId := tools.GetSid(c)
+		var ireq req.InteractionReq
+		err := c.ShouldBindJSON(&ireq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
+			return
+		}
+		err = ic.is.Reject(c, studendId, &ireq)
+		if err != nil {
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+	}
+}

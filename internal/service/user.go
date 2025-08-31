@@ -152,6 +152,23 @@ func (us *UserService) SearchUserPost(ctx *gin.Context, studentId string, keywor
 	return res, nil
 }
 
+func (us *UserService) GetChecking(ctx *gin.Context, studentId string) (resp.CheckingResp, error) {
+	var res resp.CheckingResp
+	acts, err := us.adh.GetChecking(ctx, studentId)
+	if err != nil {
+		return resp.CheckingResp{}, err
+	}
+	res.Acts = us.as.ToListResp(ctx, acts)
+
+	posts, err := us.pdh.GetChecking(ctx, studentId)
+	if err != nil {
+		return resp.CheckingResp{}, err
+	}
+	res.Posts = us.ps.ToListResp(ctx, posts)
+
+	return res, nil
+}
+
 //func genRandomAvatar(c *gin.Context) string {
 //	avatars := []string{
 //		viper.GetString("imgbed.defaultAvatar1"),

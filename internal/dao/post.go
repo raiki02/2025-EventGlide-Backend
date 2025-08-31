@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -21,20 +22,22 @@ type PostDaoHdl interface {
 }
 
 type PostDao struct {
-	db *gorm.DB
-	l  *zap.Logger
+	db     *gorm.DB
+	effect string
+	l      *zap.Logger
 }
 
 func NewPostDao(db *gorm.DB, l *zap.Logger) *PostDao {
 	return &PostDao{
-		db: db,
-		l:  l.Named("post/dao"),
+		db:     db,
+		effect: viper.GetString("auditor.effect"),
+		l:      l.Named("post/dao"),
 	}
 }
 
 func (pd *PostDao) GetAllPost(ctx context.Context) ([]model.Post, error) {
 	var posts []model.Post
-	err := pd.db.WithContext(ctx).Find(&posts).Error
+	err := pd.db.WithContext(ctx).Scopes(pd.SetEffect()).Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +51,7 @@ func (pd *PostDao) CreatePost(ctx context.Context, post *model.Post) error {
 
 func (pd *PostDao) FindPostByName(ctx context.Context, name string) ([]model.Post, error) {
 	var posts []model.Post
-	err := pd.db.WithContext(ctx).Where("title like ?", fmt.Sprintf("%%%s%%", name)).Find(&posts).Error
+	err := pd.db.WithContext(ctx).Scopes(pd.SetEffect()).Where("title like ?", fmt.Sprintf("%%%s%%", name)).Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}
@@ -108,4 +111,27 @@ func (pd *PostDao) FindPostByBid(ctx *gin.Context, bid string) (model.Post, erro
 		return model.Post{}, err
 	}
 	return post, nil
+}
+
+func (pd *PostDao) SetEffect() func(db *gorm.DB) *gorm.DB {
+	if pd.effect == "slow" {
+		return func(db *gorm.DB) *gorm.DB {
+			return db.Where("is_checking = ?", "pass")
+		}
+	} else if pd.effect == "fast" {
+		return func(db *gorm.DB) *gorm.DB {
+			return db.Where("is_checking != ?", "reject")
+		}
+	}
+	return nil
+}
+
+func (pd *PostDao) GetChecking(c *gin.Context, sid string) ([]model.Post, error) {
+	var posts []model.Post
+	err := pd.db.WithContext(c).Where("student_id = ? AND is_checking = ?", sid, "pending").Find(&posts).Error
+	if err != nil {
+		pd.l.Error("Failed to get checking posts", zap.Error(err), zap.String("student_id", sid))
+		return nil, err
+	}
+	return posts, nil
 }

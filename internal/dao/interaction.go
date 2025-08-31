@@ -132,3 +132,44 @@ func (id *InteractionDao) DiscollectPost(c *gin.Context, studentID, targetID str
 	}
 	return nil
 }
+
+func (id *InteractionDao) ApproveActivity(c *gin.Context, studentID, targetID string) error {
+	var approvement model.Approvement
+	if err := id.db.WithContext(c).Model(&model.Approvement{}).Where("student_id = ? AND bid = ?", studentID, targetID).First(&approvement).Error; err != nil {
+		id.l.Error("Failed to find activity", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
+		return fmt.Errorf("failed to find activity: %w", err)
+	}
+	approvement.Stance = "approve"
+	if err := id.db.WithContext(c).Save(&approvement).Error; err != nil {
+		id.l.Error("Failed to approve activity", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
+		return fmt.Errorf("failed to approve activity: %w", err)
+	}
+	return nil
+}
+
+func (id *InteractionDao) RejectActivity(c *gin.Context, studentID, targetID string) error {
+	var approvement model.Approvement
+	if err := id.db.WithContext(c).Model(&model.Approvement{}).Where("student_id = ? AND bid = ?", studentID, targetID).First(&approvement).Error; err != nil {
+		id.l.Error("Failed to find activity", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
+		return fmt.Errorf("failed to find activity: %w", err)
+	}
+	approvement.Stance = "reject"
+	if err := id.db.WithContext(c).Save(&approvement).Error; err != nil {
+		id.l.Error("Failed to reject activity", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
+		return fmt.Errorf("failed to reject activity: %w", err)
+	}
+	return nil
+}
+
+func (id *InteractionDao) InsertApprovement(c *gin.Context, studentID, studentName, targetID string) error {
+	approvement := &model.Approvement{
+		StudentId:   studentID,
+		StudentName: studentName,
+		Bid:         targetID,
+	}
+	if err := id.db.WithContext(c).Create(approvement).Error; err != nil {
+		id.l.Error("Failed to insert approvement", zap.Error(err), zap.String("student_id", studentID), zap.String("bid", targetID))
+		return fmt.Errorf("failed to insert approvement: %w", err)
+	}
+	return nil
+}
