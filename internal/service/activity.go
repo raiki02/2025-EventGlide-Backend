@@ -30,12 +30,12 @@ type ActivityService struct {
 	ch  *cache.Cache
 	ud  *dao.UserDao
 	id  *dao.InteractionDao
-	mq  *mq.MQ
+	mq  mq.MQHdl
 	aud AuditorService
 	l   *zap.Logger
 }
 
-func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger, id *dao.InteractionDao, mq *mq.MQ, aud AuditorService) *ActivityService {
+func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap.Logger, id *dao.InteractionDao, mq mq.MQHdl, aud AuditorService) *ActivityService {
 	return &ActivityService{
 		ad:  ad,
 		ch:  ch,
@@ -67,7 +67,7 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 			Object:    "activity",
 			Action:    "invitation",
 		}
-		if err := as.mq.Publish(c, "feed", f); err != nil {
+		if err := as.mq.Publish(c, "feed_stream", f); err != nil {
 			as.l.Error("Failed to publish feed", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
 			return resp.CreateActivityResp{}, err
 		}

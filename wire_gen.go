@@ -7,7 +7,6 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/cache"
 	"github.com/raiki02/EG/internal/controller"
 	"github.com/raiki02/EG/internal/dao"
@@ -21,7 +20,8 @@ import (
 
 // Injectors from wire.go:
 
-func InitApp(e *gin.Engine) *server.Server {
+func InitApp() *server.Server {
+	engine := ioc.InitGinHandler()
 	db := ioc.InitDB()
 	logger := ioc.Newlogger()
 	userDao := dao.NewUserDao(db, logger)
@@ -33,33 +33,35 @@ func InitApp(e *gin.Engine) *server.Server {
 	ccnuService := service.NewCCNUService()
 	imgUploader := service.NewImgUploader()
 	cacheCache := cache.NewCache(client)
-	activityService := service.NewActivityService(actDao, cacheCache, userDao, logger)
-	postService := service.NewPostService(postDao, userDao, logger)
-	userService := service.NewUserService(userDao, actDao, postDao, commentDao, jwt, ccnuService, imgUploader, activityService, postService, logger)
-	userController := controller.NewUserController(e, userService, logger)
-	userRouter := router.NewUserRouter(e, userController, jwt)
-	actController := controller.NewActController(activityService, imgUploader, logger)
-	actRouter := router.NewActRouter(e, actController, jwt)
-	postController := controller.NewPostController(postService, logger)
-	postRouter := router.NewPostRouter(e, postController, jwt)
 	interactionDao := dao.NewInteractionDao(db, commentDao, userDao, actDao, postDao, logger)
 	mqHdl := mq.NewMQ(client)
+	auditorRepository := dao.NewAuditorRepo(db, logger)
+	auditorService := service.NewAuditorService(auditorRepository, logger)
+	activityService := service.NewActivityService(actDao, cacheCache, userDao, logger, interactionDao, mqHdl, auditorService)
+	postService := service.NewPostService(postDao, userDao, logger, auditorService)
+	userService := service.NewUserService(userDao, actDao, postDao, commentDao, jwt, ccnuService, imgUploader, activityService, postService, logger)
+	userController := controller.NewUserController(engine, userService, logger)
+	userRouter := router.NewUserRouter(engine, userController, jwt)
+	actController := controller.NewActController(activityService, imgUploader, logger)
+	actRouter := router.NewActRouter(engine, actController, jwt)
+	postController := controller.NewPostController(postService, logger)
+	postRouter := router.NewPostRouter(engine, postController, jwt)
 	commentService := service.NewCommentService(commentDao, userDao, interactionDao, logger, mqHdl)
 	commentController := controller.NewCommentController(commentService, logger)
-	commentRouter := router.NewCommentRouter(commentController, e, jwt)
+	commentRouter := router.NewCommentRouter(commentController, engine, jwt)
 	feedDao := dao.NewFeedDao(db, logger)
 	feedService := service.NewFeedService(feedDao, mqHdl, userDao, logger)
 	feedController := controller.NewFeedController(feedService, logger)
-	feedRouter := router.NewFeedRouter(feedController, e, jwt)
+	feedRouter := router.NewFeedRouter(feedController, engine, jwt)
 	interactionService := service.NewInteractionService(interactionDao, mqHdl, logger)
 	interactionController := controller.NewInteractionController(interactionService, logger)
-	interactionRouter := router.NewInteractionRouter(e, interactionController, jwt)
-	cors := middleware.NewCors(e)
-	listener := ioc.InitListener(e)
+	interactionRouter := router.NewInteractionRouter(engine, interactionController, jwt)
+	cors := middleware.NewCors(engine)
+	listener := ioc.InitListener(engine)
 	callbackAuditorService := service.NewCallbackAuditor(auditorRepository, listener, logger)
-	keyGet := ioc.InitApiKeyGetter(e)
+	keyGet := ioc.InitApiKeyGetter(engine)
 	apiKeyRouter := router.NewApiKeyRouter(keyGet)
-	routerRouter := router.NewRouter(e, userRouter, actRouter, postRouter, commentRouter, feedRouter, interactionRouter, cors, callbackAuditorService, apiKeyRouter)
+	routerRouter := router.NewRouter(engine, userRouter, actRouter, postRouter, commentRouter, feedRouter, interactionRouter, cors, callbackAuditorService, apiKeyRouter)
 	serverServer := server.NewServer(routerRouter, logger)
 	return serverServer
 }
