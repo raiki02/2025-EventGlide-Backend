@@ -252,8 +252,6 @@ definitions:
     type: object
   req.InteractionReq:
     properties:
-      studentid:
-        type: string
       subject:
         type: string
       targetid:
@@ -274,8 +272,6 @@ definitions:
         type: string
       object:
         type: string
-      studentid:
-        type: string
       target_id:
         type: string
     type: object
@@ -283,21 +279,15 @@ definitions:
     properties:
       new_name:
         type: string
-      studentid:
-        type: string
     type: object
   req.UserAvatarReq:
     properties:
       avatar_url:
         type: string
-      studentid:
-        type: string
     type: object
   req.UserSearchReq:
     properties:
       keyword:
-        type: string
-      studentid:
         type: string
     type: object
   resp.BriefFeedResp:

@@ -2236,9 +2236,6 @@ const docTemplate = `{
                 "targetid"
             ],
             "properties": {
-                "studentid": {
-                    "type": "string"
-                },
                 "subject": {
                     "type": "string"
                 },
@@ -2267,9 +2264,6 @@ const docTemplate = `{
                 "object": {
                     "type": "string"
                 },
-                "studentid": {
-                    "type": "string"
-                },
                 "target_id": {
                     "type": "string"
                 }
@@ -2280,9 +2274,6 @@ const docTemplate = `{
             "properties": {
                 "new_name": {
                     "type": "string"
-                },
-                "studentid": {
-                    "type": "string"
                 }
             }
         },
@@ -2291,9 +2282,6 @@ const docTemplate = `{
             "properties": {
                 "avatar_url": {
                     "type": "string"
-                },
-                "studentid": {
-                    "type": "string"
                 }
             }
         },
@@ -2301,9 +2289,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "keyword": {
-                    "type": "string"
-                },
-                "studentid": {
                     "type": "string"
                 }
             }
