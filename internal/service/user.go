@@ -118,8 +118,8 @@ func (us *UserService) GetUserInfo(ctx *gin.Context, studentId string) (model.Us
 	return user, nil
 }
 
-func (us *UserService) UpdateAvatar(ctx *gin.Context, req req.UserAvatarReq) error {
-	err := us.udh.UpdateAvatar(ctx, req.StudentID, req.AvatarUrl)
+func (us *UserService) UpdateAvatar(ctx *gin.Context, req req.UserAvatarReq, sid string) error {
+	err := us.udh.UpdateAvatar(ctx, sid, req.AvatarUrl)
 	if err != nil {
 		return err
 	}

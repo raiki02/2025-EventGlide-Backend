@@ -2227,9 +2227,6 @@
                 "targetid"
             ],
             "properties": {
-                "studentid": {
-                    "type": "string"
-                },
                 "subject": {
                     "type": "string"
                 },
@@ -2258,9 +2255,6 @@
                 "object": {
                     "type": "string"
                 },
-                "studentid": {
-                    "type": "string"
-                },
                 "target_id": {
                     "type": "string"
                 }
@@ -2271,9 +2265,6 @@
             "properties": {
                 "new_name": {
                     "type": "string"
-                },
-                "studentid": {
-                    "type": "string"
                 }
             }
         },
@@ -2282,9 +2273,6 @@
             "properties": {
                 "avatar_url": {
                     "type": "string"
-                },
-                "studentid": {
-                    "type": "string"
                 }
             }
         },
@@ -2292,9 +2280,6 @@
             "type": "object",
             "properties": {
                 "keyword": {
-                    "type": "string"
-                },
-                "studentid": {
                     "type": "string"
                 }
             }

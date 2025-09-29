@@ -1,8 +1,7 @@
 package req
 
 type UpdateNameReq struct {
-	StudentID string `json:"studentid"`
-	Name      string `json:"new_name"`
+	Name string `json:"new_name"`
 }
 type LoginReq struct {
 	StudentID string `json:"studentid"`
@@ -10,6 +9,5 @@ type LoginReq struct {
 }
 
 type UserSearchReq struct {
-	StudentID string `json:"studentid"`
-	Keyword   string `json:"keyword"`
+	Keyword string `json:"keyword"`
 }

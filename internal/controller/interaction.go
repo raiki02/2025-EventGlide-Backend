@@ -45,8 +45,8 @@ func (ic *InteractionController) Like() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
-		ireq.StudentID=sid
-		err = ic.is.Like(c, &ireq)
+
+		err = ic.is.Like(c, &ireq, sid)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
@@ -80,8 +80,8 @@ func (ic *InteractionController) Dislike() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
 			return
 		}
-		ireq.StudentID=sid
-		err = ic.is.Dislike(c, &ireq)
+
+		err = ic.is.Dislike(c, &ireq, sid)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
@@ -115,8 +115,8 @@ func (ic *InteractionController) Collect() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
 			return
 		}
-		ireq.StudentID=sid
-		err = ic.is.Collect(c, &ireq)
+
+		err = ic.is.Collect(c, &ireq, sid)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
@@ -150,8 +150,7 @@ func (ic *InteractionController) Discollect() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
 			return
 		}
-		ireq.StudentID=sid
-		err = ic.is.Discollect(c, &ireq)
+		err = ic.is.Discollect(c, &ireq, sid)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return

@@ -70,7 +70,7 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		post.StudentID=sid
+		post.StudentID = sid
 		_, err = pc.ps.CreatePost(c, &post)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
@@ -127,7 +127,7 @@ func (pc *PostController) DeletePost() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		post.StudentID=sid
+		post.StudentID = sid
 		err = pc.ps.DeletePost(c, &post)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
@@ -159,7 +159,7 @@ func (pr *PostController) CreateDraft() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
-		postDraft.StudentID=sid
+		postDraft.StudentID = sid
 		_, err = pr.ps.CreateDraft(c, &postDraft)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))

@@ -31,6 +31,6 @@ func (ir *InteractionRouter) RegisterInteractionRouters() {
 		i.POST("/discollect", ir.ic.Discollect())
 
 		i.POST("/approve", ir.ic.Approve())
-		i.POST("/disapprove", ir.ic.Reject())
+		i.POST("/reject", ir.ic.Reject())
 	}
 }
