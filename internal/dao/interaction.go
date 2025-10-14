@@ -29,6 +29,33 @@ func NewInteractionDao(db *gorm.DB, cd *CommentDao, ud *UserDao, ad *ActDao, pd 
 	}
 }
 
+func (id *InteractionDao) GetActivityByBid(c *gin.Context, bid string) (*model.Activity, error) {
+	var activity model.Activity
+	if err := id.db.WithContext(c).Where("bid = ?", bid).First(&activity).Error; err != nil {
+		id.l.Error("Failed to find activity", zap.Error(err), zap.String("bid", bid))
+		return nil, fmt.Errorf("failed to find activity: %w", err)
+	}
+	return &activity, nil
+}
+
+func (id *InteractionDao) GetPostByBid(c *gin.Context, bid string) (*model.Post, error) {
+	var post model.Post
+	if err := id.db.WithContext(c).Where("bid = ?", bid).First(&post).Error; err != nil {
+		id.l.Error("Failed to find post", zap.Error(err), zap.String("bid", bid))
+		return nil, fmt.Errorf("failed to find post: %w", err)
+	}
+	return &post, nil
+}
+
+func (id *InteractionDao) GetCommentByBid(c *gin.Context, bid string) (*model.Comment, error) {
+	var comment model.Comment
+	if err := id.db.WithContext(c).Where("bid = ?", bid).First(&comment).Error; err != nil {
+		id.l.Error("Failed to find comment", zap.Error(err), zap.String("bid", bid))
+		return nil, fmt.Errorf("failed to find comment: %w", err)
+	}
+	return &comment, nil
+}
+
 func (id *InteractionDao) LikeActivity(c *gin.Context, studentID, targetID string) error {
 	err1 := id.db.Model(&model.User{}).Where("student_id = ?", studentID).Update("like_act", gorm.Expr("CONCAT(COALESCE(like_act, ''), ?)", fmt.Sprintf("%s,", targetID)))
 	err2 := id.db.Model(&model.Activity{}).Where("bid = ?", targetID).Update("like_num", gorm.Expr("like_num + ?", 1))

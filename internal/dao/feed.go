@@ -36,8 +36,8 @@ func (fd *FeedDao) CreateFeed(ctx context.Context, feed *model.Feed) error {
 
 func (fd *FeedDao) GetTotalCnt(ctx *gin.Context, id string) ([]int, error) {
 	var lc, ca int64
-	err1 := fd.db.Model(&model.Feed{}).Where("student_id = ? and action in ? and status = ?", id, []string{"like", "collect"}, "未读").Count(&lc).Error
-	err2 := fd.db.Model(&model.Feed{}).Where("student_id = ? and action in ? and status = ?", id, []string{"comment", "at"}, "未读").Count(&ca).Error
+	err1 := fd.db.Model(&model.Feed{}).Where("receiver = ? and action in ? and status = ?", id, []string{"like", "collect"}, "未读").Count(&lc).Error
+	err2 := fd.db.Model(&model.Feed{}).Where("receiver = ? and action in ? and status = ?", id, []string{"comment", "at"}, "未读").Count(&ca).Error
 	if err1 != nil || err2 != nil {
 		return nil, err1
 	}
@@ -46,8 +46,8 @@ func (fd *FeedDao) GetTotalCnt(ctx *gin.Context, id string) ([]int, error) {
 
 func (fd *FeedDao) GetLikeFeed(ctx *gin.Context, id string) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	err1 := fd.db.Where("student_id = ? and action = ?", id, "like").Find(&feeds).Error
-	err2 := fd.db.Model(&model.Feed{}).Where("student_id = ? and action = ?", id, "like").Updates(map[string]interface{}{"status": "已读"}).Error
+	err1 := fd.db.Where("receiver = ? and action = ? AND student_id <> ?", id, "like", id).Find(&feeds).Error
+	err2 := fd.db.Model(&model.Feed{}).Where("receiver = ? and action = ? AND student_id <> ?", id, "like", id).Updates(map[string]interface{}{"status": "已读"}).Error
 	if err1 != nil || err2 != nil {
 		fd.l.Error("Get Like Feed Failed", zap.Error(err1), zap.Error(err2))
 		return nil, err1
@@ -57,8 +57,8 @@ func (fd *FeedDao) GetLikeFeed(ctx *gin.Context, id string) ([]*model.Feed, erro
 
 func (fd *FeedDao) GetCollectFeed(ctx *gin.Context, id string) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	err1 := fd.db.Where("student_id = ? and action = ?", id, "collect").Find(&feeds).Error
-	err2 := fd.db.Model(&model.Feed{}).Where("student_id = ? and action = ?", id, "collect").Updates(map[string]interface{}{"status": "已读"}).Error
+	err1 := fd.db.Where("receiver = ? and action = ? AND student_id <> ?", id, "collect", id).Find(&feeds).Error
+	err2 := fd.db.Model(&model.Feed{}).Where("receiver = ? and action = ? AND student_id <> ?", id, "collect", id).Updates(map[string]interface{}{"status": "已读"}).Error
 	if err1 != nil || err2 != nil {
 		fd.l.Error("Get Collect Feed Failed", zap.Error(err1), zap.Error(err2))
 		return nil, err1
@@ -68,8 +68,8 @@ func (fd *FeedDao) GetCollectFeed(ctx *gin.Context, id string) ([]*model.Feed, e
 
 func (fd *FeedDao) GetCommentFeed(ctx *gin.Context, id string) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	err1 := fd.db.Where("student_id = ? and action = ?", id, "comment").Find(&feeds).Error
-	err2 := fd.db.Model(&model.Feed{}).Where("student_id = ? and action = ?", id, "comment").Updates(map[string]interface{}{"status": "已读"}).Error
+	err1 := fd.db.Where("receiver = ? and action = ? AND student_id <> ?", id, "comment", id).Find(&feeds).Error
+	err2 := fd.db.Model(&model.Feed{}).Where("receiver = ? and action = ? AND student_id <> ?", id, "comment", id).Updates(map[string]interface{}{"status": "已读"}).Error
 	if err1 != nil || err2 != nil {
 		fd.l.Error("Get Comment Feed Failed", zap.Error(err1), zap.Error(err2))
 		return nil, err1
@@ -79,8 +79,8 @@ func (fd *FeedDao) GetCommentFeed(ctx *gin.Context, id string) ([]*model.Feed, e
 
 func (fd *FeedDao) GetAtFeed(ctx *gin.Context, id string) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	err1 := fd.db.Where("student_id = ? and action = ?", id, "at").Find(&feeds).Error
-	err2 := fd.db.Model(&model.Feed{}).Where("student_id = ? and action = ?", id, "at").Updates(map[string]interface{}{"status": "已读"}).Error
+	err1 := fd.db.Where("receiver = ? and action = ? AND student_id <> ?", id, "at", id).Find(&feeds).Error
+	err2 := fd.db.Model(&model.Feed{}).Where("receiver = ? and action = ? AND student_id <> ?", id, "at", id).Updates(map[string]interface{}{"status": "已读"}).Error
 	if err1 != nil || err2 != nil {
 		fd.l.Error("Get At Feed Failed", zap.Error(err1), zap.Error(err2))
 		return nil, err1
@@ -90,7 +90,7 @@ func (fd *FeedDao) GetAtFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
 
 func (fd *FeedDao) GetAuditorFeed(ctx *gin.Context, id string) ([]*model.Approvement, error) {
 	var a []*model.Approvement
-	if err := fd.db.WithContext(ctx).Where("student_id = ? AND stance = ?", id, "pending").Find(&a).Error; err != nil {
+	if err := fd.db.WithContext(ctx).Where("receiver = ? AND stance = ? AND student_id <> ?", id, "pending", id).Find(&a).Error; err != nil {
 		fd.l.Error("Get Auditor Feed Failed", zap.Error(err))
 		return nil, err
 	}

@@ -91,6 +91,7 @@ func (ad *ActDao) FindActByName(c *gin.Context, n string) ([]model.Activity, err
 
 func (ad *ActDao) FindActByDate(c *gin.Context, d string) ([]model.Activity, error) {
 	var as []model.Activity
+	// TODO: 日期查询要改
 	err := ad.db.Scopes(ad.SetEffect()).Where("start_time like ?", fmt.Sprintf("%%%s%%", d)).Find(&as).Error
 	if err != nil {
 		return nil, err

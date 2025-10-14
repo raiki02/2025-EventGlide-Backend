@@ -132,6 +132,9 @@ func (fs *FeedService) GetLikeFeed(ctx *gin.Context, sid string) ([]resp.FeedLik
 			fs.l.Error("Get User Info when get like feed Failed", zap.Error(err))
 			return nil, err
 		}
+		if sid == user.StudentID {
+			continue // 不显示自己的点赞
+		}
 		res = append(res, resp.FeedLikeResp{
 			Userinfo: resp.UserInfo{
 				StudentID: user.StudentID,
@@ -159,6 +162,9 @@ func (fs *FeedService) GetCollectFeed(ctx *gin.Context, sid string) ([]resp.Feed
 		if err != nil {
 			fs.l.Error("Get User Info when get collect feed Failed", zap.Error(err))
 			return nil, err
+		}
+		if sid == user.StudentID {
+			continue // 不显示自己的点赞
 		}
 		res = append(res, resp.FeedCollectResp{
 			Userinfo: resp.UserInfo{
@@ -188,6 +194,9 @@ func (fs *FeedService) GetCommentFeed(ctx *gin.Context, sid string) ([]resp.Feed
 			fs.l.Error("Get User Info when get comment feed Failed", zap.Error(err))
 			return nil, err
 		}
+		if sid == user.StudentID {
+			continue // 不显示评论自己的评论
+		}
 		res = append(res, resp.FeedCommentResp{
 			Userinfo: resp.UserInfo{
 				StudentID: user.StudentID,
@@ -216,6 +225,9 @@ func (fs *FeedService) GetAtFeed(ctx *gin.Context, sid string) ([]resp.FeedAtRes
 			fs.l.Error("Get User Info when get at feed Failed", zap.Error(err))
 			return nil, err
 		}
+		if sid == user.StudentID {
+			continue // 不显示自己的@ 自己回复
+		}
 		res = append(res, resp.FeedAtResp{
 			Userinfo: resp.UserInfo{
 				StudentID: user.StudentID,
@@ -242,6 +254,9 @@ func (fs *FeedService) GetAuditorFeedList(ctx *gin.Context, sid string) (resp.Fe
 		if err != nil {
 			fs.l.Error("Get User Info when get auditor feed Failed", zap.Error(err))
 			return resp.FeedResp{}, err
+		}
+		if sid == user.StudentID {
+			continue // 不显示自己的审核, 自己发起默认同意
 		}
 		res = append(res, resp.FeedInvitationResp{
 			Userinfo: resp.UserInfo{

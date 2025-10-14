@@ -60,9 +60,11 @@ func (ac *ActController) NewAct() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "你的参数有误，请重新输入！", nil))
 			return
 		}
-		if len(act.LabelForm.Signer) <= 4 {
-			c.JSON(200, tools.ReturnMSG(c, "请至少填写五个人的信息！", nil))
-			return
+		if act.LabelForm.HolderType == "个人" {
+			if len(act.LabelForm.Signer) <= 4 {
+				c.JSON(200, tools.ReturnMSG(c, "请至少填写五个人的信息！", nil))
+				return
+			}
 		}
 
 		if act.LabelForm.StartTime == "" || act.LabelForm.EndTime == "" {

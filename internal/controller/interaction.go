@@ -29,7 +29,7 @@ func NewInteractionController(is *service.InteractionService, l *zap.Logger) *In
 // @Router /interaction/like [post]
 func (ic *InteractionController) Like() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
+		sid := tools.GetSid(c) // 获取到发起者
 		if sid == "" {
 			ic.l.Warn("request studentid is empty when like action")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
