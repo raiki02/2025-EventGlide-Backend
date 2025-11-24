@@ -35,8 +35,9 @@ type ReplyResp struct {
 	ParentID       string `json:"parentid"`
 	ParentUserName string `json:"parentUserName"`
 
-	LikeNum  int `json:"likeNum"`
-	ReplyNum int `json:"replyNum"`
+	IsLike   string `json:"isLike"`
+	LikeNum  int    `json:"likeNum"`
+	ReplyNum int    `json:"replyNum"`
 
 	SubReply []SubReplyResp `json:"sub_reply"`
 }
@@ -57,6 +58,7 @@ type SubReplyResp struct {
 	ParentID       string `json:"parentid"`
 	ParentUserName string `json:"parentUserName"`
 
-	LikeNum  int `json:"likeNum"`
-	ReplyNum int `json:"replyNum"`
+	LikeNum  int    `json:"likeNum"`
+	IsLike   string `json:"isLike"`
+	ReplyNum int    `json:"replyNum"`
 }

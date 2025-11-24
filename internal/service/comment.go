@@ -60,16 +60,16 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 	}
 
 	f := model.Feed{
-        StudentId: r.StudentID,
-        TargetBid: r.ParentID,
-        Object:    r.Subject,
-        Action:    "comment",
-    }
+		StudentId: r.StudentID,
+		TargetBid: r.ParentID,
+		Object:    r.Subject,
+		Action:    "comment",
+	}
 
-	err=cs.mq.Publish(c.Request.Context(),"feed_stream",f)
-	if err != nil{
-		cs.l.Error("Publish Comment Feed Failed",zap.Error(err),zap.Any("feed",f))
-	}else{
+	err = cs.mq.Publish(c.Request.Context(), "feed_stream", f)
+	if err != nil {
+		cs.l.Error("Publish Comment Feed Failed", zap.Error(err), zap.Any("feed", f))
+	} else {
 		cs.l.Info("Publish Comment Feed Success", zap.Any("feed", f))
 	}
 
@@ -111,16 +111,16 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) 
 	)
 
 	f := model.Feed{
-        StudentId: r.StudentID,
-        TargetBid: r.ParentID,
-        Object:    "comment",
-        Action:    "at",
-    }
+		StudentId: r.StudentID,
+		TargetBid: r.ParentID,
+		Object:    "comment",
+		Action:    "at",
+	}
 
-	err=cs.mq.Publish(c.Request.Context(),"feed_stream",f)
-	if err != nil{
-		cs.l.Error("Publish Comment Feed Failed",zap.Error(err),zap.Any("feed",f))
-	}else{
+	err = cs.mq.Publish(c.Request.Context(), "feed_stream", f)
+	if err != nil {
+		cs.l.Error("Publish Comment Feed Failed", zap.Error(err), zap.Any("feed", f))
+	} else {
 		cs.l.Info("Publish Comment Feed Success", zap.Any("feed", f))
 	}
 
@@ -205,7 +205,11 @@ func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment) resp.Reply
 	for _, subcmt := range subcmts {
 		res.SubReply = append(res.SubReply, cs.toSubReply(c, &subcmt))
 	}
-
+	if strings.Contains(user.LikeComment, cmt.Bid) {
+		res.IsLike = "true"
+	} else {
+		res.IsLike = "false"
+	}
 	res.ReplyContent = cmt.Content
 	res.ReplyTime = tools.ParseTime(cmt.CreatedAt)
 	res.Bid = cmt.Bid
@@ -237,6 +241,11 @@ func (cs *CommentService) toSubReply(c *gin.Context, cmt *model.Comment) resp.Su
 		cs.l.Error("Error get user info when comment to subreply", zap.Error(err))
 		return resp.SubReplyResp{}
 	}
+	if strings.Contains(user.LikeComment, cmt.Bid) {
+		res.IsLike = "true"
+	} else {
+		res.IsLike = "false"
+	}
 	res.ReplyContent = cmt.Content
 	res.ReplyTime = tools.ParseTime(cmt.CreatedAt)
 	res.Bid = cmt.Bid
@@ -249,4 +258,3 @@ func (cs *CommentService) toSubReply(c *gin.Context, cmt *model.Comment) resp.Su
 	res.ParentUserName = pu.Name
 	return res
 }
-
