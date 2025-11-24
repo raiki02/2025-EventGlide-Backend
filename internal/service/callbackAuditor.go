@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/cqhasy/2025-Muxi-Team-auditor-Backend/api/request"
 	"github.com/cqhasy/2025-Muxi-Team-auditor-Backend/sdk/webhook"
 	"github.com/gin-gonic/gin"
@@ -24,8 +25,13 @@ func NewCallbackAuditor(repo dao.AuditorRepository, listener *webhook.Listener, 
 	// TODO: 这里太强耦合了, 但是这个handler必须要用repo没办法
 	f := webhook.HandlerFunc(func(e string, p request.HookPayload) {
 		if m, ok := p.Data.(map[string]interface{}); ok {
-			id := uint(m["id"].(float64)) // JSON 数字会被解析成 float64
-			status := tools.StatusMapper(m["status"].(string))
+			oid, ok := m["Id"].(float64) // JSON 数字会被解析成 float64
+			if !ok {
+				fmt.Println("data: ", p.Data)
+				l.Error("读取回调data数据异常", zap.Any("data", p.Data))
+			}
+			id := uint(oid)
+			status := tools.StatusMapper(m["Status"].(string))
 			ctx := gin.Context{}
 
 			if err := repo.Update(&ctx, id, status); err != nil {
