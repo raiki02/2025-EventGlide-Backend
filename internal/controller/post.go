@@ -71,12 +71,12 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 			return
 		}
 		post.StudentID = sid
-		_, err = pc.ps.CreatePost(c, &post)
+		res, err := pc.ps.CreatePost(c, &post)
 		if err != nil {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
 
