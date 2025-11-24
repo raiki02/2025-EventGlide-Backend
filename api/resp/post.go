@@ -1,8 +1,10 @@
 package resp
 
 type CreatePostResp struct {
-	Bid        string   `json:"bid"`
-	StudentID  string   `json:"studentid"`
+	Bid         string `json:"bid"`
+	StudentID   string `json:"studentid"`
+	PublishTime string `json:"publishTime"`
+
 	Title      string   `json:"title"`
 	Introduce  string   `json:"introduce"`
 	ShowImg    []string `json:"showImg"`
@@ -24,6 +26,7 @@ type ListPostsResp struct {
 		Username  string `json:"username"`
 		School    string `json:"school"`
 	} `json:"userInfo"`
+	PublishTime string `json:"publishTime"`
 
 	Introduce string   `json:"introduce"`
 	ShowImg   []string `json:"showImg"`
