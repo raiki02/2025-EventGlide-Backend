@@ -2862,12 +2862,6 @@ const docTemplate = `{
                 },
                 "reply_time": {
                     "type": "string"
-                },
-                "sub_reply": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/resp.SubReplyResp"
-                    }
                 }
             }
         },
@@ -2879,52 +2873,6 @@ const docTemplate = `{
                 },
                 "data": {},
                 "msg": {
-                    "type": "string"
-                }
-            }
-        },
-        "resp.SubReplyResp": {
-            "type": "object",
-            "properties": {
-                "bid": {
-                    "type": "string"
-                },
-                "isLike": {
-                    "type": "string"
-                },
-                "likeNum": {
-                    "type": "integer"
-                },
-                "parentUserName": {
-                    "type": "string"
-                },
-                "parentid": {
-                    "type": "string"
-                },
-                "replyNum": {
-                    "type": "integer"
-                },
-                "reply_content": {
-                    "type": "string"
-                },
-                "reply_creator": {
-                    "type": "object",
-                    "properties": {
-                        "avatar": {
-                            "type": "string"
-                        },
-                        "studentid": {
-                            "type": "string"
-                        },
-                        "username": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "reply_pos": {
-                    "type": "string"
-                },
-                "reply_time": {
                     "type": "string"
                 }
             }

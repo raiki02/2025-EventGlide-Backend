@@ -621,10 +621,6 @@ definitions:
         type: string
       replyNum:
         type: integer
-      sub_reply:
-        items:
-          $ref: '#/definitions/resp.SubReplyResp'
-        type: array
     type: object
   resp.Resp:
     properties:
@@ -633,36 +629,6 @@ definitions:
       data: {}
       msg:
         type: string
-    type: object
-  resp.SubReplyResp:
-    properties:
-      bid:
-        type: string
-      isLike:
-        type: string
-      likeNum:
-        type: integer
-      parentUserName:
-        type: string
-      parentid:
-        type: string
-      reply_content:
-        type: string
-      reply_creator:
-        properties:
-          avatar:
-            type: string
-          studentid:
-            type: string
-          username:
-            type: string
-        type: object
-      reply_pos:
-        type: string
-      reply_time:
-        type: string
-      replyNum:
-        type: integer
     type: object
   resp.UserInfo:
     properties:

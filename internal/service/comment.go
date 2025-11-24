@@ -197,50 +197,6 @@ func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment) resp.Reply
 	}
 
 	//获取该回复的子回复
-	subcmts, err := cs.cd.LoadAnswers(c, cmt.Bid)
-	if err != nil {
-		cs.l.Error("Error load reply when loading subreplies", zap.Error(err))
-		return resp.ReplyResp{}
-	}
-	for _, subcmt := range subcmts {
-		res.SubReply = append(res.SubReply, cs.toSubReply(c, &subcmt))
-	}
-	if strings.Contains(user.LikeComment, cmt.Bid) {
-		res.IsLike = "true"
-	} else {
-		res.IsLike = "false"
-	}
-	res.ReplyContent = cmt.Content
-	res.ReplyTime = tools.ParseTime(cmt.CreatedAt)
-	res.Bid = cmt.Bid
-	res.ReplyPos = cmt.Position
-	res.LikeNum = cmt.LikeNum
-	res.ReplyNum = cmt.ReplyNum
-	res.ReplyCreator.StudentID = user.StudentID
-	res.ReplyCreator.Username = user.Name
-	res.ReplyCreator.Avatar = user.Avatar
-	res.ParentUserName = pu.Name
-	return res
-}
-
-func (cs *CommentService) toSubReply(c *gin.Context, cmt *model.Comment) resp.SubReplyResp {
-	var res resp.SubReplyResp
-	user, err := cs.ud.GetUserInfo(c, cmt.StudentID)
-	if err != nil {
-		cs.l.Error("Error get user info when comment to subreply", zap.Error(err))
-		return resp.SubReplyResp{}
-	}
-	pid := cmt.ParentID
-	pc := cs.cd.FindCmtByID(c, pid)
-	if pc == nil {
-		cs.l.Error("Error find comment by id", zap.String("pid", pid))
-		return resp.SubReplyResp{}
-	}
-	pu, err := cs.ud.GetUserInfo(c, pc.StudentID)
-	if err != nil {
-		cs.l.Error("Error get user info when comment to subreply", zap.Error(err))
-		return resp.SubReplyResp{}
-	}
 	if strings.Contains(user.LikeComment, cmt.Bid) {
 		res.IsLike = "true"
 	} else {
