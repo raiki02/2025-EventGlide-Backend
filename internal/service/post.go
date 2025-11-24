@@ -128,13 +128,13 @@ func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.List
 	user := ps.ud.FindUserByID(c, post.StudentID)
 	var res resp.ListPostsResp
 	sid := tools.GetSid(c)
-	sercher := ps.ud.FindUserByID(c, sid)
-	if strings.Contains(sercher.CollectPost, post.Bid) {
+	searcher := ps.ud.FindUserByID(c, sid)
+	if strings.Contains(searcher.CollectPost, post.Bid) {
 		res.IsCollect = "true"
 	} else {
 		res.IsCollect = "false"
 	}
-	if strings.Contains(sercher.LikePost, post.Bid) {
+	if strings.Contains(searcher.LikePost, post.Bid) {
 		res.IsLike = "true"
 	} else {
 		res.IsLike = "false"
@@ -144,6 +144,7 @@ func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.List
 	res.UserInfo.Avatar = user.Avatar
 	res.UserInfo.StudentID = user.StudentID
 	res.Bid = post.Bid
+	res.PublishTime = tools.ParseTime(post.CreatedAt)
 
 	res.Title = post.Title
 	res.Introduce = post.Introduce
@@ -180,8 +181,8 @@ func toDraft(r *req.CreatePostReq) *model.PostDraft {
 
 func (ps *PostService) toCreateResp(c *gin.Context, p any) resp.CreatePostResp {
 	switch p.(type) {
-	case model.Post:
-		post := p.(model.Post)
+	case *model.Post:
+		post := p.(*model.Post)
 		var res resp.CreatePostResp
 		user := ps.ud.FindUserByID(c, post.StudentID)
 		res.UserInfo.School = user.School
@@ -193,9 +194,10 @@ func (ps *PostService) toCreateResp(c *gin.Context, p any) resp.CreatePostResp {
 		res.IsChecking = post.IsChecking
 		res.Introduce = post.Introduce
 		res.ShowImg = tools.StringToSlice(post.ShowImg)
+		res.PublishTime = tools.ParseTime(post.CreatedAt)
 		return res
-	case model.PostDraft:
-		draft := p.(model.PostDraft)
+	case *model.PostDraft:
+		draft := p.(*model.PostDraft)
 		var res resp.CreatePostResp
 		user := ps.ud.FindUserByID(c, draft.StudentID)
 		res.UserInfo.School = user.School
@@ -205,6 +207,7 @@ func (ps *PostService) toCreateResp(c *gin.Context, p any) resp.CreatePostResp {
 		res.Title = draft.Title
 		res.Introduce = draft.Introduce
 		res.ShowImg = tools.StringToSlice(draft.ShowImg)
+		res.PublishTime = tools.ParseTime(draft.CreatedAt)
 		res.Bid = draft.Bid
 		return res
 
