@@ -679,6 +679,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/feed/read/all": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "读取全部feed, 标记已读",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/feed/read/detail/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "读取feed详情, 标记已读",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "业务ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
         "/feed/total": {
             "get": {
                 "produces": [
@@ -1480,7 +1543,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_raiki02_EG_internal_model.User"
+                                            "$ref": "#/definitions/model.User"
                                         }
                                     }
                                 }
@@ -1847,41 +1910,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_raiki02_EG_internal_model.User": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "collectact": {
-                    "type": "string"
-                },
-                "collectpost": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "likeact": {
-                    "type": "string"
-                },
-                "likecomment": {
-                    "type": "string"
-                },
-                "likepost": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "school": {
-                    "type": "string"
-                },
-                "student_id": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Activity": {
             "type": "object",
             "properties": {
@@ -2054,6 +2082,41 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "collectact": {
+                    "type": "string"
+                },
+                "collectpost": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "likeact": {
+                    "type": "string"
+                },
+                "likecomment": {
+                    "type": "string"
+                },
+                "likepost": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "school": {
+                    "type": "string"
+                },
+                "student_id": {
                     "type": "string"
                 }
             }
@@ -2439,6 +2502,9 @@ const docTemplate = `{
         "resp.FeedAtResp": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2459,6 +2525,9 @@ const docTemplate = `{
         "resp.FeedCollectResp": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2479,6 +2548,9 @@ const docTemplate = `{
         "resp.FeedCommentResp": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2499,6 +2571,9 @@ const docTemplate = `{
         "resp.FeedInvitationResp": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2519,6 +2594,9 @@ const docTemplate = `{
         "resp.FeedLikeResp": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2687,6 +2765,9 @@ const docTemplate = `{
                 "likeNum": {
                     "type": "integer"
                 },
+                "publishTime": {
+                    "type": "string"
+                },
                 "showImg": {
                     "type": "array",
                     "items": {
@@ -2742,6 +2823,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bid": {
+                    "type": "string"
+                },
+                "isLike": {
                     "type": "string"
                 },
                 "likeNum": {
@@ -2803,6 +2887,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bid": {
+                    "type": "string"
+                },
+                "isLike": {
                     "type": "string"
                 },
                 "likeNum": {
