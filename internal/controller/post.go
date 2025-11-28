@@ -70,6 +70,10 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
+		if len(post.ShowImg) == 0 {
+			c.JSON(400, tools.ReturnMSG(c, "帖子封面不能为空!", nil))
+			return
+		}
 		post.StudentID = sid
 		res, err := pc.ps.CreatePost(c, &post)
 		if err != nil {
