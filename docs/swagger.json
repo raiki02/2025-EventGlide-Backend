@@ -2413,6 +2413,9 @@
                 "likeNum": {
                     "type": "integer"
                 },
+                "parent_id": {
+                    "type": "string"
+                },
                 "reply": {
                     "type": "array",
                     "items": {
@@ -2421,6 +2424,9 @@
                 },
                 "replyNum": {
                     "type": "integer"
+                },
+                "root_id": {
+                    "type": "string"
                 }
             }
         },
@@ -2825,7 +2831,7 @@
                 "parentUserName": {
                     "type": "string"
                 },
-                "parentid": {
+                "parent_id": {
                     "type": "string"
                 },
                 "replyNum": {
@@ -2852,6 +2858,9 @@
                     "type": "string"
                 },
                 "reply_time": {
+                    "type": "string"
+                },
+                "root_id": {
                     "type": "string"
                 }
             }

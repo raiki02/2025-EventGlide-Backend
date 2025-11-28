@@ -2422,6 +2422,9 @@ const docTemplate = `{
                 "likeNum": {
                     "type": "integer"
                 },
+                "parent_id": {
+                    "type": "string"
+                },
                 "reply": {
                     "type": "array",
                     "items": {
@@ -2430,6 +2433,9 @@ const docTemplate = `{
                 },
                 "replyNum": {
                     "type": "integer"
+                },
+                "root_id": {
+                    "type": "string"
                 }
             }
         },
@@ -2834,7 +2840,7 @@ const docTemplate = `{
                 "parentUserName": {
                     "type": "string"
                 },
-                "parentid": {
+                "parent_id": {
                     "type": "string"
                 },
                 "replyNum": {
@@ -2861,6 +2867,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "reply_time": {
+                    "type": "string"
+                },
+                "root_id": {
                     "type": "string"
                 }
             }

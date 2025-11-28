@@ -333,12 +333,16 @@ definitions:
         type: string
       likeNum:
         type: integer
+      parent_id:
+        type: string
       reply:
         items:
           $ref: '#/definitions/resp.ReplyResp'
         type: array
       replyNum:
         type: integer
+      root_id:
+        type: string
     type: object
   resp.CreateActivityResp:
     properties:
@@ -600,9 +604,9 @@ definitions:
         type: string
       likeNum:
         type: integer
-      parentUserName:
+      parent_id:
         type: string
-      parentid:
+      parentUserName:
         type: string
       reply_content:
         type: string
@@ -621,6 +625,8 @@ definitions:
         type: string
       replyNum:
         type: integer
+      root_id:
+        type: string
     type: object
   resp.Resp:
     properties:
