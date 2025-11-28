@@ -48,7 +48,7 @@ func (cd *CommentDao) LoadComments(c *gin.Context, parentid string) ([]model.Com
 
 func (cd *CommentDao) LoadAnswers(c *gin.Context, pid string) ([]model.Comment, error) {
 	var cmts []model.Comment
-	err := cd.db.Where("parent_id = ? and type = 1", pid).Find(&cmts).Error
+	err := cd.db.Where("root_id = ? and type = 1", pid).Find(&cmts).Error
 	return cmts, err
 }
 

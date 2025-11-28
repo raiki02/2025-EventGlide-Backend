@@ -15,6 +15,8 @@ type CommentResp struct {
 	LikeNum       int    `json:"likeNum"`
 	ReplyNum      int    `json:"replyNum"`
 	IsLike        string `json:"isLike"`
+	ParentID      string `json:"parent_id"`
+	RootID        string `json:"root_id"`
 
 	Reply []ReplyResp `json:"reply"`
 }
@@ -32,7 +34,8 @@ type ReplyResp struct {
 	ReplyTime    string `json:"reply_time"`
 	ReplyPos     string `json:"reply_pos"`
 
-	ParentID       string `json:"parentid"`
+	ParentID       string `json:"parent_id"`
+	RootID         string `json:"root_id"`
 	ParentUserName string `json:"parentUserName"`
 
 	IsLike   string `json:"isLike"`

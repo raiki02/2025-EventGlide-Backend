@@ -73,6 +73,7 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 		cs.l.Info("Publish Comment Feed Success", zap.Any("feed", f))
 	}
 
+	// 评论数+1
 	switch r.Subject {
 	case "activity":
 		err = cs.id.CommentActivity(c, r.StudentID, r.ParentID)
@@ -98,8 +99,15 @@ func (cs *CommentService) DeleteComment(c *gin.Context, r req.DeleteCommentReq) 
 	return nil
 }
 
+// 二级评论
 func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) (resp.ReplyResp, error) {
 	cmt := cs.toComment(r)
+	var parentCmt *model.Comment
+
+	for parentCmt = cs.cd.FindCmtByID(c, r.ParentID); parentCmt.RootId != ""; parentCmt = cs.cd.FindCmtByID(c, parentCmt.ParentID) {
+	}
+	cmt.RootId = parentCmt.Bid
+
 	err := cs.cd.AnswerComment(c, cmt)
 	if err != nil {
 		cs.l.Error("Error comment answer failed", zap.Error(err))
@@ -128,6 +136,7 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) 
 }
 
 func (cs *CommentService) LoadComments(c *gin.Context, parentid string) ([]resp.CommentResp, error) {
+	// 加载一级评论
 	cmts, err := cs.cd.LoadComments(c, parentid)
 	if err != nil {
 		cs.l.Error("Error load comments failed", zap.Error(err))
@@ -144,6 +153,7 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 		cs.l.Error("Error get user info when comment to resp", zap.Error(err))
 		return resp.CommentResp{}
 	}
+	// 该条评论下的所有评论, 不分级
 	replys, err := cs.cd.LoadAnswers(c, cmt.Bid) //该条评论的回复（存储模型）
 	if err != nil {
 		cs.l.Error("Error load answers when loading replies", zap.Error(err))
@@ -157,6 +167,8 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 	res.Content = cmt.Content
 	res.CommentedTime = tools.ParseTime(cmt.CreatedAt)
 	res.Bid = cmt.Bid
+	res.ParentID = cmt.ParentID
+	res.RootID = cmt.RootId
 	res.CommentedPos = cmt.Position
 	res.LikeNum = cmt.LikeNum
 	res.ReplyNum = cmt.ReplyNum
@@ -196,12 +208,13 @@ func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment) resp.Reply
 		return resp.ReplyResp{}
 	}
 
-	//获取该回复的子回复
 	if strings.Contains(user.LikeComment, cmt.Bid) {
 		res.IsLike = "true"
 	} else {
 		res.IsLike = "false"
 	}
+	res.ParentID = cmt.ParentID
+	res.RootID = cmt.RootId
 	res.ReplyContent = cmt.Content
 	res.ReplyTime = tools.ParseTime(cmt.CreatedAt)
 	res.Bid = cmt.Bid

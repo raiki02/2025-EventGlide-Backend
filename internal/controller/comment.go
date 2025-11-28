@@ -49,6 +49,9 @@ func (cc *CommentController) CreateComment() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
+		if r.StudentID == "" {
+			r.StudentID = sid
+		}
 		if r.Content == "" || r.ParentID == "" {
 			cc.l.Warn("request  content or parentid is empty when create comment")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
@@ -85,12 +88,15 @@ func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
 			return
 		}
+		if r.StudentID == "" {
+			r.StudentID = sid
+		}
 		if r.Content == "" || r.ParentID == "" {
 			cc.l.Warn("request  content or parentid is empty when answer comment")
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
-		r.StudentID=sid
+		r.StudentID = sid
 		res, err := cc.cs.AnswerComment(c, r)
 		if err != nil {
 			cc.l.Error("answer comment failed", zap.Error(err))
@@ -128,7 +134,7 @@ func (cc *CommentController) DeleteComment() gin.HandlerFunc {
 			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
 			return
 		}
-		r.StudentID=sid
+		r.StudentID = sid
 		err = cc.cs.DeleteComment(c, r)
 		if err != nil {
 			cc.l.Error("delete comment failed", zap.Error(err))
