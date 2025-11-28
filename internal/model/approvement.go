@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	StanceApprove = "approve"
-	StanceReject  = "reject"
+	StancePass   = "pass"
+	StanceReject = "reject"
 )
 
 type Approvement struct {
@@ -16,14 +16,14 @@ type Approvement struct {
 	Bid string `gorm:"type:varchar(255);not null;column:bid"`
 
 	StudentId   string    `gorm:"type:varchar(255);not null;column:student_id"`
-	StudentName string    `gorm:"type:varchar(255);not null;column:student_name"`                                   // 学生姓名
-	Stance      string    `gorm:"type:enum('approve','reject','pending');default:'pending';column:stance;not null"` // 代表赞同或反对
-	UpdatedAt   time.Time `gorm:"type:datetime;column:updated_at;not null"`                                         // 修改代表赞同或反对的时间
+	StudentName string    `gorm:"type:varchar(255);not null;column:student_name"`                                // 学生姓名
+	Stance      string    `gorm:"type:enum('pass','reject','pending');default:'pending';column:stance;not null"` // 代表赞同或反对
+	UpdatedAt   time.Time `gorm:"type:datetime;column:updated_at;not null"`                                      // 修改代表赞同或反对的时间
 	CreatedAt   time.Time `gorm:"type:datetime;column:created_at;not null"`
 }
 
 func (a *Approvement) AfterUpdate(tx *gorm.DB) (err error) {
-	if a.Stance == StanceApprove {
+	if a.Stance == StancePass {
 		passUpdate := tx.Exec(`
 			UPDATE activities
 			SET is_checking = 'pass'
@@ -32,13 +32,13 @@ func (a *Approvement) AfterUpdate(tx *gorm.DB) (err error) {
 				SELECT 1
 				FROM approvements
 				WHERE bid = ?
-				AND stance != 'approve'
+				AND stance != 'pass'
 			)
 			AND EXISTS (
 				SELECT 1
 				FROM auditor_forms
 				WHERE bid = ?
-				AND status = 'approve'
+				AND status = 'pass'
 			)
 		`, a.Bid, a.Bid, a.Bid)
 		if passUpdate.Error != nil {
