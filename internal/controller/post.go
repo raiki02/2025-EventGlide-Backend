@@ -71,7 +71,7 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 			return
 		}
 		if len(post.ShowImg) == 0 {
-			c.JSON(400, tools.ReturnMSG(c, "帖子封面不能为空!", nil))
+			c.JSON(400, tools.ReturnMSG(c, "请至少上传一张图片!", nil))
 			return
 		}
 		post.StudentID = sid
