@@ -13,9 +13,9 @@ type Post struct {
 	ShowImg   string `gorm:"type: text;comment:图片链接;column:show_img"`
 
 	IsChecking string `gorm:"type: enum('pass','reject','checking');default:'checking';comment:审核状态;column:is_checking;not null"`
-	LikeNum    int    `gorm:"type: int;comment:点赞数;column:like_num;default:0"`
-	CollectNum int    `gorm:"type: int;comment:收藏数;column:collect_num;default:0"`
-	CommentNum int    `gorm:"type: int;comment:评论数;column:comment_num;default:0"`
+	LikeNum    uint   `gorm:"type: uint;comment:点赞数;column:like_num;default:0"`
+	CollectNum uint   `gorm:"type: uint;comment:收藏数;column:collect_num;default:0"`
+	CommentNum uint   `gorm:"type: uint;comment:评论数;column:comment_num;default:0"`
 }
 
 type PostDraft struct {
