@@ -95,3 +95,60 @@ func (fc *FeedController) GetAuditorFeedList() func(c *gin.Context) {
 		c.JSON(200, tools.ReturnMSG(c, "success", res))
 	}
 }
+
+// @Summary 读取feed详情, 标记已读
+// @Tags feed
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param id path string true "业务ID"
+// @Success 200 {object} resp.Resp
+// @Router /feed/read/detail/{id} [get]
+func (fc *FeedController) ReadFeedDetail() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		sid := tools.GetSid(c)
+		if sid == "" {
+			fc.l.Warn("request studentid is empty when get total comment")
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
+			return
+		}
+		id := c.Param("id")
+		if id == "" {
+			fc.l.Warn("request bid is empty when read feed detail")
+			c.JSON(200, tools.ReturnMSG(c, "请求参数错误! ", nil))
+			return
+		}
+		err := fc.fs.ReadFeedDetail(c, sid, id)
+		if err != nil {
+			fc.l.Error("read feed detail failed", zap.Error(err))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
+			return
+		}
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+	}
+}
+
+// @Summary 读取全部feed, 标记已读
+// @Tags feed
+// @Produce json
+// @Param Authorization header string true "token"
+// @Success 200 {object} resp.Resp
+// @Router /feed/read/all [get]
+func (fc *FeedController) ReadAllFeed() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		sid := tools.GetSid(c)
+		if sid == "" {
+			fc.l.Warn("request studentid is empty when get total comment")
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
+			return
+		}
+
+		err := fc.fs.ReadAllFeed(c, sid)
+		if err != nil {
+			fc.l.Error("read all feed failed", zap.Error(err))
+			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
+			return
+		}
+
+		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+	}
+}
