@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	"github.com/raiki02/EG/pkg/ginx"
 	"github.com/raiki02/EG/tools"
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
@@ -118,6 +119,8 @@ func (c *Jwt) WrapCheckToken() gin.HandlerFunc {
 			return
 		}
 		ctx.Set("studentid", c.parseSid(token))
+		claims := c.parseToken(token)
+		ctx.Set(ginx.UserClaimsKey, *claims)
 		ctx.Next()
 	}
 }
@@ -139,4 +142,23 @@ func (c *Jwt) parseSid(token string) string {
 		return c.Subject
 	}
 	return ""
+}
+
+func (c *Jwt) parseToken(token string) *jwt.RegisteredClaims {
+	if token == "" {
+		return nil
+	}
+	if strings.HasPrefix(token, "Bearer") {
+		_, token, _ = strings.Cut(token, " ")
+	}
+	t, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return c.jwtKey, nil
+	})
+	if err != nil {
+		return nil
+	}
+	if c, ok := t.Claims.(*jwt.RegisteredClaims); ok && t.Valid {
+		return c
+	}
+	return nil
 }

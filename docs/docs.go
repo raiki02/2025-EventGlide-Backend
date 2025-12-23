@@ -183,7 +183,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.CreateActReq"
+                            "$ref": "#/definitions/req.CreateActDraftReq"
                         }
                     },
                     {
@@ -206,7 +206,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/req.CreateActReq"
+                                            "$ref": "#/definitions/req.CreateActDraftReq"
                                         }
                                     }
                                 }
@@ -515,13 +515,6 @@ const docTemplate = `{
                 ],
                 "summary": "删除评论",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "学号",
-                        "name": "sid",
-                        "in": "formData",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "token",
@@ -2158,7 +2151,7 @@ const docTemplate = `{
                 }
             }
         },
-        "req.CreateActReq": {
+        "req.CreateActDraftReq": {
             "type": "object",
             "properties": {
                 "introduce": {
@@ -2178,6 +2171,87 @@ const docTemplate = `{
                         },
                         "if_register": {
                             "type": "string"
+                        },
+                        "position": {
+                            "type": "string"
+                        },
+                        "register_method": {
+                            "type": "string"
+                        },
+                        "signer": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "studentid": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "startTime": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "showImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "studentid": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.CreateActReq": {
+            "type": "object",
+            "required": [
+                "introduce",
+                "studentid",
+                "title"
+            ],
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "labelform": {
+                    "type": "object",
+                    "required": [
+                        "activeForm",
+                        "endTime",
+                        "holderType",
+                        "if_register",
+                        "position",
+                        "startTime",
+                        "type"
+                    ],
+                    "properties": {
+                        "activeForm": {
+                            "type": "string"
+                        },
+                        "endTime": {
+                            "type": "string"
+                        },
+                        "holderType": {
+                            "type": "string"
+                        },
+                        "if_register": {
+                            "type": "string",
+                            "enum": [
+                                "是",
+                                "否"
+                            ]
                         },
                         "position": {
                             "type": "string"
@@ -2274,14 +2348,21 @@ const docTemplate = `{
         },
         "req.FindActByDateReq": {
             "type": "object",
+            "required": [
+                "date"
+            ],
             "properties": {
                 "date": {
+                    "description": "02-01",
                     "type": "string"
                 }
             }
         },
         "req.FindActByNameReq": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "name": {
                     "type": "string"
@@ -2515,6 +2596,9 @@ const docTemplate = `{
         "resp.FeedAtResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2538,6 +2622,9 @@ const docTemplate = `{
         "resp.FeedCollectResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2561,6 +2648,9 @@ const docTemplate = `{
         "resp.FeedCommentResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2584,6 +2674,9 @@ const docTemplate = `{
         "resp.FeedInvitationResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2607,6 +2700,9 @@ const docTemplate = `{
         "resp.FeedLikeResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },

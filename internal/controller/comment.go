@@ -110,7 +110,6 @@ func (cc *CommentController) AnswerComment() gin.HandlerFunc {
 // @Tags Comment
 // @Summary 删除评论
 // @Produce json
-// @Param sid formData string true "学号"
 // @Param Authorization header string true "token"
 // @Param DeleteCommentReq body req.DeleteCommentReq true "删除评论"
 // @Success 200 {object} resp.Resp

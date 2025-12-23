@@ -107,7 +107,7 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 
 }
 
-func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActReq) (resp.CreateActivityResp, error) {
+func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActDraftReq) (resp.CreateActivityResp, error) {
 
 	d := toActDraft(r)
 
@@ -247,7 +247,7 @@ func toAct(r *req.CreateActReq) *model.Activity {
 }
 
 func joinSigners(signers []struct {
-	StudentID string `json:"studentid"`
+	StudentID string `json:"studentid" validate:"len=10"`
 	Name      string `json:"name"`
 }) []string {
 	var res []string
@@ -276,7 +276,7 @@ func separateSigners(signers []string) []struct {
 	return res
 }
 
-func toActDraft(r *req.CreateActReq) *model.ActivityDraft {
+func toActDraft(r *req.CreateActDraftReq) *model.ActivityDraft {
 	var ad model.ActivityDraft
 	ad.Bid = tools.GenUUID()
 	ad.CreatedAt = time.Now()
