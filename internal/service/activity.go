@@ -62,10 +62,11 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 			return resp.CreateActivityResp{}, err
 		}
 		f := model.Feed{
-			StudentId: s.StudentID,
+			StudentId: r.StudentID,
 			TargetBid: act.Bid,
 			Object:    "activity",
 			Action:    "invitation",
+			Receiver:  s.StudentID,
 		}
 		if err := as.mq.Publish(c, "feed_stream", f); err != nil {
 			as.l.Error("Failed to publish feed", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
