@@ -48,9 +48,13 @@ func (ps *PostService) GetAllPost(c *gin.Context) ([]resp.ListPostsResp, error) 
 }
 
 func (ps *PostService) CreatePost(c *gin.Context, r *req.CreatePostReq) (resp.CreatePostResp, error) {
+	var (
+		err  error
+		form *model.AuditorForm
+	)
 	post := toPost(r)
 
-	form, err := ps.aud.CreateAuditorForm(c, post.Bid, "", SubjectPost)
+	form, err = ps.aud.CreateAuditorForm(c, post.Bid, "", SubjectPost)
 	if err != nil {
 		ps.l.Error("Failed to create auditor form", zap.Error(err), zap.String("bid", post.Bid))
 		return resp.CreatePostResp{}, err
