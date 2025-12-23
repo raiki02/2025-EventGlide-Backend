@@ -210,6 +210,8 @@ definitions:
         type: string
       parent_id:
         type: string
+      receiver:
+        type: string
       studentid:
         type: string
       subject:
@@ -252,11 +254,14 @@ definitions:
     type: object
   req.InteractionReq:
     properties:
+      receiver:
+        type: string
       subject:
         type: string
       targetid:
         type: string
     required:
+    - receiver
     - targetid
     type: object
   req.LoginReq:

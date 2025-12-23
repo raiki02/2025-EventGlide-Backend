@@ -2230,6 +2230,9 @@ const docTemplate = `{
                 "parent_id": {
                     "type": "string"
                 },
+                "receiver": {
+                    "type": "string"
+                },
                 "studentid": {
                     "type": "string"
                 },
@@ -2296,9 +2299,13 @@ const docTemplate = `{
         "req.InteractionReq": {
             "type": "object",
             "required": [
+                "receiver",
                 "targetid"
             ],
             "properties": {
+                "receiver": {
+                    "type": "string"
+                },
                 "subject": {
                     "type": "string"
                 },

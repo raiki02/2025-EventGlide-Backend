@@ -2221,6 +2221,9 @@
                 "parent_id": {
                     "type": "string"
                 },
+                "receiver": {
+                    "type": "string"
+                },
                 "studentid": {
                     "type": "string"
                 },
@@ -2287,9 +2290,13 @@
         "req.InteractionReq": {
             "type": "object",
             "required": [
+                "receiver",
                 "targetid"
             ],
             "properties": {
+                "receiver": {
+                    "type": "string"
+                },
                 "subject": {
                     "type": "string"
                 },
