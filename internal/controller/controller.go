@@ -9,4 +9,5 @@ var Provider = wire.NewSet(
 	NewInteractionController,
 	NewPostController,
 	NewUserController,
+	NewCallbackAuditorController,
 )
