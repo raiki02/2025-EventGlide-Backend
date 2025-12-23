@@ -1,17 +1,16 @@
 package service
 
 import (
-	"github.com/cqhasy/2025-Muxi-Team-auditor-Backend/api/request"
-	"github.com/cqhasy/2025-Muxi-Team-auditor-Backend/api/response"
-	"github.com/cqhasy/2025-Muxi-Team-auditor-Backend/sdk/client"
 	"github.com/gin-gonic/gin"
+	"github.com/muxi-Infra/auditor-Backend/sdk/v2/api/request"
+	"github.com/muxi-Infra/auditor-Backend/sdk/v2/client"
+	"github.com/muxi-Infra/auditor-Backend/sdk/v2/dto"
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/internal/dao"
 	"github.com/raiki02/EG/internal/model"
 	"github.com/raiki02/EG/tools"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	"net/http"
 	"strings"
 	"time"
 )
@@ -31,18 +30,26 @@ type AuditorService interface {
 type auditorService struct {
 	ApiKey      string
 	HookUrl     string
-	MuxiCli     *client.MuxiAuditClient
+	MuxiCli     *client.Client
 	AuditorRepo dao.AuditorRepository
 
 	l *zap.Logger
 }
 
 func NewAuditorService(repo dao.AuditorRepository, l *zap.Logger) AuditorService {
-	httpCli := &http.Client{}
+	muxiCli, err := client.NewClient(client.Config{
+		ApiKey: viper.GetString("auditor.apiKey"),
+		Region: viper.GetString("auditor.region"),
+	})
+	if err != nil {
+		l.Fatal("Failed to create Muxi Auditor client", zap.Error(err))
+		panic(err)
+	}
+
 	c := &auditorService{
 		ApiKey:      viper.GetString("auditor.apiKey"),
 		HookUrl:     viper.GetString("auditor.hookUrl"),
-		MuxiCli:     client.NewMuxiAuditClient(httpCli, viper.GetString("auditor.auditUrl")),
+		MuxiCli:     muxiCli,
 		AuditorRepo: repo,
 		l:           l.Named("auditor/service"),
 	}
@@ -51,7 +58,7 @@ func NewAuditorService(repo dao.AuditorRepository, l *zap.Logger) AuditorService
 
 func (a *auditorService) UploadForm(c *gin.Context, aw *req.AuditWrapper, id uint) error {
 	uploadReq := a.toUploadReq(aw, id)
-	_, err := a.MuxiCli.UploadItem(a.ApiKey, uploadReq)
+	_, err := a.MuxiCli.UploadItem(c, &uploadReq)
 	if err != nil {
 		a.l.Error("Upload to auditor failed", zap.Error(err))
 		return err
@@ -64,38 +71,41 @@ func (a *auditorService) CreateAuditorForm(c *gin.Context, ActId, FormUrl string
 }
 
 func (a *auditorService) toUploadReq(aw *req.AuditWrapper, id uint) request.UploadReq {
+	now := time.Now().Unix()
 	res := request.UploadReq{
-		HookUrl:    a.HookUrl,
-		Id:         id,
-		Tags:       []string{"校灵通"},
-		PublicTime: time.Now().Unix(),
+		HookUrl:    &a.HookUrl,
+		Id:         &id,
+		Tags:       &[]string{"校灵通"},
+		PublicTime: &now,
 	}
 
 	if aw.Subject == SubjectActivity {
-		res.Author = extractAuthors(aw.CactReq.LabelForm.Signer)
-		res.Tags = append(res.Tags, aw.CactReq.LabelForm.Type, "活动")
-		res.Content = response.Contents{
-			Topic: response.Topics{
-				Title:    aw.CactReq.Title,
-				Content:  aw.CactReq.Introduce,
-				Pictures: aw.CactReq.ShowImg,
-			},
-		}
+		author := extractAuthors(aw.CactReq.LabelForm.Signer)
+		res.Author = &author
+		*res.Tags = append(*res.Tags, aw.CactReq.LabelForm.Type, "活动")
+
+		ctt := dto.NewContents(
+			dto.WithTopicText(aw.CactReq.Title, aw.CactReq.Introduce),
+			dto.WithTopicPictures(aw.CactReq.ShowImg),
+		)
+		res.Content = ctt
+
 		if tools.IfRegisterMapper(aw.CactReq.LabelForm.IfRegister) {
-			res.Tags = append(res.Tags, "含报名表需要审核")
+			*res.Tags = append(*res.Tags, "含报名表需要审核")
 			res.Content.Topic.Pictures = append(res.Content.Topic.Pictures, aw.CactReq.LabelForm.ActiveForm)
 		}
+
 	} else if aw.Subject == SubjectPost {
-		res.Author = aw.CpostReq.StudentID
-		res.Tags = append(res.Tags, "帖子")
-		res.Content = response.Contents{
-			Topic: response.Topics{
-				Title:    aw.CpostReq.Title,
-				Content:  aw.CpostReq.Introduce,
-				Pictures: aw.CpostReq.ShowImg,
-			},
-		}
+		res.Author = &aw.CpostReq.StudentID
+		*res.Tags = append(*res.Tags, "帖子")
+
+		ctt := dto.NewContents(
+			dto.WithTopicText(aw.CpostReq.Title, aw.CpostReq.Introduce),
+			dto.WithTopicPictures(aw.CpostReq.ShowImg),
+		)
+		res.Content = ctt
 	}
+
 	return res
 }
 
