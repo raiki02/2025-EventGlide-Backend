@@ -64,6 +64,7 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 		TargetBid: r.ParentID,
 		Object:    r.Subject,
 		Action:    "comment",
+		Receiver:  r.Receiver,
 	}
 
 	err = cs.mq.Publish(c.Request.Context(), "feed_stream", f)
@@ -123,6 +124,7 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) 
 		TargetBid: r.ParentID,
 		Object:    "comment",
 		Action:    "at",
+		Receiver:  r.Receiver,
 	}
 
 	err = cs.mq.Publish(c.Request.Context(), "feed_stream", f)

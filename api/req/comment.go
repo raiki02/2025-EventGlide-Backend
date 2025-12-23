@@ -10,4 +10,5 @@ type CreateCommentReq struct {
 	Content   string `json:"content"`
 	ParentID  string `json:"parent_id"`
 	Subject   string `json:"subject"`
+	Receiver  string `json:"receiver"`
 }
