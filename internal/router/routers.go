@@ -10,5 +10,4 @@ var Provider = wire.NewSet(
 	NewPostRouter,
 	NewUserRouter,
 	NewRouter,
-	NewApiKeyRouter,
 )
