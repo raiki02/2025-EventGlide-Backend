@@ -10,8 +10,6 @@ var Provider = wire.NewSet(
 	InitDB,
 	InitRedis,
 	Newlogger,
-	InitListener,
-	InitApiKeyGetter,
 	mq.NewMQ,
 	cache.NewCache,
 	InitGinHandler,
