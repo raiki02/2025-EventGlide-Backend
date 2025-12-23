@@ -353,9 +353,16 @@ func processMsg(f *model.Feed, name string) string {
 }
 
 func getFirstPic(pics string) string {
+	// http://xxx,http://yyy
 	if strings.Contains(pics, ",http") {
 		return strings.Split(pics, ",")[0]
 	}
 
+	// http://xxx
+	if pics != "" {
+		return pics
+	}
+
+	// no pic
 	return ""
 }

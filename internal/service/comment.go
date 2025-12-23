@@ -105,7 +105,7 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) 
 	cmt := cs.toComment(r)
 	var parentCmt *model.Comment
 
-	for parentCmt = cs.cd.FindCmtByID(c, r.ParentID); parentCmt.RootId != ""; parentCmt = cs.cd.FindCmtByID(c, parentCmt.ParentID) {
+	for parentCmt = cs.cd.FindCmtByID(c, r.ParentID); parentCmt != nil && parentCmt.RootId != ""; parentCmt = cs.cd.FindCmtByID(c, parentCmt.ParentID) {
 	}
 	cmt.RootId = parentCmt.Bid
 
