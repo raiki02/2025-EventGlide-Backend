@@ -272,6 +272,12 @@ definitions:
         type: string
       subject:
         type: string
+    required:
+    - content
+    - parent_id
+    - receiver
+    - studentid
+    - subject
     type: object
   req.CreatePostReq:
     properties:
@@ -292,6 +298,9 @@ definitions:
         type: string
       target_id:
         type: string
+    required:
+    - studentid
+    - target_id
     type: object
   req.FindActByDateReq:
     properties:
@@ -1041,11 +1050,11 @@ paths:
       summary: 删除评论
       tags:
       - Comment
-  /comment/load/{id}:
+  /comment/load:
     get:
       parameters:
       - description: 目标id
-        in: path
+        in: query
         name: id
         required: true
         type: string

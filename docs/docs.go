@@ -542,7 +542,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/comment/load/{id}": {
+        "/comment/load": {
             "get": {
                 "produces": [
                     "application/json"
@@ -556,7 +556,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "目标id",
                         "name": "id",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -2297,6 +2297,13 @@ const docTemplate = `{
         },
         "req.CreateCommentReq": {
             "type": "object",
+            "required": [
+                "content",
+                "parent_id",
+                "receiver",
+                "studentid",
+                "subject"
+            ],
             "properties": {
                 "content": {
                     "type": "string"
@@ -2337,6 +2344,10 @@ const docTemplate = `{
         },
         "req.DeleteCommentReq": {
             "type": "object",
+            "required": [
+                "studentid",
+                "target_id"
+            ],
             "properties": {
                 "studentid": {
                     "type": "string"
