@@ -127,11 +127,10 @@ func (ac *ActController) FindActByDate(ctx *gin.Context, req_ req.FindActByDateR
 // @Summary 通过创建者id查找活动
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param id path string true "创建者id"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/own/{id} [get]
-func (ac *ActController) FindActByOwnerID(ctx *gin.Context, req_ req.FindActByOwnerIDReq) (resp.Resp, error) {
-	res, err := ac.as.FindActByOwnerID(ctx, req_.Id)
+// @Router /act/own [get]
+func (ac *ActController) FindActByOwnerID(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := ac.as.FindActByOwnerID(ctx, claims.Subject)
 	if err != nil {
 		return ginx.ReturnError(err)
 	}
@@ -143,9 +142,8 @@ func (ac *ActController) FindActByOwnerID(ctx *gin.Context, req_ req.FindActByOw
 // @Summary 列出所有活动
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param id path string true "用户id"
 // @Success 200 {object} resp.Resp{data=resp.ListActivitiesResp}
-// @Router /act/all/{id} [get]
+// @Router /act/all [get]
 func (ac *ActController) ListAllActs(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
 	res, err := ac.as.ListAllActs(ctx, claims.Subject)
 	if err != nil {

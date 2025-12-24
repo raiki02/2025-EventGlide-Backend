@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/act/all/{id}": {
+        "/act/all": {
             "get": {
                 "produces": [
                     "application/json"
@@ -30,13 +30,6 @@ const docTemplate = `{
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户id",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     }
                 ],
@@ -311,7 +304,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/act/own/{id}": {
+        "/act/own": {
             "get": {
                 "produces": [
                     "application/json"
@@ -326,13 +319,6 @@ const docTemplate = `{
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "创建者id",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     }
                 ],

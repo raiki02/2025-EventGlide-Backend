@@ -735,17 +735,12 @@ info:
   description: 校灵通 API 文档
   title: EventGlide API
 paths:
-  /act/all/{id}:
+  /act/all:
     get:
       parameters:
       - description: token
         in: header
         name: Authorization
-        required: true
-        type: string
-      - description: 用户id
-        in: path
-        name: id
         required: true
         type: string
       produces:
@@ -911,17 +906,12 @@ paths:
       summary: 通过名称查找活动
       tags:
       - Activity
-  /act/own/{id}:
+  /act/own:
     get:
       parameters:
       - description: token
         in: header
         name: Authorization
-        required: true
-        type: string
-      - description: 创建者id
-        in: path
-        name: id
         required: true
         type: string
       produces:

@@ -35,7 +35,7 @@ func (ar ActRouter) RegisterActRouters() {
 		act.POST("/name", ginx.WrapRequest(ar.ach.FindActByName))
 		act.POST("/date", ginx.WrapRequest(ar.ach.FindActByDate))
 		act.POST("/search", ginx.WrapRequest(ar.ach.FindActBySearches))
-		act.GET("/own/:id", ginx.WrapRequest(ar.ach.FindActByOwnerID))
-		act.GET("/all/:id", ginx.WrapWithClaims(ar.ach.ListAllActs))
+		act.GET("/own", ginx.WrapWithClaims(ar.ach.FindActByOwnerID))
+		act.GET("/all", ginx.WrapWithClaims(ar.ach.ListAllActs))
 	}
 }

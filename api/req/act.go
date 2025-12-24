@@ -64,7 +64,3 @@ type FindActByNameReq struct {
 type FindActByDateReq struct {
 	Date string `json:"date" validate:"required"` // 02-01
 }
-
-type FindActByOwnerIDReq struct {
-	Id string `validate:"required" json:"id" form:"id"`
-}

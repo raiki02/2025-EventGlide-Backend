@@ -6,7 +6,7 @@
         "contact": {}
     },
     "paths": {
-        "/act/all/{id}": {
+        "/act/all": {
             "get": {
                 "produces": [
                     "application/json"
@@ -21,13 +21,6 @@
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户id",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     }
                 ],
@@ -302,7 +295,7 @@
                 }
             }
         },
-        "/act/own/{id}": {
+        "/act/own": {
             "get": {
                 "produces": [
                     "application/json"
@@ -317,13 +310,6 @@
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "创建者id",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     }
                 ],
