@@ -363,6 +363,7 @@ definitions:
         type: string
     required:
     - receiver
+    - subject
     - targetid
     type: object
   req.LoginReq:

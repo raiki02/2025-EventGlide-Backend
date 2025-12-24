@@ -2416,6 +2416,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "receiver",
+                "subject",
                 "targetid"
             ],
             "properties": {

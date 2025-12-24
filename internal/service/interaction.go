@@ -120,10 +120,10 @@ func (is *InteractionService) toFeed(r *req.InteractionReq, action string, sid s
 	return f
 }
 
-func (is *InteractionService) Approve(c *gin.Context, studendId string, r *req.InteractionReq) error {
+func (is *InteractionService) Approve(c *gin.Context, r *req.InteractionReq, studendId string) error {
 	return is.id.ApproveActivity(c, studendId, r.TargetID)
 }
 
-func (is *InteractionService) Reject(c *gin.Context, studendId string, r *req.InteractionReq) error {
+func (is *InteractionService) Reject(c *gin.Context, r *req.InteractionReq, studendId string) error {
 	return is.id.RejectActivity(c, studendId, r.TargetID)
 }
