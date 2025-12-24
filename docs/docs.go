@@ -686,7 +686,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/feed/read/detail/{id}": {
+        "/feed/read/detail": {
             "get": {
                 "produces": [
                     "application/json"
@@ -707,7 +707,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "业务ID",
                         "name": "id",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],

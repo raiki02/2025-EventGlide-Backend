@@ -1166,7 +1166,7 @@ paths:
       summary: 读取全部feed, 标记已读
       tags:
       - feed
-  /feed/read/detail/{id}:
+  /feed/read/detail:
     get:
       parameters:
       - description: token
@@ -1175,7 +1175,7 @@ paths:
         required: true
         type: string
       - description: 业务ID
-        in: path
+        in: query
         name: id
         required: true
         type: string

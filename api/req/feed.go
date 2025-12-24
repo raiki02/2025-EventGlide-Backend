@@ -5,3 +5,7 @@ type NumReq struct {
 	Object   string `json:"object"`
 	Action   string `json:"action"`
 }
+
+type ReadFeedDetailReq struct {
+	Id string `json:"id" validate:"required" form:"id"`
+}
