@@ -289,9 +289,6 @@ func (fs *FeedService) GetAuditorFeedList(ctx *gin.Context, sid string) (resp.Fe
 			fs.l.Error("Get User Info when get auditor feed Failed", zap.Error(err))
 			return resp.FeedResp{}, err
 		}
-		if sid == user.StudentID {
-			continue // 不显示自己的审核, 自己发起默认同意
-		}
 		pics, err := fs.fd.GetPictureFromObj(ctx, v.Bid, "activity")
 		if err != nil {
 			fs.l.Error("Get Picture From Obj when get auditor feed Failed", zap.Error(err))
@@ -353,9 +350,16 @@ func processMsg(f *model.Feed, name string) string {
 }
 
 func getFirstPic(pics string) string {
+	// 多个取第一个
 	if strings.Contains(pics, ",http") {
 		return strings.Split(pics, ",")[0]
 	}
 
+	// 没有则直接返回
+	if pics != "" {
+		return pics
+	}
+
+	// 没有图片
 	return ""
 }

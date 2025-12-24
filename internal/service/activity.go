@@ -57,6 +57,9 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 	// TODO: 异步增加
 	signers := r.LabelForm.Signer
 	for _, s := range signers {
+		if s.StudentID == r.StudentID {
+			continue // 这里避免了 填写了自己的学号名字但是还需要自己审批的情况
+		}
 		if err := as.id.InsertApprovement(c, s.StudentID, s.Name, act.Bid); err != nil {
 			as.l.Error("Failed to insert approvement", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
 			return resp.CreateActivityResp{}, err
