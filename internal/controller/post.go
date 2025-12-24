@@ -2,22 +2,13 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/raiki02/EG/api/req"
-	"github.com/raiki02/EG/internal/model"
+	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
-	"github.com/raiki02/EG/tools"
+	"github.com/raiki02/EG/pkg/ginx"
 	"go.uber.org/zap"
 )
-
-type PostControllerHdl interface {
-	GetAllPost() gin.HandlerFunc
-	CreatePost() gin.HandlerFunc
-	FindPostByName() gin.HandlerFunc
-	DeletePost() gin.HandlerFunc
-	CreateDraft() gin.HandlerFunc
-	LoadDraft() gin.HandlerFunc
-	FindPostByOwnerID() gin.HandlerFunc
-}
 
 type PostController struct {
 	ps *service.PostService
@@ -37,15 +28,13 @@ func NewPostController(ps *service.PostService, l *zap.Logger) *PostController {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
 // @Router /post/all [get]
-func (pc *PostController) GetAllPost() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		posts, err := pc.ps.GetAllPost(c)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", posts))
+func (pc *PostController) GetAllPost(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	posts, err := pc.ps.GetAllPost(ctx) // todo: claims 传入 studentId
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(posts)
 }
 
 // @Tags Post
@@ -56,32 +45,13 @@ func (pc *PostController) GetAllPost() gin.HandlerFunc {
 // @Param post body req.CreatePostReq true "帖子"
 // @Success 200 {object} resp.Resp{}
 // @Router /post/create [post]
-func (pc *PostController) CreatePost() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			pc.l.Warn("request studentid is empty when create post")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var post req.CreatePostReq
-		err := c.ShouldBindJSON(&post)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		if len(post.ShowImg) == 0 {
-			c.JSON(400, tools.ReturnMSG(c, "请至少上传一张图片!", nil))
-			return
-		}
-		post.StudentID = sid
-		res, err := pc.ps.CreatePost(c, &post)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", res))
+func (pc *PostController) CreatePost(ctx *gin.Context, req_ req.CreatePostReq) (resp.Resp, error) {
+	res, err := pc.ps.CreatePost(ctx, &req_)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Tags Post
@@ -91,22 +61,13 @@ func (pc *PostController) CreatePost() gin.HandlerFunc {
 // @Param name body req.FindPostReq true "帖子名"
 // @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
 // @Router /post/find [post]
-func (pc *PostController) FindPostByName() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var n req.FindPostReq
-		err := c.ShouldBindJSON(&n)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-
-		posts, err := pc.ps.FindPostByName(c, n.Name)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", posts))
+func (pc *PostController) FindPostByName(ctx *gin.Context, req_ req.FindPostReq) (resp.Resp, error) {
+	posts, err := pc.ps.FindPostByName(ctx, req_.Name)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(posts)
 }
 
 // @Tags Post
@@ -114,31 +75,15 @@ func (pc *PostController) FindPostByName() gin.HandlerFunc {
 // @Produce json
 // @Accept json
 // @Param Authorization header string true "token"
-// @Param post body model.Post true "帖子"
+// @Param post body req.DeletePostReq true "帖子"
 // @Success 200 {object} resp.Resp
 // @Router /post/delete [post]
-func (pc *PostController) DeletePost() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			pc.l.Warn("request studentid is empty when delete post")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var post model.Post
-		err := c.ShouldBindJSON(&post)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		post.StudentID = sid
-		err = pc.ps.DeletePost(c, &post)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (pc *PostController) DeletePost(ctx *gin.Context, req_ req.DeletePostReq) (resp.Resp, error) {
+	if err := pc.ps.DeletePost(ctx, &req_); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags Post
@@ -146,31 +91,16 @@ func (pc *PostController) DeletePost() gin.HandlerFunc {
 // @Produce json
 // @Accept json
 // @Param Authorization header string true "token"
-// @Param post body req.CreatePostReq true "草稿"
+// @Param post body req.CreatePostDraftReq true "草稿"
 // @Success 200 {object} resp.Resp{data=req.CreatePostReq}
 // @Router /post/draft [post]
-func (pr *PostController) CreateDraft() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			pr.l.Warn("request studentid is empty when create draft")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var postDraft req.CreatePostReq
-		err := c.ShouldBindJSON(&postDraft)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		postDraft.StudentID = sid
-		_, err = pr.ps.CreateDraft(c, &postDraft)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", postDraft))
+func (pc *PostController) CreateDraft(ctx *gin.Context, req_ req.CreatePostReq) (resp.Resp, error) {
+	res, err := pc.ps.CreateDraft(ctx, &req_)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Tags Post
@@ -180,37 +110,26 @@ func (pr *PostController) CreateDraft() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=model.PostDraft}
 // @Router /post/load [get]
-func (pr *PostController) LoadDraft() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		draft, err := pr.ps.LoadDraft(c, sid)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", draft))
+func (pc *PostController) LoadDraft(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	draft, err := pc.ps.LoadDraft(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(draft)
 }
 
 // @Tags Post
 // @Summary 通过用户ID查找帖子
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param id path string true "用户ID"
 // @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
-// @Router /post/own/{id} [get]
-func (pr *PostController) FindPostByOwnerID() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		id := c.Param("id")
-		posts, err := pr.ps.FindPostByOwnerID(c, id)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", posts))
+// @Router /post/own [get]
+func (pr *PostController) FindPostByOwnerID(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	posts, err := pr.ps.FindPostByOwnerID(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(posts)
 }

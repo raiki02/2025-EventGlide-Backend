@@ -279,7 +279,7 @@ definitions:
     - studentid
     - subject
     type: object
-  req.CreatePostReq:
+  req.CreatePostDraftReq:
     properties:
       introduce:
         type: string
@@ -292,7 +292,36 @@ definitions:
       title:
         type: string
     type: object
+  req.CreatePostReq:
+    properties:
+      introduce:
+        type: string
+      showImg:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      studentid:
+        type: string
+      title:
+        type: string
+    required:
+    - introduce
+    - showImg
+    - studentid
+    - title
+    type: object
   req.DeleteCommentReq:
+    properties:
+      studentid:
+        type: string
+      target_id:
+        type: string
+    required:
+    - studentid
+    - target_id
+    type: object
+  req.DeletePostReq:
     properties:
       studentid:
         type: string
@@ -321,6 +350,8 @@ definitions:
     properties:
       name:
         type: string
+    required:
+    - name
     type: object
   req.InteractionReq:
     properties:
@@ -1390,7 +1421,7 @@ paths:
         name: post
         required: true
         schema:
-          $ref: '#/definitions/model.Post'
+          $ref: '#/definitions/req.DeletePostReq'
       produces:
       - application/json
       responses:
@@ -1416,7 +1447,7 @@ paths:
         name: post
         required: true
         schema:
-          $ref: '#/definitions/req.CreatePostReq'
+          $ref: '#/definitions/req.CreatePostDraftReq'
       produces:
       - application/json
       responses:
@@ -1488,17 +1519,12 @@ paths:
       summary: 加载草稿
       tags:
       - Post
-  /post/own/{id}:
+  /post/own:
     get:
       parameters:
       - description: token
         in: header
         name: Authorization
-        required: true
-        type: string
-      - description: 用户ID
-        in: path
-        name: id
         required: true
         type: string
       produces:

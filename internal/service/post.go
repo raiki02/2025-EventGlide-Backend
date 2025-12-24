@@ -86,8 +86,11 @@ func (ps *PostService) FindPostByName(c *gin.Context, name string) ([]resp.ListP
 	res := ps.ToListResp(c, posts)
 	return res, nil
 }
-func (ps *PostService) DeletePost(c *gin.Context, post *model.Post) error {
-	err := ps.pdh.DeletePost(c, post)
+func (ps *PostService) DeletePost(c *gin.Context, post *req.DeletePostReq) error {
+	err := ps.pdh.DeletePost(c, &model.Post{
+		Bid:       post.TargetID,
+		StudentID: post.StudentID,
+	})
 	if err != nil {
 		return err
 	}

@@ -1092,7 +1092,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Post"
+                            "$ref": "#/definitions/req.DeletePostReq"
                         }
                     }
                 ],
@@ -1132,7 +1132,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.CreatePostReq"
+                            "$ref": "#/definitions/req.CreatePostDraftReq"
                         }
                     }
                 ],
@@ -1253,7 +1253,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/post/own/{id}": {
+        "/post/own": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1268,13 +1268,6 @@ const docTemplate = `{
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户ID",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     }
                 ],
@@ -2308,7 +2301,7 @@ const docTemplate = `{
                 }
             }
         },
-        "req.CreatePostReq": {
+        "req.CreatePostDraftReq": {
             "type": "object",
             "properties": {
                 "introduce": {
@@ -2328,7 +2321,49 @@ const docTemplate = `{
                 }
             }
         },
+        "req.CreatePostReq": {
+            "type": "object",
+            "required": [
+                "introduce",
+                "showImg",
+                "studentid",
+                "title"
+            ],
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "showImg": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "studentid": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "req.DeleteCommentReq": {
+            "type": "object",
+            "required": [
+                "studentid",
+                "target_id"
+            ],
+            "properties": {
+                "studentid": {
+                    "type": "string"
+                },
+                "target_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.DeletePostReq": {
             "type": "object",
             "required": [
                 "studentid",
@@ -2368,6 +2403,9 @@ const docTemplate = `{
         },
         "req.FindPostReq": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "name": {
                     "type": "string"
