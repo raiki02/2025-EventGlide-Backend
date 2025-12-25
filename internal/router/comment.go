@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/controller"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/pkg/ginx"
 )
 
 type CommentRouterHdl interface {
@@ -28,9 +29,9 @@ func (cr *CommentRouter) RegisterCommentRouter() {
 	cmt := cr.e.Group("/comment")
 	cmt.Use(cr.j.WrapCheckToken())
 	{
-		cmt.POST("/create", cr.cch.CreateComment())
-		cmt.POST("/delete", cr.cch.DeleteComment())
-		cmt.POST("/answer", cr.cch.AnswerComment())
-		cmt.GET("/load/:id", cr.cch.LoadComments())
+		cmt.POST("/create", ginx.WrapRequestWithClaims(cr.cch.CreateComment))
+		cmt.POST("/delete", ginx.WrapRequestWithClaims(cr.cch.DeleteComment))
+		cmt.POST("/answer", ginx.WrapRequestWithClaims(cr.cch.AnswerComment))
+		cmt.GET("/load/:id", ginx.WrapRequest(cr.cch.LoadComments))
 	}
 }
