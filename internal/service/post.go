@@ -61,8 +61,9 @@ func (ps *PostService) CreatePost(c *gin.Context, r *req.CreatePostReq, studentI
 	}
 
 	aw := &req.AuditWrapper{
-		Subject:  SubjectPost,
-		CpostReq: r,
+		Subject:   SubjectPost,
+		StudentId: studentId,
+		CpostReq:  r,
 	}
 	err = ps.aud.UploadForm(c, aw, form.Id)
 	if err != nil {

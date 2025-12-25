@@ -73,8 +73,9 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq, studentId
 		return resp.CreateActivityResp{}, err
 	}
 	aw := &req.AuditWrapper{
-		Subject: SubjectActivity,
-		CactReq: r,
+		Subject:   SubjectActivity,
+		StudentId: studentId,
+		CactReq:   r,
 	}
 
 	err = as.aud.UploadForm(c, aw, form.Id)
