@@ -1478,7 +1478,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/info/{id}": {
+        "/user/info": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1499,7 +1499,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "用户id",
                         "name": "id",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -2433,6 +2433,10 @@ const docTemplate = `{
         },
         "req.LoginReq": {
             "type": "object",
+            "required": [
+                "password",
+                "studentid"
+            ],
             "properties": {
                 "password": {
                     "type": "string"
@@ -2466,6 +2470,9 @@ const docTemplate = `{
         },
         "req.UserAvatarReq": {
             "type": "object",
+            "required": [
+                "avatar_url"
+            ],
             "properties": {
                 "avatar_url": {
                     "type": "string"

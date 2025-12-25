@@ -1469,7 +1469,7 @@
                 }
             }
         },
-        "/user/info/{id}": {
+        "/user/info": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1490,7 +1490,7 @@
                         "type": "string",
                         "description": "用户id",
                         "name": "id",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -2424,6 +2424,10 @@
         },
         "req.LoginReq": {
             "type": "object",
+            "required": [
+                "password",
+                "studentid"
+            ],
             "properties": {
                 "password": {
                     "type": "string"
@@ -2457,6 +2461,9 @@
         },
         "req.UserAvatarReq": {
             "type": "object",
+            "required": [
+                "avatar_url"
+            ],
             "properties": {
                 "avatar_url": {
                     "type": "string"

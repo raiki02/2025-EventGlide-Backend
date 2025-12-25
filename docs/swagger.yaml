@@ -372,6 +372,9 @@ definitions:
         type: string
       studentid:
         type: string
+    required:
+    - password
+    - studentid
     type: object
   req.NumReq:
     properties:
@@ -391,6 +394,8 @@ definitions:
     properties:
       avatar_url:
         type: string
+    required:
+    - avatar_url
     type: object
   req.UserSearchReq:
     properties:
@@ -1655,7 +1660,7 @@ paths:
       summary: 加载帖子收藏
       tags:
       - User
-  /user/info/{id}:
+  /user/info:
     get:
       parameters:
       - description: token
@@ -1664,7 +1669,7 @@ paths:
         required: true
         type: string
       - description: 用户id
-        in: path
+        in: query
         name: id
         required: true
         type: string

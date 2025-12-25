@@ -120,7 +120,7 @@ func bind(ctx *gin.Context, req any) (err error) {
 	if ctx.Request.Method == http.MethodGet {
 		err = ctx.ShouldBindQuery(req)
 	} else {
-		err = ctx.ShouldBind(&req)
+		err = ctx.ShouldBind(req)
 	}
 	if err != nil {
 		ctx.Error(err)
