@@ -32,6 +32,6 @@ func (cr *CommentRouter) RegisterCommentRouter() {
 		cmt.POST("/create", ginx.WrapRequest(cr.cch.CreateComment))
 		cmt.POST("/delete", ginx.WrapRequest(cr.cch.DeleteComment))
 		cmt.POST("/answer", ginx.WrapRequest(cr.cch.AnswerComment))
-		cmt.GET("/load", ginx.WrapRequest(cr.cch.LoadComments))
+		cmt.GET("/load/:id", ginx.WrapRequest(cr.cch.LoadComments))
 	}
 }

@@ -31,7 +31,7 @@ func (fr *FeedRouter) RegisterFeedRouters() {
 	{
 		feed.GET("/total", ginx.WrapWithClaims(fr.fc.GetTotalCnt))
 		feed.GET("/list", ginx.WrapWithClaims(fr.fc.GetFeedList))
-		feed.GET("/read/detail", ginx.WrapRequestWithClaims(fr.fc.ReadFeedDetail))
+		feed.GET("/read/detail/:id", ginx.WrapRequestWithClaims(fr.fc.ReadFeedDetail))
 		feed.GET("/read/all", ginx.WrapWithClaims(fr.fc.ReadAllFeed))
 		feed.GET("/auditor", ginx.WrapWithClaims(fr.fc.GetAuditorFeedList))
 	}

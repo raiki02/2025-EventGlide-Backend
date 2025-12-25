@@ -30,7 +30,7 @@ func (ur *UserRouter) RegisterUserRouters() {
 		{
 			user.POST("/logout", ginx.Wrap(ur.uc.Logout))
 			user.GET("/token/qiniu", ginx.Wrap(ur.uc.GenQiniuToken))
-			user.GET("/info", ginx.WrapRequest(ur.uc.GetUserInfo))
+			user.GET("/info/:id", ginx.WrapRequest(ur.uc.GetUserInfo))
 			user.POST("/avatar", ginx.WrapRequestWithClaims(ur.uc.UpdateAvatar))
 			user.POST("/username", ginx.WrapRequestWithClaims(ur.uc.UpdateUsername))
 			user.POST("/search/act", ginx.WrapRequestWithClaims(ur.uc.SearchUserAct))

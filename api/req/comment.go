@@ -14,5 +14,5 @@ type CreateCommentReq struct {
 }
 
 type LoadCommentsReq struct {
-	Id string `json:"id" validate:"required" form:"id"`
+	Id string `json:"id" validate:"required" form:"id" uri:"id"`
 }

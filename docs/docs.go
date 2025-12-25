@@ -528,7 +528,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/comment/load": {
+        "/comment/load/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -542,7 +542,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "目标id",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -686,7 +686,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/feed/read/detail": {
+        "/feed/read/detail/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -707,7 +707,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "业务ID",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -1478,7 +1478,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/info": {
+        "/user/info/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1499,7 +1499,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "用户id",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],

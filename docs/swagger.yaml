@@ -1077,11 +1077,11 @@ paths:
       summary: 删除评论
       tags:
       - Comment
-  /comment/load:
+  /comment/load/{id}:
     get:
       parameters:
       - description: 目标id
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -1171,7 +1171,7 @@ paths:
       summary: 读取全部feed, 标记已读
       tags:
       - feed
-  /feed/read/detail:
+  /feed/read/detail/{id}:
     get:
       parameters:
       - description: token
@@ -1180,7 +1180,7 @@ paths:
         required: true
         type: string
       - description: 业务ID
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -1660,7 +1660,7 @@ paths:
       summary: 加载帖子收藏
       tags:
       - User
-  /user/info:
+  /user/info/{id}:
     get:
       parameters:
       - description: token
@@ -1669,7 +1669,7 @@ paths:
         required: true
         type: string
       - description: 用户id
-        in: query
+        in: path
         name: id
         required: true
         type: string

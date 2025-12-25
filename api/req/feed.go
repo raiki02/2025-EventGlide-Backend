@@ -7,5 +7,5 @@ type NumReq struct {
 }
 
 type ReadFeedDetailReq struct {
-	Id string `json:"id" validate:"required" form:"id"`
+	Id string `json:"id" validate:"required" form:"id" uri:"id"`
 }

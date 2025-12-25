@@ -71,9 +71,9 @@ func (fc *FeedController) GetAuditorFeedList(ctx *gin.Context, claims jwt.Regist
 // @Tags feed
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param id query string true "业务ID"
+// @Param id path string true "业务ID"
 // @Success 200 {object} resp.Resp
-// @Router /feed/read/detail [get]
+// @Router /feed/read/detail/{id} [get]
 func (fc *FeedController) ReadFeedDetail(ctx *gin.Context, req_ req.ReadFeedDetailReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
 	if err := fc.fs.ReadFeedDetail(ctx, claims.Subject, req_.Id); err != nil {
 		return ginx.ReturnError(err)

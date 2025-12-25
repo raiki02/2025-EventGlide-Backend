@@ -117,6 +117,11 @@ func WrapWithClaims(fn func(*gin.Context, jwt.RegisteredClaims) (resp.Resp, erro
 }
 
 func bind(ctx *gin.Context, req any) (err error) {
+	if err = ctx.ShouldBindUri(req); err != nil {
+		ctx.Error(err)
+		return
+	}
+
 	if ctx.Request.Method == http.MethodGet {
 		err = ctx.ShouldBindQuery(req)
 	} else {

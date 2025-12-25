@@ -72,10 +72,10 @@ func (cc *CommentController) DeleteComment(ctx *gin.Context, req_ req.DeleteComm
 // @Tags Comment
 // @Summary 加载评论
 // @Produce json
-// @Param id query string true "目标id"
+// @Param id path string true "目标id"
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=[]resp.CommentResp}
-// @Router /comment/load [get]
+// @Router /comment/load/{id} [get]
 func (cc *CommentController) LoadComments(ctx *gin.Context, req_ req.LoadCommentsReq) (resp.Resp, error) {
 	res, err := cc.cs.LoadComments(ctx, req_.Id)
 	if err != nil {
