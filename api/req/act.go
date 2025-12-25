@@ -24,7 +24,7 @@ type CreateActReq struct {
 		RegisterMethod string `json:"register_method"`
 		StartTime      string `json:"startTime" validate:"required,ltcsfield=EndTime"`
 		ActiveForm     string `json:"activeForm" validate:"required"`
-		EndTime        string `json:"endTime" validate:"required,gtcsfield=StartTime"`
+		EndTime        string `json:"endTime" validate:"required"`
 		Type           string `json:"type" validate:"required"`
 
 		Signer []struct {
