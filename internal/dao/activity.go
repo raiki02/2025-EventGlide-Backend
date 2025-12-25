@@ -57,6 +57,9 @@ func (ad *ActDao) LoadDraft(c *gin.Context, s string) (model.ActivityDraft, erro
 	var d model.ActivityDraft
 	err := ad.db.Where("student_id = ?", s).Find(&d).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return d, nil
+		}
 		return model.ActivityDraft{}, err
 	}
 	return d, nil

@@ -24,11 +24,6 @@ func Init() error {
 		setGinLog()
 	}
 
-	viper.SetDefault("mysql.dsn", "root:123456@tcp(127.0.0.1:3306)/EventGlide?charset=utf8mb4&parseTime=True&loc=Local")
-	viper.SetDefault("mysql.maxIdleConns", 10)
-	viper.SetDefault("mysql.maxOpenConns", 100)
-	viper.SetDefault("redis.addr", "127.0.0.1:6379")
-
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}

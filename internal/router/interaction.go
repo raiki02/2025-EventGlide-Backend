@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/controller"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/pkg/ginx"
 )
 
 type InteractionRouter struct {
@@ -24,13 +25,13 @@ func (ir *InteractionRouter) RegisterInteractionRouters() {
 	i := ir.e.Group("interaction")
 	i.Use(ir.j.WrapCheckToken())
 	{
-		i.POST("/like", ir.ic.Like())
-		i.POST("/dislike", ir.ic.Dislike())
+		i.POST("/like", ginx.WrapRequestWithClaims(ir.ic.Like))
+		i.POST("/dislike", ginx.WrapRequestWithClaims(ir.ic.Dislike))
 
-		i.POST("/collect", ir.ic.Collect())
-		i.POST("/discollect", ir.ic.Discollect())
+		i.POST("/collect", ginx.WrapRequestWithClaims(ir.ic.Collect))
+		i.POST("/discollect", ginx.WrapRequestWithClaims(ir.ic.Discollect))
 
-		i.POST("/approve", ir.ic.Approve())
-		i.POST("/reject", ir.ic.Reject())
+		i.POST("/approve", ginx.WrapRequestWithClaims(ir.ic.Approve))
+		i.POST("/reject", ginx.WrapRequestWithClaims(ir.ic.Reject))
 	}
 }

@@ -25,7 +25,7 @@ func NewInteractionService(id *dao.InteractionDao, mq mq.MQHdl, l *zap.Logger) *
 }
 
 func (is *InteractionService) Like(c *gin.Context, r *req.InteractionReq, sid string) error {
-	jreq := is.toFeed(r, "like", sid)
+	jreq := is.toFeed(r, "like", sid, r.Receiver)
 	err := is.mq.Publish(c.Request.Context(), "feed_stream", jreq)
 	if err != nil {
 		is.l.Error("Publish Like Feed Failed", zap.Error(err), zap.Any("feed", jreq))
@@ -59,7 +59,7 @@ func (is *InteractionService) Dislike(c *gin.Context, r *req.InteractionReq, sid
 }
 
 func (is *InteractionService) Comment(c *gin.Context, r *req.InteractionReq, sid string) error {
-	jreq := is.toFeed(r, "comment", sid)
+	jreq := is.toFeed(r, "comment", sid, r.Receiver)
 	err := is.mq.Publish(c.Request.Context(), "feed_stream", jreq)
 	if err != nil {
 		is.l.Error("Publish Comment Feed Failed", zap.Error(err), zap.Any("feed", jreq))
@@ -80,7 +80,7 @@ func (is *InteractionService) Comment(c *gin.Context, r *req.InteractionReq, sid
 }
 
 func (is *InteractionService) Collect(c *gin.Context, r *req.InteractionReq, sid string) error {
-	jreq := is.toFeed(r, "collect", sid)
+	jreq := is.toFeed(r, "collect", sid, r.Receiver)
 	err := is.mq.Publish(c.Request.Context(), "feed_stream", jreq)
 	if err != nil {
 		is.l.Error("Publish Collect Feed Failed", zap.Error(err), zap.Any("feed", jreq))
@@ -109,20 +109,21 @@ func (is *InteractionService) Discollect(c *gin.Context, r *req.InteractionReq, 
 	}
 }
 
-func (is *InteractionService) toFeed(r *req.InteractionReq, action string, sid string) model.Feed {
+func (is *InteractionService) toFeed(r *req.InteractionReq, action string, sid string, recv string) model.Feed {
 	f := model.Feed{
 		TargetBid: r.TargetID,
 		Object:    r.Subject,
 		StudentId: sid,
 		Action:    action,
+		Receiver:  recv,
 	}
 	return f
 }
 
-func (is *InteractionService) Approve(c *gin.Context, studendId string, r *req.InteractionReq) error {
+func (is *InteractionService) Approve(c *gin.Context, r *req.InteractionReq, studendId string) error {
 	return is.id.ApproveActivity(c, studendId, r.TargetID)
 }
 
-func (is *InteractionService) Reject(c *gin.Context, studendId string, r *req.InteractionReq) error {
+func (is *InteractionService) Reject(c *gin.Context, r *req.InteractionReq, studendId string) error {
 	return is.id.RejectActivity(c, studendId, r.TargetID)
 }

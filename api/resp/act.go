@@ -45,9 +45,9 @@ type ListActivitiesResp struct {
 	ShowImg    []string `json:"showImg"`
 	IsChecking string   `json:"isChecking"`
 
-	LikeNum    int `json:"likeNum"`
-	CollectNum int `json:"collectNum"`
-	CommentNum int `json:"commentNum"`
+	LikeNum    uint `json:"likeNum"`
+	CollectNum uint `json:"collectNum"`
+	CommentNum uint `json:"commentNum"`
 
 	IsLike    string `json:"isLike"`
 	IsCollect string `json:"isCollect"`

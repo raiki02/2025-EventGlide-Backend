@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/model"
@@ -88,8 +89,11 @@ func (pd *PostDao) CreateDraft(ctx context.Context, draft *model.PostDraft) erro
 
 func (pd *PostDao) LoadDraft(ctx context.Context, sid string) (model.PostDraft, error) {
 	var draft model.PostDraft
-	err := pd.db.WithContext(ctx).Where("student_id = ?", sid).First(&draft).Error
+	err := pd.db.WithContext(ctx).Where("student_id = ?", sid).Find(&draft).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return draft, nil
+		}
 		return model.PostDraft{}, err
 	}
 	return draft, nil
