@@ -10,15 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
-type FeedDaoHdl interface {
-	CreateFeed(ctx context.Context, feed *model.Feed) error
-	GetTotalCnt(ctx *gin.Context, id string) ([]int, error)
-	GetLikeFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-	GetCollectFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-	GetCommentFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-	GetAtFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-	GetInvitationFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-}
+const (
+	TableNameActivity = "activity"
+	TableNamePost     = "post"
+)
 
 type FeedDao struct {
 	db *gorm.DB
@@ -114,8 +109,17 @@ func (fd *FeedDao) GetPictureFromObj(ctx *gin.Context, targetId, object string) 
 	type Result struct {
 		ShowImg string `gorm:"column:show_img"`
 	}
+	var tableName string
+	switch object {
+	case TableNameActivity:
+		tableName = TableNameActivity
+	case TableNamePost:
+		tableName = TableNamePost
+	default:
+		return "", errors.New("invalid object type")
+	}
 	var res Result
-	err := fd.db.WithContext(ctx).Table(object).Where("bid = ?", targetId).Select("show_img").Find(&res).Error
+	err := fd.db.WithContext(ctx).Table(tableName).Where("bid = ?", targetId).Select("show_img").Find(&res).Error
 	if err != nil {
 		fd.l.Error("Get First Pic Failed", zap.Error(err))
 		return "", err
