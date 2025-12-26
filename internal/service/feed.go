@@ -350,16 +350,16 @@ func processMsg(f *model.Feed, name string) string {
 }
 
 func getFirstPic(pics string) string {
-	// 多个取第一个
+	// http://xxx,http://yyy
 	if strings.Contains(pics, ",http") {
 		return strings.Split(pics, ",")[0]
 	}
 
-	// 没有则直接返回
+	// http://xxx
 	if pics != "" {
 		return pics
 	}
 
-	// 没有图片
+	// no pic
 	return ""
 }
