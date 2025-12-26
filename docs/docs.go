@@ -2267,87 +2267,6 @@ const docTemplate = `{
                 }
             }
         },
-        "req.CreateActReq": {
-            "type": "object",
-            "required": [
-                "introduce",
-                "studentid",
-                "title"
-            ],
-            "properties": {
-                "introduce": {
-                    "type": "string"
-                },
-                "labelform": {
-                    "type": "object",
-                    "required": [
-                        "activeForm",
-                        "endTime",
-                        "holderType",
-                        "if_register",
-                        "position",
-                        "startTime",
-                        "type"
-                    ],
-                    "properties": {
-                        "activeForm": {
-                            "type": "string"
-                        },
-                        "endTime": {
-                            "type": "string"
-                        },
-                        "holderType": {
-                            "type": "string"
-                        },
-                        "if_register": {
-                            "type": "string",
-                            "enum": [
-                                "是",
-                                "否"
-                            ]
-                        },
-                        "position": {
-                            "type": "string"
-                        },
-                        "register_method": {
-                            "type": "string"
-                        },
-                        "signer": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "studentid": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        },
-                        "startTime": {
-                            "type": "string"
-                        },
-                        "type": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "showImg": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "studentid": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
         "req.CreateCommentReq": {
             "type": "object",
             "required": [
@@ -2373,19 +2292,12 @@ const docTemplate = `{
         },
         "req.CreatePostDraftReq": {
             "type": "object",
-            "required": [
-                "introduce",
-                "showImg",
-                "studentid",
-                "title"
-            ],
             "properties": {
                 "introduce": {
                     "type": "string"
                 },
                 "showImg": {
                     "type": "array",
-                    "minItems": 1,
                     "items": {
                         "type": "string"
                     }
