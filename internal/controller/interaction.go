@@ -2,9 +2,11 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
-	"github.com/raiki02/EG/tools"
+	"github.com/raiki02/EG/pkg/ginx"
 	"go.uber.org/zap"
 )
 
@@ -27,32 +29,12 @@ func NewInteractionController(is *service.InteractionService, l *zap.Logger) *In
 // @Param interaction body req.InteractionReq true "互动"
 // @Success 200 {object} resp.Resp
 // @Router /interaction/like [post]
-func (ic *InteractionController) Like() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			ic.l.Warn("request studentid is empty when like action")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var ireq req.InteractionReq
-		err := c.ShouldBindJSON(&ireq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		if ireq.TargetID == "" || ireq.Subject == "" {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-
-		err = ic.is.Like(c, &ireq, sid)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (ic *InteractionController) Like(ctx *gin.Context, req_ req.InteractionReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := ic.is.Like(ctx, &req_, claims.Subject); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags Interaction
@@ -62,32 +44,12 @@ func (ic *InteractionController) Like() gin.HandlerFunc {
 // @Param interaction body req.InteractionReq true "互动"
 // @Success 200 {object} resp.Resp
 // @Router /interaction/dislike [post]
-func (ic *InteractionController) Dislike() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			ic.l.Warn("request studentid is empty when dislike action")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var ireq req.InteractionReq
-		err := c.ShouldBindJSON(&ireq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		if ireq.TargetID == "" || ireq.Subject == "" {
-			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
-			return
-		}
-
-		err = ic.is.Dislike(c, &ireq, sid)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (ic *InteractionController) Dislike(ctx *gin.Context, req_ req.InteractionReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := ic.is.Dislike(ctx, &req_, claims.Subject); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags Interaction
@@ -97,32 +59,12 @@ func (ic *InteractionController) Dislike() gin.HandlerFunc {
 // @Param interaction body req.InteractionReq true "互动"
 // @Success 200 {object} resp.Resp
 // @Router /interaction/collect [post]
-func (ic *InteractionController) Collect() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			ic.l.Warn("request studentid is empty when save action")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var ireq req.InteractionReq
-		err := c.ShouldBindJSON(&ireq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		if ireq.TargetID == "" || ireq.Subject == "" {
-			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
-			return
-		}
-
-		err = ic.is.Collect(c, &ireq, sid)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (ic *InteractionController) Collect(ctx *gin.Context, req_ req.InteractionReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := ic.is.Collect(ctx, &req_, claims.Subject); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags Interaction
@@ -132,31 +74,12 @@ func (ic *InteractionController) Collect() gin.HandlerFunc {
 // @Param interaction body req.InteractionReq true "互动"
 // @Success 200 {object} resp.Resp
 // @Router /interaction/discollect [post]
-func (ic *InteractionController) Discollect() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			ic.l.Warn("request studentid is empty when discollect action")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var ireq req.InteractionReq
-		err := c.ShouldBindJSON(&ireq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		if ireq.TargetID == "" || ireq.Subject == "" {
-			c.JSON(200, tools.ReturnMSG(c, "你的参数有误, 请重新输入!", nil))
-			return
-		}
-		err = ic.is.Discollect(c, &ireq, sid)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (ic *InteractionController) Discollect(ctx *gin.Context, req_ req.InteractionReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := ic.is.Discollect(ctx, &req_, claims.Subject); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags Interaction
@@ -166,22 +89,12 @@ func (ic *InteractionController) Discollect() gin.HandlerFunc {
 // @Param interaction body req.InteractionReq true "互动"
 // @Success 200 {object} resp.Resp
 // @Router /interaction/approve [post]
-func (ic *InteractionController) Approve() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		studendId := tools.GetSid(c)
-		var ireq req.InteractionReq
-		err := c.ShouldBindJSON(&ireq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		err = ic.is.Approve(c, studendId, &ireq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (ic *InteractionController) Approve(ctx *gin.Context, req_ req.InteractionReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := ic.is.Approve(ctx, &req_, claims.Subject); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags Interaction
@@ -191,20 +104,10 @@ func (ic *InteractionController) Approve() gin.HandlerFunc {
 // @Param interaction body req.InteractionReq true "互动"
 // @Success 200 {object} resp.Resp
 // @Router /interaction/reject [post]
-func (ic *InteractionController) Reject() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		studendId := tools.GetSid(c)
-		var ireq req.InteractionReq
-		err := c.ShouldBindJSON(&ireq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		err = ic.is.Reject(c, studendId, &ireq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (ic *InteractionController) Reject(ctx *gin.Context, req_ req.InteractionReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := ic.is.Reject(ctx, &req_, claims.Subject); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,14 @@ func NewFeedService(fd *dao.FeedDao, mq mq.MQHdl, ud *dao.UserDao, l *zap.Logger
 	}
 	fs.ConsumeFeedStream()
 	return fs
+}
+
+func (fs *FeedService) ReadFeedDetail(ctx *gin.Context, sid, bid string) error {
+	return fs.fd.ReadFeedDetail(ctx, sid, bid)
+}
+
+func (fs *FeedService) ReadAllFeed(ctx *gin.Context, sid string) error {
+	return fs.fd.ReadAllFeed(ctx, sid)
 }
 
 func (fs *FeedService) GetTotalCnt(ctx *gin.Context, sid string) (resp.BriefFeedResp, error) {
@@ -132,16 +141,25 @@ func (fs *FeedService) GetLikeFeed(ctx *gin.Context, sid string) ([]resp.FeedLik
 			fs.l.Error("Get User Info when get like feed Failed", zap.Error(err))
 			return nil, err
 		}
+		if sid == user.StudentID {
+			continue // 不显示自己的点赞
+		}
+		pics, err := fs.fd.GetPictureFromObj(ctx, v.TargetBid, v.Object)
+		if err != nil {
+			fs.l.Error("Get Picture From Obj when get like feed Failed", zap.Error(err))
+		}
 		res = append(res, resp.FeedLikeResp{
 			Userinfo: resp.UserInfo{
 				StudentID: user.StudentID,
 				Avatar:    user.Avatar,
 				Username:  user.Name,
 			},
+			Id:          v.Id,
 			Message:     processMsg(v, user.Name),
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
 			TargetBid:   v.TargetBid,
 			Status:      v.Status,
+			FirstPic:    getFirstPic(pics),
 		})
 	}
 	return res, nil
@@ -160,16 +178,25 @@ func (fs *FeedService) GetCollectFeed(ctx *gin.Context, sid string) ([]resp.Feed
 			fs.l.Error("Get User Info when get collect feed Failed", zap.Error(err))
 			return nil, err
 		}
+		if sid == user.StudentID {
+			continue // 不显示自己的收藏
+		}
+		pics, err := fs.fd.GetPictureFromObj(ctx, v.TargetBid, v.Object)
+		if err != nil {
+			fs.l.Error("Get Picture From Obj when get collect feed Failed", zap.Error(err))
+		}
 		res = append(res, resp.FeedCollectResp{
 			Userinfo: resp.UserInfo{
 				StudentID: user.StudentID,
 				Avatar:    user.Avatar,
 				Username:  user.Name,
 			},
+			Id:          v.Id,
 			Message:     processMsg(v, user.Name),
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
 			TargetBid:   v.TargetBid,
 			Status:      v.Status,
+			FirstPic:    getFirstPic(pics),
 		})
 	}
 	return res, nil
@@ -188,16 +215,25 @@ func (fs *FeedService) GetCommentFeed(ctx *gin.Context, sid string) ([]resp.Feed
 			fs.l.Error("Get User Info when get comment feed Failed", zap.Error(err))
 			return nil, err
 		}
+		if sid == user.StudentID {
+			continue // 不显示评论自己的评论
+		}
+		pics, err := fs.fd.GetPictureFromObj(ctx, v.TargetBid, v.Object)
+		if err != nil {
+			fs.l.Error("Get Picture From Obj when get comment feed Failed", zap.Error(err))
+		}
 		res = append(res, resp.FeedCommentResp{
 			Userinfo: resp.UserInfo{
 				StudentID: user.StudentID,
 				Avatar:    user.Avatar,
 				Username:  user.Name,
 			},
+			Id:          v.Id,
 			Message:     processMsg(v, user.Name),
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
 			TargetBid:   v.TargetBid,
 			Status:      v.Status,
+			FirstPic:    getFirstPic(pics),
 		})
 	}
 	return res, nil
@@ -216,15 +252,25 @@ func (fs *FeedService) GetAtFeed(ctx *gin.Context, sid string) ([]resp.FeedAtRes
 			fs.l.Error("Get User Info when get at feed Failed", zap.Error(err))
 			return nil, err
 		}
+		if sid == user.StudentID {
+			continue // 不显示自己的@ 自己回复
+		}
+		pics, err := fs.fd.GetPictureFromObj(ctx, v.TargetBid, v.Object)
+		if err != nil {
+			fs.l.Error("Get Picture From Obj when get at feed Failed", zap.Error(err))
+		}
 		res = append(res, resp.FeedAtResp{
 			Userinfo: resp.UserInfo{
 				StudentID: user.StudentID,
 				Avatar:    user.Avatar,
 				Username:  user.Name,
 			},
+			Id:          v.Id,
 			Message:     processMsg(v, user.Name),
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
 			TargetBid:   v.TargetBid,
+			Status:      v.Status,
+			FirstPic:    getFirstPic(pics),
 		})
 	}
 	return res, nil
@@ -243,6 +289,10 @@ func (fs *FeedService) GetAuditorFeedList(ctx *gin.Context, sid string) (resp.Fe
 			fs.l.Error("Get User Info when get auditor feed Failed", zap.Error(err))
 			return resp.FeedResp{}, err
 		}
+		pics, err := fs.fd.GetPictureFromObj(ctx, v.Bid, "activity")
+		if err != nil {
+			fs.l.Error("Get Picture From Obj when get auditor feed Failed", zap.Error(err))
+		}
 		res = append(res, resp.FeedInvitationResp{
 			Userinfo: resp.UserInfo{
 				StudentID: user.StudentID,
@@ -255,6 +305,7 @@ func (fs *FeedService) GetAuditorFeedList(ctx *gin.Context, sid string) (resp.Fe
 			PubLishedAt: tools.ParseTime(v.CreatedAt),
 			TargetBid:   v.Bid,
 			Status:      v.Stance,
+			FirstPic:    getFirstPic(pics),
 		})
 	}
 	return resp.FeedResp{Invitations: res}, nil
@@ -296,4 +347,19 @@ func processMsg(f *model.Feed, name string) string {
 		return name + "邀请你批准活动发布"
 	}
 	return "消息加载中......"
+}
+
+func getFirstPic(pics string) string {
+	// http://xxx,http://yyy
+	if strings.Contains(pics, ",http") {
+		return strings.Split(pics, ",")[0]
+	}
+
+	// http://xxx
+	if pics != "" {
+		return pics
+	}
+
+	// no pic
+	return ""
 }

@@ -57,11 +57,9 @@ func InitApp() *server.Server {
 	interactionController := controller.NewInteractionController(interactionService, logger)
 	interactionRouter := router.NewInteractionRouter(engine, interactionController, jwt)
 	cors := middleware.NewCors(engine)
-	listener := ioc.InitListener(engine)
-	callbackAuditorService := service.NewCallbackAuditor(auditorRepository, listener, logger)
-	keyGet := ioc.InitApiKeyGetter(engine)
-	apiKeyRouter := router.NewApiKeyRouter(keyGet)
-	routerRouter := router.NewRouter(engine, userRouter, actRouter, postRouter, commentRouter, feedRouter, interactionRouter, cors, callbackAuditorService, apiKeyRouter)
+	callbackAuditorService := service.NewCallbackAuditor(auditorRepository)
+	callbackAuditorController := controller.NewCallbackAuditorController(engine, callbackAuditorService)
+	routerRouter := router.NewRouter(engine, userRouter, actRouter, postRouter, commentRouter, feedRouter, interactionRouter, cors, callbackAuditorController)
 	serverServer := server.NewServer(routerRouter, logger)
 	return serverServer
 }

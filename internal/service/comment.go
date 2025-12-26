@@ -34,9 +34,9 @@ func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao, id *dao.InteractionD
 	}
 }
 
-func (cs *CommentService) toComment(r req.CreateCommentReq) *model.Comment {
+func (cs *CommentService) toComment(r req.CreateCommentReq, studentId string) *model.Comment {
 	return &model.Comment{
-		StudentID: r.StudentID,
+		StudentID: studentId,
 		Content:   r.Content,
 		ParentID:  r.ParentID,
 		CreatedAt: time.Now(),
@@ -45,8 +45,8 @@ func (cs *CommentService) toComment(r req.CreateCommentReq) *model.Comment {
 	}
 }
 
-func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) (resp.CommentResp, error) {
-	cmt := cs.toComment(r)
+func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq, studentId string) (resp.CommentResp, error) {
+	cmt := cs.toComment(r, studentId)
 	err := cs.cd.CreateComment(c, cmt)
 	cs.l.Info("CreateComment",
 		zap.String("bid", cmt.Bid),
@@ -60,26 +60,28 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 	}
 
 	f := model.Feed{
-        StudentId: r.StudentID,
-        TargetBid: r.ParentID,
-        Object:    r.Subject,
-        Action:    "comment",
-    }
+		StudentId: studentId,
+		TargetBid: r.ParentID,
+		Object:    r.Subject,
+		Action:    "comment",
+		Receiver:  r.Receiver,
+	}
 
-	err=cs.mq.Publish(c.Request.Context(),"feed_stream",f)
-	if err != nil{
-		cs.l.Error("Publish Comment Feed Failed",zap.Error(err),zap.Any("feed",f))
-	}else{
+	err = cs.mq.Publish(c.Request.Context(), "feed_stream", f)
+	if err != nil {
+		cs.l.Error("Publish Comment Feed Failed", zap.Error(err), zap.Any("feed", f))
+	} else {
 		cs.l.Info("Publish Comment Feed Success", zap.Any("feed", f))
 	}
 
+	// 评论数+1
 	switch r.Subject {
 	case "activity":
-		err = cs.id.CommentActivity(c, r.StudentID, r.ParentID)
+		err = cs.id.CommentActivity(c, studentId, r.ParentID)
 	case "post":
-		err = cs.id.CommentPost(c, r.StudentID, r.ParentID)
+		err = cs.id.CommentPost(c, studentId, r.ParentID)
 	case "comment":
-		err = cs.id.CommentComment(c, r.StudentID, r.ParentID)
+		err = cs.id.CommentComment(c, studentId, r.ParentID)
 	}
 	if err != nil {
 		cs.l.Error("Error comment create failed", zap.Error(err))
@@ -89,8 +91,8 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 	return cs.toResp(c, cmt), nil
 }
 
-func (cs *CommentService) DeleteComment(c *gin.Context, r req.DeleteCommentReq) error {
-	err := cs.cd.DeleteComment(c, r.StudentID, r.TargetID)
+func (cs *CommentService) DeleteComment(c *gin.Context, targetId, studentId string) error {
+	err := cs.cd.DeleteComment(c, studentId, targetId)
 	if err != nil {
 		cs.l.Error("Error comment delete failed", zap.Error(err))
 		return err
@@ -98,8 +100,15 @@ func (cs *CommentService) DeleteComment(c *gin.Context, r req.DeleteCommentReq) 
 	return nil
 }
 
-func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) (resp.ReplyResp, error) {
-	cmt := cs.toComment(r)
+// 二级评论
+func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq, studentId string) (resp.ReplyResp, error) {
+	cmt := cs.toComment(r, studentId)
+	var parentCmt *model.Comment
+
+	for parentCmt = cs.cd.FindCmtByID(c, r.ParentID); parentCmt != nil && parentCmt.RootId != ""; parentCmt = cs.cd.FindCmtByID(c, parentCmt.ParentID) {
+	}
+	cmt.RootId = parentCmt.Bid
+
 	err := cs.cd.AnswerComment(c, cmt)
 	if err != nil {
 		cs.l.Error("Error comment answer failed", zap.Error(err))
@@ -111,16 +120,17 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) 
 	)
 
 	f := model.Feed{
-        StudentId: r.StudentID,
-        TargetBid: r.ParentID,
-        Object:    "comment",
-        Action:    "at",
-    }
+		StudentId: studentId,
+		TargetBid: r.ParentID,
+		Object:    "comment",
+		Action:    "at",
+		Receiver:  r.Receiver,
+	}
 
-	err=cs.mq.Publish(c.Request.Context(),"feed_stream",f)
-	if err != nil{
-		cs.l.Error("Publish Comment Feed Failed",zap.Error(err),zap.Any("feed",f))
-	}else{
+	err = cs.mq.Publish(c.Request.Context(), "feed_stream", f)
+	if err != nil {
+		cs.l.Error("Publish Comment Feed Failed", zap.Error(err), zap.Any("feed", f))
+	} else {
 		cs.l.Info("Publish Comment Feed Success", zap.Any("feed", f))
 	}
 
@@ -128,6 +138,7 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) 
 }
 
 func (cs *CommentService) LoadComments(c *gin.Context, parentid string) ([]resp.CommentResp, error) {
+	// 加载一级评论
 	cmts, err := cs.cd.LoadComments(c, parentid)
 	if err != nil {
 		cs.l.Error("Error load comments failed", zap.Error(err))
@@ -144,6 +155,7 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 		cs.l.Error("Error get user info when comment to resp", zap.Error(err))
 		return resp.CommentResp{}
 	}
+	// 该条评论下的所有评论, 不分级
 	replys, err := cs.cd.LoadAnswers(c, cmt.Bid) //该条评论的回复（存储模型）
 	if err != nil {
 		cs.l.Error("Error load answers when loading replies", zap.Error(err))
@@ -157,6 +169,8 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 	res.Content = cmt.Content
 	res.CommentedTime = tools.ParseTime(cmt.CreatedAt)
 	res.Bid = cmt.Bid
+	res.ParentID = cmt.ParentID
+	res.RootID = cmt.RootId
 	res.CommentedPos = cmt.Position
 	res.LikeNum = cmt.LikeNum
 	res.ReplyNum = cmt.ReplyNum
@@ -196,16 +210,13 @@ func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment) resp.Reply
 		return resp.ReplyResp{}
 	}
 
-	//获取该回复的子回复
-	subcmts, err := cs.cd.LoadAnswers(c, cmt.Bid)
-	if err != nil {
-		cs.l.Error("Error load reply when loading subreplies", zap.Error(err))
-		return resp.ReplyResp{}
+	if strings.Contains(user.LikeComment, cmt.Bid) {
+		res.IsLike = "true"
+	} else {
+		res.IsLike = "false"
 	}
-	for _, subcmt := range subcmts {
-		res.SubReply = append(res.SubReply, cs.toSubReply(c, &subcmt))
-	}
-
+	res.ParentID = cmt.ParentID
+	res.RootID = cmt.RootId
 	res.ReplyContent = cmt.Content
 	res.ReplyTime = tools.ParseTime(cmt.CreatedAt)
 	res.Bid = cmt.Bid
@@ -218,35 +229,3 @@ func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment) resp.Reply
 	res.ParentUserName = pu.Name
 	return res
 }
-
-func (cs *CommentService) toSubReply(c *gin.Context, cmt *model.Comment) resp.SubReplyResp {
-	var res resp.SubReplyResp
-	user, err := cs.ud.GetUserInfo(c, cmt.StudentID)
-	if err != nil {
-		cs.l.Error("Error get user info when comment to subreply", zap.Error(err))
-		return resp.SubReplyResp{}
-	}
-	pid := cmt.ParentID
-	pc := cs.cd.FindCmtByID(c, pid)
-	if pc == nil {
-		cs.l.Error("Error find comment by id", zap.String("pid", pid))
-		return resp.SubReplyResp{}
-	}
-	pu, err := cs.ud.GetUserInfo(c, pc.StudentID)
-	if err != nil {
-		cs.l.Error("Error get user info when comment to subreply", zap.Error(err))
-		return resp.SubReplyResp{}
-	}
-	res.ReplyContent = cmt.Content
-	res.ReplyTime = tools.ParseTime(cmt.CreatedAt)
-	res.Bid = cmt.Bid
-	res.ReplyPos = cmt.Position
-	res.LikeNum = cmt.LikeNum
-	res.ReplyNum = cmt.ReplyNum
-	res.ReplyCreator.StudentID = user.StudentID
-	res.ReplyCreator.Username = user.Name
-	res.ReplyCreator.Avatar = user.Avatar
-	res.ParentUserName = pu.Name
-	return res
-}
-

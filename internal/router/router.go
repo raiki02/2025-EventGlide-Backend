@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	_ "github.com/raiki02/EG/docs"
+	"github.com/raiki02/EG/internal/controller"
 	"github.com/raiki02/EG/internal/middleware"
-	"github.com/raiki02/EG/internal/service"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
 	"net/http"
@@ -26,11 +26,10 @@ type Router struct {
 	ir   *InteractionRouter
 	cors *middleware.Cors
 
-	kgr ApiKeyRouter
-	cba service.CallbackAuditorService
+	cba *controller.CallbackAuditorController
 }
 
-func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr *CommentRouter, fr *FeedRouter, ir *InteractionRouter, cors *middleware.Cors, cba service.CallbackAuditorService, kgr ApiKeyRouter) *Router {
+func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr *CommentRouter, fr *FeedRouter, ir *InteractionRouter, cors *middleware.Cors, cba *controller.CallbackAuditorController) *Router {
 	return &Router{
 		e:    e,
 		ur:   ur,
@@ -41,7 +40,6 @@ func NewRouter(e *gin.Engine, ur *UserRouter, ar *ActRouter, pr *PostRouter, cr 
 		ir:   ir,
 		cors: cors,
 		cba:  cba,
-		kgr:  kgr,
 	}
 }
 
@@ -53,8 +51,6 @@ func (r *Router) RegisterRouters() {
 	r.cr.RegisterCommentRouter()
 	r.ir.RegisterInteractionRouters()
 	r.fr.RegisterFeedRouters()
-	r.cba.RegisterCallbackAuditorRouters()
-	r.kgr.RegisterApiKeyRouters()
 	r.RegisterSwagger()
 }
 

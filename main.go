@@ -5,6 +5,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/raiki02/EG/config"
 	"github.com/raiki02/EG/internal/server"
+	"github.com/raiki02/EG/pkg/ginx"
 	"github.com/spf13/viper"
 	"log"
 	"sync"
@@ -19,6 +20,7 @@ var (
 // @Description 校灵通 API 文档
 // @verstion 1.0
 func main() {
+	ginx.InitValidation()
 	config.Init()
 	app = InitApp()
 

@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/act/all/{id}": {
+        "/act/all": {
             "get": {
                 "produces": [
                     "application/json"
@@ -30,13 +30,6 @@ const docTemplate = `{
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户id",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     }
                 ],
@@ -183,7 +176,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.CreateActReq"
+                            "$ref": "#/definitions/req.CreateActDraftReq"
                         }
                     },
                     {
@@ -206,7 +199,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/req.CreateActReq"
+                                            "$ref": "#/definitions/req.CreateActDraftReq"
                                         }
                                     }
                                 }
@@ -311,7 +304,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/act/own/{id}": {
+        "/act/own": {
             "get": {
                 "produces": [
                     "application/json"
@@ -326,13 +319,6 @@ const docTemplate = `{
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "创建者id",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     }
                 ],
@@ -517,13 +503,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "学号",
-                        "name": "sid",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
@@ -674,6 +653,69 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/feed/read/all": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "读取全部feed, 标记已读",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
+                        }
+                    }
+                }
+            }
+        },
+        "/feed/read/detail/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "feed"
+                ],
+                "summary": "读取feed详情, 标记已读",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "业务ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.Resp"
                         }
                     }
                 }
@@ -1050,7 +1092,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Post"
+                            "$ref": "#/definitions/req.DeletePostReq"
                         }
                     }
                 ],
@@ -1090,7 +1132,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/req.CreatePostReq"
+                            "$ref": "#/definitions/req.CreatePostDraftReq"
                         }
                     }
                 ],
@@ -1211,7 +1253,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/post/own/{id}": {
+        "/post/own": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1226,13 +1268,6 @@ const docTemplate = `{
                         "description": "token",
                         "name": "Authorization",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户ID",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     }
                 ],
@@ -1480,7 +1515,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_raiki02_EG_internal_model.User"
+                                            "$ref": "#/definitions/model.User"
                                         }
                                     }
                                 }
@@ -1847,41 +1882,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_raiki02_EG_internal_model.User": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "collectact": {
-                    "type": "string"
-                },
-                "collectpost": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "likeact": {
-                    "type": "string"
-                },
-                "likecomment": {
-                    "type": "string"
-                },
-                "likepost": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "school": {
-                    "type": "string"
-                },
-                "student_id": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Activity": {
             "type": "object",
             "properties": {
@@ -2058,6 +2058,41 @@ const docTemplate = `{
                 }
             }
         },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "collectact": {
+                    "type": "string"
+                },
+                "collectpost": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "likeact": {
+                    "type": "string"
+                },
+                "likecomment": {
+                    "type": "string"
+                },
+                "likepost": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "school": {
+                    "type": "string"
+                },
+                "student_id": {
+                    "type": "string"
+                }
+            }
+        },
         "req.ActSearchReq": {
             "type": "object",
             "properties": {
@@ -2095,7 +2130,7 @@ const docTemplate = `{
                 }
             }
         },
-        "req.CreateActReq": {
+        "req.CreateActDraftReq": {
             "type": "object",
             "properties": {
                 "introduce": {
@@ -2150,36 +2185,154 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "studentid": {
+                "title": {
                     "type": "string"
+                }
+            }
+        },
+        "req.CreateActReq": {
+            "type": "object",
+            "required": [
+                "introduce",
+                "title"
+            ],
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "labelform": {
+                    "type": "object",
+                    "required": [
+                        "activeForm",
+                        "endTime",
+                        "holderType",
+                        "if_register",
+                        "position",
+                        "startTime",
+                        "type"
+                    ],
+                    "properties": {
+                        "activeForm": {
+                            "type": "string"
+                        },
+                        "endTime": {
+                            "type": "string"
+                        },
+                        "holderType": {
+                            "type": "string"
+                        },
+                        "if_register": {
+                            "type": "string",
+                            "enum": [
+                                "是",
+                                "否"
+                            ]
+                        },
+                        "position": {
+                            "type": "string"
+                        },
+                        "register_method": {
+                            "type": "string"
+                        },
+                        "signer": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "studentid": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "startTime": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "showImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "title": {
                     "type": "string"
                 }
             }
         },
-        "req.CreateCommentReq": {
+        "req.CreateActReq": {
             "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "parent_id": {
-                    "type": "string"
-                },
-                "studentid": {
-                    "type": "string"
-                },
-                "subject": {
-                    "type": "string"
-                }
-            }
-        },
-        "req.CreatePostReq": {
-            "type": "object",
+            "required": [
+                "introduce",
+                "studentid",
+                "title"
+            ],
             "properties": {
                 "introduce": {
                     "type": "string"
+                },
+                "labelform": {
+                    "type": "object",
+                    "required": [
+                        "activeForm",
+                        "endTime",
+                        "holderType",
+                        "if_register",
+                        "position",
+                        "startTime",
+                        "type"
+                    ],
+                    "properties": {
+                        "activeForm": {
+                            "type": "string"
+                        },
+                        "endTime": {
+                            "type": "string"
+                        },
+                        "holderType": {
+                            "type": "string"
+                        },
+                        "if_register": {
+                            "type": "string",
+                            "enum": [
+                                "是",
+                                "否"
+                            ]
+                        },
+                        "position": {
+                            "type": "string"
+                        },
+                        "register_method": {
+                            "type": "string"
+                        },
+                        "signer": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "studentid": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "startTime": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "showImg": {
                     "type": "array",
@@ -2195,12 +2348,93 @@ const docTemplate = `{
                 }
             }
         },
-        "req.DeleteCommentReq": {
+        "req.CreateCommentReq": {
             "type": "object",
+            "required": [
+                "content",
+                "parent_id",
+                "receiver",
+                "subject"
+            ],
             "properties": {
-                "studentid": {
+                "content": {
                     "type": "string"
                 },
+                "parent_id": {
+                    "type": "string"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.CreatePostDraftReq": {
+            "type": "object",
+            "required": [
+                "introduce",
+                "showImg",
+                "studentid",
+                "title"
+            ],
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "showImg": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.CreatePostReq": {
+            "type": "object",
+            "required": [
+                "introduce",
+                "showImg",
+                "title"
+            ],
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "showImg": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.DeleteCommentReq": {
+            "type": "object",
+            "required": [
+                "target_id"
+            ],
+            "properties": {
+                "target_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.DeletePostReq": {
+            "type": "object",
+            "required": [
+                "target_id"
+            ],
+            "properties": {
                 "target_id": {
                     "type": "string"
                 }
@@ -2208,14 +2442,21 @@ const docTemplate = `{
         },
         "req.FindActByDateReq": {
             "type": "object",
+            "required": [
+                "date"
+            ],
             "properties": {
                 "date": {
+                    "description": "02-01",
                     "type": "string"
                 }
             }
         },
         "req.FindActByNameReq": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "name": {
                     "type": "string"
@@ -2224,6 +2465,9 @@ const docTemplate = `{
         },
         "req.FindPostReq": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "name": {
                     "type": "string"
@@ -2233,9 +2477,14 @@ const docTemplate = `{
         "req.InteractionReq": {
             "type": "object",
             "required": [
+                "receiver",
+                "subject",
                 "targetid"
             ],
             "properties": {
+                "receiver": {
+                    "type": "string"
+                },
                 "subject": {
                     "type": "string"
                 },
@@ -2246,6 +2495,10 @@ const docTemplate = `{
         },
         "req.LoginReq": {
             "type": "object",
+            "required": [
+                "password",
+                "studentid"
+            ],
             "properties": {
                 "password": {
                     "type": "string"
@@ -2279,6 +2532,9 @@ const docTemplate = `{
         },
         "req.UserAvatarReq": {
             "type": "object",
+            "required": [
+                "avatar_url"
+            ],
             "properties": {
                 "avatar_url": {
                     "type": "string"
@@ -2359,6 +2615,9 @@ const docTemplate = `{
                 "likeNum": {
                     "type": "integer"
                 },
+                "parent_id": {
+                    "type": "string"
+                },
                 "reply": {
                     "type": "array",
                     "items": {
@@ -2367,6 +2626,9 @@ const docTemplate = `{
                 },
                 "replyNum": {
                     "type": "integer"
+                },
+                "root_id": {
+                    "type": "string"
                 }
             }
         },
@@ -2439,6 +2701,12 @@ const docTemplate = `{
         "resp.FeedAtResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2459,6 +2727,12 @@ const docTemplate = `{
         "resp.FeedCollectResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2479,6 +2753,12 @@ const docTemplate = `{
         "resp.FeedCommentResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2499,6 +2779,12 @@ const docTemplate = `{
         "resp.FeedInvitationResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2519,6 +2805,12 @@ const docTemplate = `{
         "resp.FeedLikeResp": {
             "type": "object",
             "properties": {
+                "first_pic": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -2687,6 +2979,9 @@ const docTemplate = `{
                 "likeNum": {
                     "type": "integer"
                 },
+                "publishTime": {
+                    "type": "string"
+                },
                 "showImg": {
                     "type": "array",
                     "items": {
@@ -2744,13 +3039,16 @@ const docTemplate = `{
                 "bid": {
                     "type": "string"
                 },
+                "isLike": {
+                    "type": "string"
+                },
                 "likeNum": {
                     "type": "integer"
                 },
                 "parentUserName": {
                     "type": "string"
                 },
-                "parentid": {
+                "parent_id": {
                     "type": "string"
                 },
                 "replyNum": {
@@ -2779,11 +3077,8 @@ const docTemplate = `{
                 "reply_time": {
                     "type": "string"
                 },
-                "sub_reply": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/resp.SubReplyResp"
-                    }
+                "root_id": {
+                    "type": "string"
                 }
             }
         },
@@ -2795,49 +3090,6 @@ const docTemplate = `{
                 },
                 "data": {},
                 "msg": {
-                    "type": "string"
-                }
-            }
-        },
-        "resp.SubReplyResp": {
-            "type": "object",
-            "properties": {
-                "bid": {
-                    "type": "string"
-                },
-                "likeNum": {
-                    "type": "integer"
-                },
-                "parentUserName": {
-                    "type": "string"
-                },
-                "parentid": {
-                    "type": "string"
-                },
-                "replyNum": {
-                    "type": "integer"
-                },
-                "reply_content": {
-                    "type": "string"
-                },
-                "reply_creator": {
-                    "type": "object",
-                    "properties": {
-                        "avatar": {
-                            "type": "string"
-                        },
-                        "studentid": {
-                            "type": "string"
-                        },
-                        "username": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "reply_pos": {
-                    "type": "string"
-                },
-                "reply_time": {
                     "type": "string"
                 }
             }

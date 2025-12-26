@@ -2,28 +2,13 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/api/resp"
-	//"github.com/raiki02/EG/internal/model" // 不知道为什么swag 识别不了model,非得加上
 	"github.com/raiki02/EG/internal/service"
-	"github.com/raiki02/EG/tools"
+	"github.com/raiki02/EG/pkg/ginx"
 	"go.uber.org/zap"
 )
-
-type UserControllerHdl interface {
-	Login() gin.HandlerFunc
-	Logout() gin.HandlerFunc
-	GetUserInfo() gin.HandlerFunc
-	UpdateAvatar() gin.HandlerFunc
-	UpdateUsername() gin.HandlerFunc
-	SearchUserAct() gin.HandlerFunc
-	SearchUserPost() gin.HandlerFunc
-	GenQINIUToken() gin.HandlerFunc
-	Like() gin.HandlerFunc
-	Comment() gin.HandlerFunc
-	Collect() gin.HandlerFunc
-	LoadCollect() gin.HandlerFunc
-}
 
 type UserController struct {
 	e   *gin.Engine
@@ -45,37 +30,22 @@ func NewUserController(e *gin.Engine, ush *service.UserService, l *zap.Logger) *
 // @Param user body req.LoginReq true "登录请求"
 // @Success 200 {object} resp.Resp{data=resp.LoginResp}
 // @Router /user/login [post]
-func (uc *UserController) Login() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var lr req.LoginReq
-		err := c.ShouldBindJSON(&lr)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-
-		if lr.StudentID == "" || lr.Password == "" {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("账号或者密码为空", zap.String("studentID", lr.StudentID))
-			return
-		}
-		user, token, err := uc.ush.Login(c, lr.StudentID, lr.Password)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("ccnu登录失败", zap.Error(err))
-			return
-		}
-		res := resp.LoginResp{
-			Id:     user.Id,
-			Sid:    user.StudentID,
-			Name:   user.Name,
-			Avatar: user.Avatar,
-			School: user.School,
-			Token:  token,
-		}
-
-		c.JSON(200, tools.ReturnMSG(c, "success", res))
+func (uc *UserController) Login(ctx *gin.Context, req_ req.LoginReq) (resp.Resp, error) {
+	user, token, err := uc.ush.Login(ctx, req_.StudentID, req_.Password)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+	res := resp.LoginResp{
+		Id:     user.Id,
+		Sid:    user.StudentID,
+		Name:   user.Name,
+		Avatar: user.Avatar,
+		School: user.School,
+		Token:  token,
+	}
+
+	return ginx.ReturnSuccess(res)
+
 }
 
 // @Tags User
@@ -84,17 +54,13 @@ func (uc *UserController) Login() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp
 // @Router /user/logout [post]
-func (uc *UserController) Logout() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
-		err := uc.ush.Logout(c, token)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("ccnu登出失败", zap.Error(err))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (uc *UserController) Logout(ctx *gin.Context) (resp.Resp, error) {
+	token := ctx.GetHeader("Authorization")
+	if err := uc.ush.Logout(ctx, token); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags User
@@ -104,22 +70,13 @@ func (uc *UserController) Logout() gin.HandlerFunc {
 // @Param id path string true "用户id"
 // @Success 200 {object} resp.Resp{data=model.User}
 // @Router /user/info/{id} [get]
-func (uc *UserController) GetUserInfo() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := c.Param("id")
-		if sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("学生id为空", zap.String("sid", sid))
-			return
-		}
-		user, err := uc.ush.GetUserInfo(c, sid)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("获取学生信息失败", zap.Error(err))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", user))
+func (uc *UserController) GetUserInfo(ctx *gin.Context, req_ req.GetUserInfoReq) (resp.Resp, error) {
+	res, err := uc.ush.GetUserInfo(ctx, req_.Id)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Tags User
@@ -130,34 +87,12 @@ func (uc *UserController) GetUserInfo() gin.HandlerFunc {
 // @Param userAvatarReq body req.UserAvatarReq true "用户头像更改"
 // @Success 200 {object} resp.Resp
 // @Router /user/avatar [post]
-func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			uc.l.Warn("request studentid is empty when update avatar")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var userAvatarReq req.UserAvatarReq
-		err := c.ShouldBind(&userAvatarReq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			return
-		}
-		if userAvatarReq.AvatarUrl == "" {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("头像url为空", zap.String("avatarUrl", userAvatarReq.AvatarUrl))
-			return
-		}
-
-		err = uc.ush.UpdateAvatar(c, userAvatarReq, sid)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("更新头像失败", zap.Error(err))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (uc *UserController) UpdateAvatar(ctx *gin.Context, req_ req.UserAvatarReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := uc.ush.UpdateAvatar(ctx, req_, claims.Subject); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags User
@@ -167,35 +102,12 @@ func (uc *UserController) UpdateAvatar() gin.HandlerFunc {
 // @Param unr body req.UpdateNameReq true "更新用户名"
 // @Success 200 {object} resp.Resp
 // @Router /user/username [post]
-func (uc *UserController) UpdateUsername() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			uc.l.Warn("request studentid is empty when update username")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		var unr req.UpdateNameReq
-		err := c.ShouldBind(&unr)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			uc.l.Error("绑定请求失败", zap.Error(err))
-			return
-		}
-		if unr.Name == "" {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("用户名为空", zap.String("studentID", sid))
-			return
-		}
-		err = uc.ush.UpdateUsername(c, sid, unr.Name)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("更新用户名失败", zap.Error(err))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (uc *UserController) UpdateUsername(ctx *gin.Context, req_ req.UpdateNameReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := uc.ush.UpdateUsername(ctx, claims.Subject, req_.Name); err != nil {
+		return ginx.ReturnError(err)
 	}
 
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Tags User
@@ -205,30 +117,13 @@ func (uc *UserController) UpdateUsername() gin.HandlerFunc {
 // @Param ureq body req.UserSearchReq true "搜索请求"
 // @Success 200 {object} resp.Resp{data=[]model.Activity}
 // @Router /user/search/act [post]
-func (uc *UserController) SearchUserAct() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var ureq req.UserSearchReq
-		err := c.ShouldBindJSON(&ureq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			uc.l.Error("绑定请求失败", zap.Error(err))
-			return
-		}
-
-		sid := tools.GetSid(c)
-		if sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("学生id为空", zap.String("studentID", sid))
-			return
-		}
-		acts, err := uc.ush.SearchUserAct(c, sid, ureq.Keyword)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("搜索用户活动失败", zap.Error(err))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", acts))
+func (uc *UserController) SearchUserAct(ctx *gin.Context, req_ req.UserSearchReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	acts, err := uc.ush.SearchUserAct(ctx, claims.Subject, req_.Keyword)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(acts)
 }
 
 // @Tags User
@@ -238,30 +133,13 @@ func (uc *UserController) SearchUserAct() gin.HandlerFunc {
 // @Param ureq body req.UserSearchReq true "搜索请求"
 // @Success 200 {object} resp.Resp{data=[]model.Post}
 // @Router /user/search/post [post]
-func (uc *UserController) SearchUserPost() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var ureq req.UserSearchReq
-		err := c.ShouldBindJSON(&ureq)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, err.Error(), nil))
-			uc.l.Error("绑定请求失败", zap.Error(err))
-			return
-		}
-
-		sid := tools.GetSid(c)
-		if sid == "" {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("学生id为空", zap.String("studentID", sid))
-			return
-		}
-		posts, err := uc.ush.SearchUserPost(c, sid, ureq.Keyword)
-		if err != nil {
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("搜索用户帖子失败", zap.Error(err))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", posts))
+func (uc *UserController) SearchUserPost(ctx *gin.Context, req_ req.UserSearchReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	posts, err := uc.ush.SearchUserPost(ctx, claims.Subject, req_.Keyword)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(posts)
 }
 
 // @Tags User
@@ -270,12 +148,9 @@ func (uc *UserController) SearchUserPost() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=resp.ImgBedResp}
 // @Router /user/token/qiniu [get]
-func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		res := uc.ush.GenQINIUToken(c)
-		uc.l.Info("生成七牛云token", zap.String("token", res.AccessToken), zap.String("dn", res.DomainName))
-		c.JSON(200, tools.ReturnMSG(c, "success", res))
-	}
+func (uc *UserController) GenQiniuToken(ctx *gin.Context) (resp.Resp, error) {
+	res := uc.ush.GenQINIUToken(ctx)
+	return ginx.ReturnSuccess(res)
 }
 
 // @Tags User
@@ -285,22 +160,13 @@ func (uc *UserController) GenQiniuToken() gin.HandlerFunc {
 // @Param cr body req.NumReq true "加载收藏请求"
 // @Success 200 {object} resp.Resp{data=[]resp.ListActivitiesResp}
 // @Router /user/collect/act [post]
-func (uc *UserController) LoadCollectAct() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		sid := tools.GetSid(context)
-		if sid == "" {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("学生id为空", zap.String("studentID", sid))
-			return
-		}
-		res, err := uc.ush.LoadCollectAct(context, sid)
-		if err != nil {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("加载活动收藏失败", zap.Error(err))
-			return
-		}
-		context.JSON(200, tools.ReturnMSG(context, "success", res))
+func (uc *UserController) LoadCollectAct(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := uc.ush.LoadCollectAct(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Tags User
@@ -310,22 +176,13 @@ func (uc *UserController) LoadCollectAct() gin.HandlerFunc {
 // @Param cr body req.NumReq true "加载收藏请求"
 // @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
 // @Router /user/collect/post [post]
-func (uc *UserController) LoadCollectPost() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		sid := tools.GetSid(context)
-		if sid == "" {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("学生id为空", zap.String("studentID", sid))
-			return
-		}
-		res, err := uc.ush.LoadCollectPost(context, sid)
-		if err != nil {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("加载帖子收藏失败", zap.Error(err))
-			return
-		}
-		context.JSON(200, tools.ReturnMSG(context, "success", res))
+func (uc *UserController) LoadCollectPost(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := uc.ush.LoadCollectPost(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Tags User
@@ -335,22 +192,13 @@ func (uc *UserController) LoadCollectPost() gin.HandlerFunc {
 // @Param cr body req.NumReq true "点赞请求"
 // @Success 200 {object} resp.Resp{data=[]resp.ListPostsResp}
 // @Router /user/like/post [post]
-func (uc *UserController) LoadLikePost() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		sid := tools.GetSid(context)
-		if sid == "" {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("学生id为空", zap.String("studentID", sid))
-			return
-		}
-		res, err := uc.ush.LoadLikePost(context, sid)
-		if err != nil {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("加载帖子点赞失败", zap.Error(err))
-			return
-		}
-		context.JSON(200, tools.ReturnMSG(context, "success", res))
+func (uc *UserController) LoadLikePost(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := uc.ush.LoadLikePost(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Tags User
@@ -360,22 +208,13 @@ func (uc *UserController) LoadLikePost() gin.HandlerFunc {
 // @Param cr body req.NumReq true "点赞请求"
 // @Success 200 {object} resp.Resp{data=[]resp.ListActivitiesResp}
 // @Router /user/like/act [post]
-func (uc *UserController) LoadLikeAct() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		sid := tools.GetSid(context)
-		if sid == "" {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Warn("学生id为空", zap.String("studentID", sid))
-			return
-		}
-		res, err := uc.ush.LoadLikeAct(context, sid)
-		if err != nil {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("加载活动点赞失败", zap.Error(err))
-			return
-		}
-		context.JSON(200, tools.ReturnMSG(context, "success", res))
+func (uc *UserController) LoadLikeAct(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := uc.ush.LoadLikeAct(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Tags User
@@ -384,16 +223,11 @@ func (uc *UserController) LoadLikeAct() gin.HandlerFunc {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=resp.CheckingResp}
 // @Router /user/checking [get]
-func (uc *UserController) Checking() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		studentId := tools.GetSid(context)
-		res, err := uc.ush.GetChecking(context, studentId)
-		if err != nil {
-			context.JSON(200, tools.ReturnMSG(context, "服务器出错啦, 请稍后尝试!", nil))
-			uc.l.Error("获取签到状态失败", zap.Error(err))
-			return
-		}
-
-		context.JSON(200, tools.ReturnMSG(context, "success", res))
+func (uc *UserController) Checking(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := uc.ush.GetChecking(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
