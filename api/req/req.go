@@ -5,11 +5,17 @@ type DraftReq struct {
 }
 
 type UserAvatarReq struct {
-	AvatarUrl string `json:"avatar_url"`
+	AvatarUrl string `json:"avatar_url" validate:"required,url"`
 }
 
 type AuditWrapper struct {
-	Subject  string
+	Subject   string
+	StudentId string
+
 	CactReq  *CreateActReq
 	CpostReq *CreatePostReq
+}
+
+type GetUserInfoReq struct {
+	Id string `json:"id" validate:"required" form:"id" uri:"id"`
 }

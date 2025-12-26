@@ -14,17 +14,6 @@ import (
 	"time"
 )
 
-type ActivityServiceHdl interface {
-	NewAct(*gin.Context, *req.CreateActReq) (resp.CreateActivityResp, error)
-	NewDraft(*gin.Context, *req.CreateActReq) (resp.CreateActivityResp, error)
-	LoadDraft(*gin.Context, req.DraftReq) (resp.CreateActivityResp, error)
-	FindActBySearches(*gin.Context, *req.ActSearchReq) ([]resp.ListActivitiesResp, error)
-	FindActByDate(*gin.Context, string) ([]resp.ListActivitiesResp, error)
-	FindActByName(*gin.Context, string) ([]resp.ListActivitiesResp, error)
-	FindActByOwnerID(*gin.Context, string) ([]resp.ListActivitiesResp, error)
-	ListAllActs(*gin.Context) ([]resp.ListActivitiesResp, error)
-}
-
 type ActivityService struct {
 	ad  *dao.ActDao
 	ch  *cache.Cache
@@ -47,22 +36,25 @@ func NewActivityService(ad *dao.ActDao, ch *cache.Cache, ud *dao.UserDao, l *zap
 	}
 }
 
-func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.CreateActivityResp, error) {
+func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq, studentId string) (resp.CreateActivityResp, error) {
 	var (
 		form *model.AuditorForm
 		err  error
 	)
-	act := toAct(r)
+	act := toAct(r, studentId)
 
 	// TODO: 异步增加
 	signers := r.LabelForm.Signer
 	for _, s := range signers {
+		if s.StudentID == studentId {
+			continue // 这里避免了 填写了自己的学号名字但是还需要自己审批的情况
+		}
 		if err := as.id.InsertApprovement(c, s.StudentID, s.Name, act.Bid); err != nil {
 			as.l.Error("Failed to insert approvement", zap.Error(err), zap.String("studentID", s.StudentID), zap.String("actBid", act.Bid))
 			return resp.CreateActivityResp{}, err
 		}
 		f := model.Feed{
-			StudentId: r.StudentID,
+			StudentId: studentId,
 			TargetBid: act.Bid,
 			Object:    "activity",
 			Action:    "invitation",
@@ -81,8 +73,9 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 		return resp.CreateActivityResp{}, err
 	}
 	aw := &req.AuditWrapper{
-		Subject: SubjectActivity,
-		CactReq: r,
+		Subject:   SubjectActivity,
+		StudentId: studentId,
+		CactReq:   r,
 	}
 
 	err = as.aud.UploadForm(c, aw, form.Id)
@@ -107,9 +100,9 @@ func (as *ActivityService) NewAct(c *gin.Context, r *req.CreateActReq) (resp.Cre
 
 }
 
-func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActReq) (resp.CreateActivityResp, error) {
+func (as *ActivityService) NewDraft(c *gin.Context, r *req.CreateActDraftReq, studentId string) (resp.CreateActivityResp, error) {
 
-	d := toActDraft(r)
+	d := toActDraft(r, studentId)
 
 	err := as.ad.CreateDraft(c, d)
 	if err != nil {
@@ -222,13 +215,13 @@ func (as *ActivityService) toListActResp(c *gin.Context, act *model.Activity) re
 	return res
 }
 
-func toAct(r *req.CreateActReq) *model.Activity {
+func toAct(r *req.CreateActReq, studentId string) *model.Activity {
 	var act model.Activity
 
 	act.Bid = tools.GenUUID()
 	act.CreatedAt = time.Now()
 
-	act.StudentID = r.StudentID
+	act.StudentID = studentId
 	act.Title = r.Title
 	act.Introduce = r.Introduce
 	act.ShowImg = tools.SliceToString(r.ShowImg)
@@ -247,7 +240,7 @@ func toAct(r *req.CreateActReq) *model.Activity {
 }
 
 func joinSigners(signers []struct {
-	StudentID string `json:"studentid"`
+	StudentID string `json:"studentid" validate:"len=10"`
 	Name      string `json:"name"`
 }) []string {
 	var res []string
@@ -276,12 +269,12 @@ func separateSigners(signers []string) []struct {
 	return res
 }
 
-func toActDraft(r *req.CreateActReq) *model.ActivityDraft {
+func toActDraft(r *req.CreateActDraftReq, studentId string) *model.ActivityDraft {
 	var ad model.ActivityDraft
 	ad.Bid = tools.GenUUID()
 	ad.CreatedAt = time.Now()
 
-	ad.StudentID = r.StudentID
+	ad.StudentID = studentId
 	ad.Title = r.Title
 	ad.Introduce = r.Introduce
 	ad.ShowImg = tools.SliceToString(r.ShowImg)

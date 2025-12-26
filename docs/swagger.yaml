@@ -163,7 +163,7 @@ definitions:
           type: string
         type: array
     type: object
-  req.CreateActReq:
+  req.CreateActDraftReq:
     properties:
       introduce:
         type: string
@@ -176,6 +176,9 @@ definitions:
           holderType:
             type: string
           if_register:
+            enum:
+            - 是
+            - 否
             type: string
           position:
             type: string
@@ -194,15 +197,74 @@ definitions:
             type: string
           type:
             type: string
+        required:
+        - activeForm
+        - endTime
+        - holderType
+        - if_register
+        - position
+        - startTime
+        - type
         type: object
       showImg:
         items:
           type: string
         type: array
-      studentid:
-        type: string
       title:
         type: string
+    type: object
+  req.CreateActReq:
+    properties:
+      introduce:
+        type: string
+      labelform:
+        properties:
+          activeForm:
+            type: string
+          endTime:
+            type: string
+          holderType:
+            type: string
+          if_register:
+            enum:
+            - 是
+            - 否
+            type: string
+          position:
+            type: string
+          register_method:
+            type: string
+          signer:
+            items:
+              properties:
+                name:
+                  type: string
+                studentid:
+                  type: string
+              type: object
+            type: array
+          startTime:
+            type: string
+          type:
+            type: string
+        required:
+        - activeForm
+        - endTime
+        - holderType
+        - if_register
+        - position
+        - startTime
+        - type
+        type: object
+      showImg:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    required:
+    - introduce
+    - title
     type: object
   req.CreateCommentReq:
     properties:
@@ -212,9 +274,24 @@ definitions:
         type: string
       receiver:
         type: string
-      studentid:
-        type: string
       subject:
+        type: string
+    required:
+    - content
+    - parent_id
+    - receiver
+    - subject
+    type: object
+  req.CreatePostDraftReq:
+    properties:
+      introduce:
+        type: string
+      showImg:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      title:
         type: string
     type: object
   req.CreatePostReq:
@@ -224,33 +301,50 @@ definitions:
       showImg:
         items:
           type: string
+        minItems: 1
         type: array
-      studentid:
-        type: string
       title:
         type: string
+    required:
+    - introduce
+    - showImg
+    - title
     type: object
   req.DeleteCommentReq:
     properties:
-      studentid:
-        type: string
       target_id:
         type: string
+    required:
+    - target_id
+    type: object
+  req.DeletePostReq:
+    properties:
+      target_id:
+        type: string
+    required:
+    - target_id
     type: object
   req.FindActByDateReq:
     properties:
       date:
+        description: 02-01
         type: string
+    required:
+    - date
     type: object
   req.FindActByNameReq:
     properties:
       name:
         type: string
+    required:
+    - name
     type: object
   req.FindPostReq:
     properties:
       name:
         type: string
+    required:
+    - name
     type: object
   req.InteractionReq:
     properties:
@@ -262,6 +356,7 @@ definitions:
         type: string
     required:
     - receiver
+    - subject
     - targetid
     type: object
   req.LoginReq:
@@ -270,6 +365,9 @@ definitions:
         type: string
       studentid:
         type: string
+    required:
+    - password
+    - studentid
     type: object
   req.NumReq:
     properties:
@@ -289,6 +387,8 @@ definitions:
     properties:
       avatar_url:
         type: string
+    required:
+    - avatar_url
     type: object
   req.UserSearchReq:
     properties:
@@ -394,6 +494,8 @@ definitions:
     type: object
   resp.FeedAtResp:
     properties:
+      first_pic:
+        type: string
       id:
         type: integer
       message:
@@ -409,6 +511,8 @@ definitions:
     type: object
   resp.FeedCollectResp:
     properties:
+      first_pic:
+        type: string
       id:
         type: integer
       message:
@@ -424,6 +528,8 @@ definitions:
     type: object
   resp.FeedCommentResp:
     properties:
+      first_pic:
+        type: string
       id:
         type: integer
       message:
@@ -439,6 +545,8 @@ definitions:
     type: object
   resp.FeedInvitationResp:
     properties:
+      first_pic:
+        type: string
       id:
         type: integer
       message:
@@ -454,6 +562,8 @@ definitions:
     type: object
   resp.FeedLikeResp:
     properties:
+      first_pic:
+        type: string
       id:
         type: integer
       message:
@@ -655,17 +765,12 @@ info:
   description: 校灵通 API 文档
   title: EventGlide API
 paths:
-  /act/all/{id}:
+  /act/all:
     get:
       parameters:
       - description: token
         in: header
         name: Authorization
-        required: true
-        type: string
-      - description: 用户id
-        in: path
-        name: id
         required: true
         type: string
       produces:
@@ -754,7 +859,7 @@ paths:
         name: draft
         required: true
         schema:
-          $ref: '#/definitions/req.CreateActReq'
+          $ref: '#/definitions/req.CreateActDraftReq'
       - description: token
         in: header
         name: Authorization
@@ -770,7 +875,7 @@ paths:
             - $ref: '#/definitions/resp.Resp'
             - properties:
                 data:
-                  $ref: '#/definitions/req.CreateActReq'
+                  $ref: '#/definitions/req.CreateActDraftReq'
               type: object
       summary: 创建活动草稿
       tags:
@@ -831,17 +936,12 @@ paths:
       summary: 通过名称查找活动
       tags:
       - Activity
-  /act/own/{id}:
+  /act/own:
     get:
       parameters:
       - description: token
         in: header
         name: Authorization
-        required: true
-        type: string
-      - description: 创建者id
-        in: path
-        name: id
         required: true
         type: string
       produces:
@@ -949,11 +1049,6 @@ paths:
   /comment/delete:
     post:
       parameters:
-      - description: 学号
-        in: formData
-        name: sid
-        required: true
-        type: string
       - description: token
         in: header
         name: Authorization
@@ -1325,7 +1420,7 @@ paths:
         name: post
         required: true
         schema:
-          $ref: '#/definitions/model.Post'
+          $ref: '#/definitions/req.DeletePostReq'
       produces:
       - application/json
       responses:
@@ -1351,7 +1446,7 @@ paths:
         name: post
         required: true
         schema:
-          $ref: '#/definitions/req.CreatePostReq'
+          $ref: '#/definitions/req.CreatePostDraftReq'
       produces:
       - application/json
       responses:
@@ -1423,17 +1518,12 @@ paths:
       summary: 加载草稿
       tags:
       - Post
-  /post/own/{id}:
+  /post/own:
     get:
       parameters:
       - description: token
         in: header
         name: Authorization
-        required: true
-        type: string
-      - description: 用户ID
-        in: path
-        name: id
         required: true
         type: string
       produces:

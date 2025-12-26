@@ -26,12 +26,12 @@ func (af *AuditorForm) AfterUpdate(tx *gorm.DB) (err error) {
 		table := af.Subject
 		if table == SubjectActivity {
 			update := tx.Exec(`
-				UPDATE activities
+				UPDATE activity
 				SET is_checking = 'pass'
 				WHERE bid = ?
 				AND NOT EXISTS (
 					SELECT 1
-					FROM approvements
+					FROM approvement
 					WHERE bid = ?
 					AND stance != 'pass'
 				)
@@ -46,7 +46,7 @@ func (af *AuditorForm) AfterUpdate(tx *gorm.DB) (err error) {
 			}
 		} else if table == SubjectPost {
 			update := tx.Exec(`
-				UPDATE posts
+				UPDATE post
 				SET is_checking = 'pass'
 				WHERE bid = ?
 			`, af.Bid)
@@ -64,7 +64,7 @@ func (af *AuditorForm) AfterUpdate(tx *gorm.DB) (err error) {
 	if af.Status == StanceReject {
 		if af.Subject == SubjectActivity {
 			update := tx.Exec(`
-				UPDATE activities
+				UPDATE activity
 				SET is_checking = 'reject'
 				WHERE bid = ?
 			`, af.Bid)
@@ -78,7 +78,7 @@ func (af *AuditorForm) AfterUpdate(tx *gorm.DB) (err error) {
 			}
 		} else if af.Subject == SubjectPost {
 			update := tx.Exec(`
-				UPDATE posts
+				UPDATE post
 				SET is_checking = 'reject'
 				WHERE bid = ?
 			`, af.Bid)

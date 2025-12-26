@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/controller"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/pkg/ginx"
 )
 
 type PostRouterHdl interface {
@@ -28,12 +29,12 @@ func (pr *PostRouter) RegisterPostRouters() {
 	post := pr.e.Group("/post")
 	post.Use(pr.j.WrapCheckToken())
 	{
-		post.GET("/all", pr.pch.GetAllPost())
-		post.POST("/create", pr.pch.CreatePost())
-		post.POST("/find", pr.pch.FindPostByName())
-		post.POST("/draft", pr.pch.CreateDraft())
-		post.POST("/delete", pr.pch.DeletePost())
-		post.GET("/load", pr.pch.LoadDraft())
-		post.GET("/own/:id", pr.pch.FindPostByOwnerID())
+		post.GET("/all", ginx.WrapWithClaims(pr.pch.GetAllPost))
+		post.POST("/create", ginx.WrapRequestWithClaims(pr.pch.CreatePost))
+		post.POST("/find", ginx.WrapRequest(pr.pch.FindPostByName))
+		post.POST("/draft", ginx.WrapRequestWithClaims(pr.pch.CreateDraft))
+		post.POST("/delete", ginx.WrapRequestWithClaims(pr.pch.DeletePost))
+		post.GET("/load", ginx.WrapWithClaims(pr.pch.LoadDraft))
+		post.GET("/own", ginx.WrapWithClaims(pr.pch.FindPostByOwnerID))
 	}
 }

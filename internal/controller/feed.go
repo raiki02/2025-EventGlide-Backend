@@ -2,15 +2,13 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/raiki02/EG/api/req"
+	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
-	"github.com/raiki02/EG/tools"
+	"github.com/raiki02/EG/pkg/ginx"
 	"go.uber.org/zap"
 )
-
-type FeedControllerHdl interface {
-	GetTotalCnt() func(c *gin.Context)
-	GetFeedList() func(c *gin.Context)
-}
 
 type FeedController struct {
 	fs *service.FeedService
@@ -30,22 +28,13 @@ func NewFeedController(fs *service.FeedService, l *zap.Logger) *FeedController {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=resp.BriefFeedResp}
 // @Router /feed/total [get]
-func (fc *FeedController) GetTotalCnt() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			fc.l.Warn("request studentid is empty when get total comment")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		res, err := fc.fs.GetTotalCnt(c, sid)
-		if err != nil {
-			fc.l.Error("get total cnt failed", zap.Error(err))
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", res))
+func (fc *FeedController) GetTotalCnt(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := fc.fs.GetTotalCnt(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Summary 获取feed列表
@@ -54,22 +43,13 @@ func (fc *FeedController) GetTotalCnt() func(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=resp.FeedResp}
 // @Router /feed/list [get]
-func (fc *FeedController) GetFeedList() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			fc.l.Warn("request studentid is empty when get feed list")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		res, err := fc.fs.GetFeedList(c, sid)
-		if err != nil {
-			fc.l.Error("get feed list failed", zap.Error(err))
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", res))
+func (fc *FeedController) GetFeedList(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := fc.fs.GetFeedList(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Summary 获取审核员feed列表
@@ -78,22 +58,13 @@ func (fc *FeedController) GetFeedList() func(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=resp.FeedResp}
 // @Router /feed/auditor [get]
-func (fc *FeedController) GetAuditorFeedList() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			fc.l.Warn("request studentid or content or parentid is empty when create comment")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		res, err := fc.fs.GetAuditorFeedList(c, sid)
-		if err != nil {
-			fc.l.Error("get feed list failed", zap.Error(err))
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", res))
+func (fc *FeedController) GetAuditorFeedList(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := fc.fs.GetAuditorFeedList(ctx, claims.Subject)
+	if err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(res)
 }
 
 // @Summary 读取feed详情, 标记已读
@@ -103,28 +74,12 @@ func (fc *FeedController) GetAuditorFeedList() func(c *gin.Context) {
 // @Param id path string true "业务ID"
 // @Success 200 {object} resp.Resp
 // @Router /feed/read/detail/{id} [get]
-func (fc *FeedController) ReadFeedDetail() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			fc.l.Warn("request studentid is empty when get total comment")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		id := c.Param("id")
-		if id == "" {
-			fc.l.Warn("request bid is empty when read feed detail")
-			c.JSON(200, tools.ReturnMSG(c, "请求参数错误! ", nil))
-			return
-		}
-		err := fc.fs.ReadFeedDetail(c, sid, id)
-		if err != nil {
-			fc.l.Error("read feed detail failed", zap.Error(err))
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (fc *FeedController) ReadFeedDetail(ctx *gin.Context, req_ req.ReadFeedDetailReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := fc.fs.ReadFeedDetail(ctx, claims.Subject, req_.Id); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }
 
 // @Summary 读取全部feed, 标记已读
@@ -133,22 +88,10 @@ func (fc *FeedController) ReadFeedDetail() func(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp
 // @Router /feed/read/all [get]
-func (fc *FeedController) ReadAllFeed() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		sid := tools.GetSid(c)
-		if sid == "" {
-			fc.l.Warn("request studentid is empty when get total comment")
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-
-		err := fc.fs.ReadAllFeed(c, sid)
-		if err != nil {
-			fc.l.Error("read all feed failed", zap.Error(err))
-			c.JSON(200, tools.ReturnMSG(c, "服务器出错啦,请稍后再尝试! ", nil))
-			return
-		}
-
-		c.JSON(200, tools.ReturnMSG(c, "success", nil))
+func (fc *FeedController) ReadAllFeed(ctx *gin.Context, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := fc.fs.ReadAllFeed(ctx, claims.Subject); err != nil {
+		return ginx.ReturnError(err)
 	}
+
+	return ginx.ReturnSuccess(nil)
 }

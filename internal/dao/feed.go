@@ -10,15 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
-type FeedDaoHdl interface {
-	CreateFeed(ctx context.Context, feed *model.Feed) error
-	GetTotalCnt(ctx *gin.Context, id string) ([]int, error)
-	GetLikeFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-	GetCollectFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-	GetCommentFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-	GetAtFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-	GetInvitationFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
-}
+const (
+	TableNameActivity = "activity"
+	TableNamePost     = "post"
+)
 
 type FeedDao struct {
 	db *gorm.DB
@@ -95,7 +90,7 @@ func (fd *FeedDao) GetAtFeed(ctx *gin.Context, id string) ([]*model.Feed, error)
 
 func (fd *FeedDao) GetAuditorFeed(ctx *gin.Context, id string) ([]*model.Approvement, error) {
 	var a []*model.Approvement
-	if err := fd.db.WithContext(ctx).Where("receiver = ? AND stance = ? and student_id != ?", id, "pending", id).Find(&a).Error; err != nil {
+	if err := fd.db.WithContext(ctx).Where("stance = ? and student_id = ?", "pending", id).Find(&a).Error; err != nil {
 		fd.l.Error("Get Auditor Feed Failed", zap.Error(err))
 		return nil, err
 	}
@@ -112,14 +107,23 @@ func (fd *FeedDao) ReadAllFeed(ctx *gin.Context, sid string) error {
 
 func (fd *FeedDao) GetPictureFromObj(ctx *gin.Context, targetId, object string) (string, error) {
 	type Result struct {
-		ShowImage string
+		ShowImg string `gorm:"column:show_img"`
+	}
+	var tableName string
+	switch object {
+	case TableNameActivity:
+		tableName = TableNameActivity
+	case TableNamePost:
+		tableName = TableNamePost
+	default:
+		return "", errors.New("invalid object type")
 	}
 	var res Result
-	err := fd.db.WithContext(ctx).Table(object).Where("bid = ?", targetId).Select("show_image").Scan(&res).Error
+	err := fd.db.WithContext(ctx).Table(tableName).Where("bid = ?", targetId).Select("show_img").Find(&res).Error
 	if err != nil {
 		fd.l.Error("Get First Pic Failed", zap.Error(err))
 		return "", err
 	}
 
-	return res.ShowImage, nil
+	return res.ShowImg, nil
 }

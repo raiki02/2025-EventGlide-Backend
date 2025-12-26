@@ -289,9 +289,6 @@ func (fs *FeedService) GetAuditorFeedList(ctx *gin.Context, sid string) (resp.Fe
 			fs.l.Error("Get User Info when get auditor feed Failed", zap.Error(err))
 			return resp.FeedResp{}, err
 		}
-		if sid == user.StudentID {
-			continue // 不显示自己的审核, 自己发起默认同意
-		}
 		pics, err := fs.fd.GetPictureFromObj(ctx, v.Bid, "activity")
 		if err != nil {
 			fs.l.Error("Get Picture From Obj when get auditor feed Failed", zap.Error(err))

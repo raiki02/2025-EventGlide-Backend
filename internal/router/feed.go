@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/controller"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/pkg/ginx"
 )
 
 type FeedRouterHdl interface {
@@ -28,10 +29,10 @@ func (fr *FeedRouter) RegisterFeedRouters() {
 	feed := fr.e.Group("/feed")
 	feed.Use(fr.j.WrapCheckToken())
 	{
-		feed.GET("/total", fr.fc.GetTotalCnt())
-		feed.GET("/list", fr.fc.GetFeedList())
-		feed.GET("/read/detail/:id", fr.fc.ReadFeedDetail())
-		feed.GET("/read/all", fr.fc.ReadAllFeed())
-		feed.GET("/auditor", fr.fc.GetAuditorFeedList())
+		feed.GET("/total", ginx.WrapWithClaims(fr.fc.GetTotalCnt))
+		feed.GET("/list", ginx.WrapWithClaims(fr.fc.GetFeedList))
+		feed.GET("/read/detail/:id", ginx.WrapRequestWithClaims(fr.fc.ReadFeedDetail))
+		feed.GET("/read/all", ginx.WrapWithClaims(fr.fc.ReadAllFeed))
+		feed.GET("/auditor", ginx.WrapWithClaims(fr.fc.GetAuditorFeedList))
 	}
 }
