@@ -21,9 +21,9 @@ type Activity struct {
 	ActiveForm     string `gorm:"type:varchar(255);column:active_form"` // 表单url // 通过条件2
 	Signer         string `gorm:"type:text;column:signer;not null"`     // 报名人 >= 5的 []slice // 通过条件1
 
-	LikeNum    int `gorm:"type:int;column:like_num;default:0"`
-	CollectNum int `gorm:"type:int;column:collect_num;default:0"`
-	CommentNum int `gorm:"type:int;column:comment_num;default:0"`
+	LikeNum    uint `gorm:"type:int unsigned;column:like_num;default:0"`
+	CollectNum uint `gorm:"type:int unsigned;column:collect_num;default:0"`
+	CommentNum uint `gorm:"type:int unsigned;column:comment_num;default:0"`
 }
 
 type ActivityDraft struct {

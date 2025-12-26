@@ -176,6 +176,9 @@ definitions:
           holderType:
             type: string
           if_register:
+            enum:
+            - 是
+            - 否
             type: string
           position:
             type: string
@@ -194,6 +197,14 @@ definitions:
             type: string
           type:
             type: string
+        required:
+        - activeForm
+        - endTime
+        - holderType
+        - if_register
+        - position
+        - startTime
+        - type
         type: object
       showImg:
         items:
@@ -278,6 +289,7 @@ definitions:
       showImg:
         items:
           type: string
+        minItems: 1
         type: array
       title:
         type: string

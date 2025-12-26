@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/raiki02/EG/internal/controller"
 	"github.com/raiki02/EG/internal/middleware"
+	"github.com/raiki02/EG/pkg/ginx"
 )
 
 type UserRouterHdl interface {
@@ -23,18 +24,22 @@ func NewUserRouter(e *gin.Engine, uc *controller.UserController, j *middleware.J
 func (ur *UserRouter) RegisterUserRouters() {
 	user := ur.e.Group("/user")
 	{
-		user.POST("/login", ur.uc.Login())
-		user.POST("/logout", ur.j.WrapCheckToken(), ur.uc.Logout())
-		user.GET("/token/qiniu", ur.j.WrapCheckToken(), ur.uc.GenQiniuToken())
-		user.GET("/info/:id", ur.j.WrapCheckToken(), ur.uc.GetUserInfo())
-		user.POST("/avatar", ur.j.WrapCheckToken(), ur.uc.UpdateAvatar())
-		user.POST("/username", ur.j.WrapCheckToken(), ur.uc.UpdateUsername())
-		user.POST("/search/act", ur.j.WrapCheckToken(), ur.uc.SearchUserAct())
-		user.POST("/search/post", ur.j.WrapCheckToken(), ur.uc.SearchUserPost())
-		user.POST("/collect/act", ur.j.WrapCheckToken(), ur.uc.LoadCollectAct())
-		user.POST("/collect/post", ur.j.WrapCheckToken(), ur.uc.LoadCollectPost())
-		user.POST("/like/act", ur.j.WrapCheckToken(), ur.uc.LoadLikeAct())
-		user.POST("/like/post", ur.j.WrapCheckToken(), ur.uc.LoadLikePost())
-		user.GET("/checking", ur.j.WrapCheckToken(), ur.uc.Checking())
+		user.POST("/login", ginx.WrapRequest(ur.uc.Login))
+
+		user.Use(ur.j.WrapCheckToken())
+		{
+			user.POST("/logout", ginx.Wrap(ur.uc.Logout))
+			user.GET("/token/qiniu", ginx.Wrap(ur.uc.GenQiniuToken))
+			user.GET("/info/:id", ginx.WrapRequest(ur.uc.GetUserInfo))
+			user.POST("/avatar", ginx.WrapRequestWithClaims(ur.uc.UpdateAvatar))
+			user.POST("/username", ginx.WrapRequestWithClaims(ur.uc.UpdateUsername))
+			user.POST("/search/act", ginx.WrapRequestWithClaims(ur.uc.SearchUserAct))
+			user.POST("/search/post", ginx.WrapRequestWithClaims(ur.uc.SearchUserPost))
+			user.POST("/collect/act", ginx.WrapWithClaims(ur.uc.LoadCollectAct))
+			user.POST("/collect/post", ginx.WrapWithClaims(ur.uc.LoadCollectPost))
+			user.POST("/like/act", ginx.WrapWithClaims(ur.uc.LoadLikeAct))
+			user.POST("/like/post", ginx.WrapWithClaims(ur.uc.LoadLikePost))
+			user.GET("/checking", ginx.WrapWithClaims(ur.uc.Checking))
+		}
 	}
 }
