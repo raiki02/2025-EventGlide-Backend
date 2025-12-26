@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/raiki02/EG/api/req"
 	"github.com/raiki02/EG/api/resp"
 	"github.com/raiki02/EG/internal/service"
@@ -28,8 +29,8 @@ func NewCommentController(cs *service.CommentService, l *zap.Logger) *CommentCon
 // @Param CommentReq body req.CreateCommentReq true "评论"
 // @Success 200 {object} resp.Resp{data=resp.CommentResp}
 // @Router /comment/create [post]
-func (cc *CommentController) CreateComment(ctx *gin.Context, req_ req.CreateCommentReq) (resp.Resp, error) {
-	res, err := cc.cs.CreateComment(ctx, req_)
+func (cc *CommentController) CreateComment(ctx *gin.Context, req_ req.CreateCommentReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := cc.cs.CreateComment(ctx, req_, claims.Subject)
 	if err != nil {
 		return ginx.ReturnError(err)
 	}
@@ -44,8 +45,8 @@ func (cc *CommentController) CreateComment(ctx *gin.Context, req_ req.CreateComm
 // @Param CommentReq body req.CreateCommentReq true "回复"
 // @Success 200 {object} resp.Resp{data=resp.ReplyResp}
 // @Router /comment/answer [post]
-func (cc *CommentController) AnswerComment(ctx *gin.Context, req_ req.CreateCommentReq) (resp.Resp, error) {
-	res, err := cc.cs.AnswerComment(ctx, req_)
+func (cc *CommentController) AnswerComment(ctx *gin.Context, req_ req.CreateCommentReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := cc.cs.AnswerComment(ctx, req_, claims.Subject)
 	if err != nil {
 		return ginx.ReturnError(err)
 	}
@@ -60,8 +61,8 @@ func (cc *CommentController) AnswerComment(ctx *gin.Context, req_ req.CreateComm
 // @Param DeleteCommentReq body req.DeleteCommentReq true "删除评论"
 // @Success 200 {object} resp.Resp
 // @Router /comment/delete [post]
-func (cc *CommentController) DeleteComment(ctx *gin.Context, req_ req.DeleteCommentReq) (resp.Resp, error) {
-	err := cc.cs.DeleteComment(ctx, req_)
+func (cc *CommentController) DeleteComment(ctx *gin.Context, req_ req.DeleteCommentReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	err := cc.cs.DeleteComment(ctx, req_.TargetID, claims.Subject)
 	if err != nil {
 		return ginx.ReturnError(err)
 	}

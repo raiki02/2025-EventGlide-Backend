@@ -96,7 +96,7 @@ func (a *auditorService) toUploadReq(aw *req.AuditWrapper, id uint) request.Uplo
 		}
 
 	} else if aw.Subject == SubjectPost {
-		res.Author = &aw.CpostReq.StudentID
+		res.Author = &aw.StudentId
 		*res.Tags = append(*res.Tags, "帖子")
 
 		ctt := dto.NewContents(

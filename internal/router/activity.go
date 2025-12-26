@@ -29,8 +29,8 @@ func (ar ActRouter) RegisterActRouters() {
 	act := ar.e.Group("act")
 	act.Use(ar.j.WrapCheckToken())
 	{
-		act.POST("/create", ginx.WrapRequest(ar.ach.NewAct))
-		act.POST("/draft", ginx.WrapRequest(ar.ach.NewDraft))
+		act.POST("/create", ginx.WrapRequestWithClaims(ar.ach.NewAct))
+		act.POST("/draft", ginx.WrapRequestWithClaims(ar.ach.NewDraft))
 		act.GET("/load", ginx.WrapWithClaims(ar.ach.LoadDraft))
 		act.POST("/name", ginx.WrapRequest(ar.ach.FindActByName))
 		act.POST("/date", ginx.WrapRequest(ar.ach.FindActByDate))

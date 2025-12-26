@@ -1,14 +1,12 @@
 package req
 
 type CreatePostReq struct {
-	StudentID string   `json:"studentid" validate:"required"`
 	Title     string   `json:"title" validate:"required"`
 	Introduce string   `json:"introduce" validate:"required"`
 	ShowImg   []string `json:"showImg" validate:"required,min=1"`
 }
 
 type CreatePostDraftReq struct {
-	StudentID string   `json:"studentid"`
 	Title     string   `json:"title"`
 	Introduce string   `json:"introduce"`
 	ShowImg   []string `json:"showImg"`
@@ -19,6 +17,5 @@ type FindPostReq struct {
 }
 
 type DeletePostReq struct {
-	TargetID  string `json:"target_id" validate:"required"`
-	StudentID string `json:"studentid" validate:"required"`
+	TargetID string `json:"target_id" validate:"required"`
 }

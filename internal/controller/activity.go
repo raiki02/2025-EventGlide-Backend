@@ -32,8 +32,8 @@ func NewActController(as *service.ActivityService, iu *service.ImgUploader, l *z
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=resp.CreateActivityResp}
 // @Router /act/create [post]
-func (ac *ActController) NewAct(ctx *gin.Context, req_ req.CreateActReq) (resp.Resp, error) {
-	res, err := ac.as.NewAct(ctx, &req_)
+func (ac *ActController) NewAct(ctx *gin.Context, req_ req.CreateActReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := ac.as.NewAct(ctx, &req_, claims.Subject)
 	if err != nil {
 		return ginx.ReturnError(err)
 	}
@@ -50,8 +50,8 @@ func (ac *ActController) NewAct(ctx *gin.Context, req_ req.CreateActReq) (resp.R
 // @Param Authorization header string true "token"
 // @Success 200 {object} resp.Resp{data=req.CreateActDraftReq}
 // @Router /act/draft [post]
-func (ac *ActController) NewDraft(ctx *gin.Context, req_ req.CreateActDraftReq) (resp.Resp, error) {
-	res, err := ac.as.NewDraft(ctx, &req_)
+func (ac *ActController) NewDraft(ctx *gin.Context, req_ req.CreateActDraftReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := ac.as.NewDraft(ctx, &req_, claims.Subject)
 	if err != nil {
 		return ginx.ReturnError(err)
 	}

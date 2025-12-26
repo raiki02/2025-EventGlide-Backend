@@ -47,12 +47,12 @@ func (ps *PostService) GetAllPost(c *gin.Context) ([]resp.ListPostsResp, error) 
 	return res, nil
 }
 
-func (ps *PostService) CreatePost(c *gin.Context, r *req.CreatePostReq) (resp.CreatePostResp, error) {
+func (ps *PostService) CreatePost(c *gin.Context, r *req.CreatePostReq, studentId string) (resp.CreatePostResp, error) {
 	var (
 		err  error
 		form *model.AuditorForm
 	)
-	post := toPost(r)
+	post := toPost(r, studentId)
 
 	form, err = ps.aud.CreateAuditorForm(c, post.Bid, "", SubjectPost)
 	if err != nil {
@@ -61,8 +61,9 @@ func (ps *PostService) CreatePost(c *gin.Context, r *req.CreatePostReq) (resp.Cr
 	}
 
 	aw := &req.AuditWrapper{
-		Subject:  SubjectPost,
-		CpostReq: r,
+		Subject:   SubjectPost,
+		StudentId: studentId,
+		CpostReq:  r,
 	}
 	err = ps.aud.UploadForm(c, aw, form.Id)
 	if err != nil {
@@ -86,10 +87,10 @@ func (ps *PostService) FindPostByName(c *gin.Context, name string) ([]resp.ListP
 	res := ps.ToListResp(c, posts)
 	return res, nil
 }
-func (ps *PostService) DeletePost(c *gin.Context, post *req.DeletePostReq) error {
+func (ps *PostService) DeletePost(c *gin.Context, post *req.DeletePostReq, studentId string) error {
 	err := ps.pdh.DeletePost(c, &model.Post{
 		Bid:       post.TargetID,
-		StudentID: post.StudentID,
+		StudentID: studentId,
 	})
 	if err != nil {
 		return err
@@ -97,8 +98,8 @@ func (ps *PostService) DeletePost(c *gin.Context, post *req.DeletePostReq) error
 	return nil
 }
 
-func (ps *PostService) CreateDraft(c *gin.Context, r *req.CreatePostReq) (resp.CreatePostResp, error) {
-	draft := toDraft(r)
+func (ps *PostService) CreateDraft(c *gin.Context, r *req.CreatePostReq, studentId string) (resp.CreatePostResp, error) {
+	draft := toDraft(r, studentId)
 	err := ps.pdh.CreateDraft(c, draft)
 	if err != nil {
 		return resp.CreatePostResp{}, err
@@ -163,23 +164,23 @@ func (ps *PostService) toListPostResp(c *gin.Context, post model.Post) resp.List
 	return res
 }
 
-func toPost(r *req.CreatePostReq) *model.Post {
+func toPost(r *req.CreatePostReq, studentId string) *model.Post {
 	return &model.Post{
 		Bid:       tools.GenUUID(),
 		CreatedAt: time.Now(),
 
-		StudentID: r.StudentID,
+		StudentID: studentId,
 		Title:     r.Title,
 		Introduce: r.Introduce,
 		ShowImg:   tools.SliceToString(r.ShowImg),
 	}
 }
 
-func toDraft(r *req.CreatePostReq) *model.PostDraft {
+func toDraft(r *req.CreatePostReq, studentId string) *model.PostDraft {
 	return &model.PostDraft{
 		Bid:       tools.GenUUID(),
 		CreatedAt: time.Now(),
-		StudentID: r.StudentID,
+		StudentID: studentId,
 		Title:     r.Title,
 		Introduce: r.Introduce,
 		ShowImg:   tools.SliceToString(r.ShowImg),

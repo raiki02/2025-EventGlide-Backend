@@ -176,6 +176,9 @@ definitions:
           holderType:
             type: string
           if_register:
+            enum:
+            - 是
+            - 否
             type: string
           position:
             type: string
@@ -194,13 +197,19 @@ definitions:
             type: string
           type:
             type: string
+        required:
+        - activeForm
+        - endTime
+        - holderType
+        - if_register
+        - position
+        - startTime
+        - type
         type: object
       showImg:
         items:
           type: string
         type: array
-      studentid:
-        type: string
       title:
         type: string
     type: object
@@ -251,13 +260,10 @@ definitions:
         items:
           type: string
         type: array
-      studentid:
-        type: string
       title:
         type: string
     required:
     - introduce
-    - studentid
     - title
     type: object
   req.CreateCommentReq:
@@ -268,15 +274,12 @@ definitions:
         type: string
       receiver:
         type: string
-      studentid:
-        type: string
       subject:
         type: string
     required:
     - content
     - parent_id
     - receiver
-    - studentid
     - subject
     type: object
   req.CreatePostDraftReq:
@@ -286,9 +289,8 @@ definitions:
       showImg:
         items:
           type: string
+        minItems: 1
         type: array
-      studentid:
-        type: string
       title:
         type: string
     type: object
@@ -301,34 +303,25 @@ definitions:
           type: string
         minItems: 1
         type: array
-      studentid:
-        type: string
       title:
         type: string
     required:
     - introduce
     - showImg
-    - studentid
     - title
     type: object
   req.DeleteCommentReq:
     properties:
-      studentid:
-        type: string
       target_id:
         type: string
     required:
-    - studentid
     - target_id
     type: object
   req.DeletePostReq:
     properties:
-      studentid:
-        type: string
       target_id:
         type: string
     required:
-    - studentid
     - target_id
     type: object
   req.FindActByDateReq:

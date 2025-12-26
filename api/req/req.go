@@ -9,7 +9,9 @@ type UserAvatarReq struct {
 }
 
 type AuditWrapper struct {
-	Subject  string
+	Subject   string
+	StudentId string
+
 	CactReq  *CreateActReq
 	CpostReq *CreatePostReq
 }

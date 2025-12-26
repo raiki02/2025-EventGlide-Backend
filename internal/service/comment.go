@@ -34,9 +34,9 @@ func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao, id *dao.InteractionD
 	}
 }
 
-func (cs *CommentService) toComment(r req.CreateCommentReq) *model.Comment {
+func (cs *CommentService) toComment(r req.CreateCommentReq, studentId string) *model.Comment {
 	return &model.Comment{
-		StudentID: r.StudentID,
+		StudentID: studentId,
 		Content:   r.Content,
 		ParentID:  r.ParentID,
 		CreatedAt: time.Now(),
@@ -45,8 +45,8 @@ func (cs *CommentService) toComment(r req.CreateCommentReq) *model.Comment {
 	}
 }
 
-func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) (resp.CommentResp, error) {
-	cmt := cs.toComment(r)
+func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq, studentId string) (resp.CommentResp, error) {
+	cmt := cs.toComment(r, studentId)
 	err := cs.cd.CreateComment(c, cmt)
 	cs.l.Info("CreateComment",
 		zap.String("bid", cmt.Bid),
@@ -60,7 +60,7 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 	}
 
 	f := model.Feed{
-		StudentId: r.StudentID,
+		StudentId: studentId,
 		TargetBid: r.ParentID,
 		Object:    r.Subject,
 		Action:    "comment",
@@ -77,11 +77,11 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 	// 评论数+1
 	switch r.Subject {
 	case "activity":
-		err = cs.id.CommentActivity(c, r.StudentID, r.ParentID)
+		err = cs.id.CommentActivity(c, studentId, r.ParentID)
 	case "post":
-		err = cs.id.CommentPost(c, r.StudentID, r.ParentID)
+		err = cs.id.CommentPost(c, studentId, r.ParentID)
 	case "comment":
-		err = cs.id.CommentComment(c, r.StudentID, r.ParentID)
+		err = cs.id.CommentComment(c, studentId, r.ParentID)
 	}
 	if err != nil {
 		cs.l.Error("Error comment create failed", zap.Error(err))
@@ -91,8 +91,8 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq) 
 	return cs.toResp(c, cmt), nil
 }
 
-func (cs *CommentService) DeleteComment(c *gin.Context, r req.DeleteCommentReq) error {
-	err := cs.cd.DeleteComment(c, r.StudentID, r.TargetID)
+func (cs *CommentService) DeleteComment(c *gin.Context, targetId, studentId string) error {
+	err := cs.cd.DeleteComment(c, studentId, targetId)
 	if err != nil {
 		cs.l.Error("Error comment delete failed", zap.Error(err))
 		return err
@@ -101,11 +101,11 @@ func (cs *CommentService) DeleteComment(c *gin.Context, r req.DeleteCommentReq) 
 }
 
 // 二级评论
-func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) (resp.ReplyResp, error) {
-	cmt := cs.toComment(r)
+func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq, studentId string) (resp.ReplyResp, error) {
+	cmt := cs.toComment(r, studentId)
 	var parentCmt *model.Comment
 
-	for parentCmt = cs.cd.FindCmtByID(c, r.ParentID); parentCmt.RootId != ""; parentCmt = cs.cd.FindCmtByID(c, parentCmt.ParentID) {
+	for parentCmt = cs.cd.FindCmtByID(c, r.ParentID); parentCmt != nil && parentCmt.RootId != ""; parentCmt = cs.cd.FindCmtByID(c, parentCmt.ParentID) {
 	}
 	cmt.RootId = parentCmt.Bid
 
@@ -120,7 +120,7 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq) 
 	)
 
 	f := model.Feed{
-		StudentId: r.StudentID,
+		StudentId: studentId,
 		TargetBid: r.ParentID,
 		Object:    "comment",
 		Action:    "at",

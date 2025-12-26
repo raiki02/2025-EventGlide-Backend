@@ -29,9 +29,9 @@ func (cr *CommentRouter) RegisterCommentRouter() {
 	cmt := cr.e.Group("/comment")
 	cmt.Use(cr.j.WrapCheckToken())
 	{
-		cmt.POST("/create", ginx.WrapRequest(cr.cch.CreateComment))
-		cmt.POST("/delete", ginx.WrapRequest(cr.cch.DeleteComment))
-		cmt.POST("/answer", ginx.WrapRequest(cr.cch.AnswerComment))
+		cmt.POST("/create", ginx.WrapRequestWithClaims(cr.cch.CreateComment))
+		cmt.POST("/delete", ginx.WrapRequestWithClaims(cr.cch.DeleteComment))
+		cmt.POST("/answer", ginx.WrapRequestWithClaims(cr.cch.AnswerComment))
 		cmt.GET("/load/:id", ginx.WrapRequest(cr.cch.LoadComments))
 	}
 }

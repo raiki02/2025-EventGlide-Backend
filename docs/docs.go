@@ -2185,8 +2185,82 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "studentid": {
+                "title": {
                     "type": "string"
+                }
+            }
+        },
+        "req.CreateActReq": {
+            "type": "object",
+            "required": [
+                "introduce",
+                "title"
+            ],
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "labelform": {
+                    "type": "object",
+                    "required": [
+                        "activeForm",
+                        "endTime",
+                        "holderType",
+                        "if_register",
+                        "position",
+                        "startTime",
+                        "type"
+                    ],
+                    "properties": {
+                        "activeForm": {
+                            "type": "string"
+                        },
+                        "endTime": {
+                            "type": "string"
+                        },
+                        "holderType": {
+                            "type": "string"
+                        },
+                        "if_register": {
+                            "type": "string",
+                            "enum": [
+                                "是",
+                                "否"
+                            ]
+                        },
+                        "position": {
+                            "type": "string"
+                        },
+                        "register_method": {
+                            "type": "string"
+                        },
+                        "signer": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "studentid": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "startTime": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "showImg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "title": {
                     "type": "string"
@@ -2280,7 +2354,6 @@ const docTemplate = `{
                 "content",
                 "parent_id",
                 "receiver",
-                "studentid",
                 "subject"
             ],
             "properties": {
@@ -2293,35 +2366,12 @@ const docTemplate = `{
                 "receiver": {
                     "type": "string"
                 },
-                "studentid": {
-                    "type": "string"
-                },
                 "subject": {
                     "type": "string"
                 }
             }
         },
         "req.CreatePostDraftReq": {
-            "type": "object",
-            "properties": {
-                "introduce": {
-                    "type": "string"
-                },
-                "showImg": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "studentid": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "req.CreatePostReq": {
             "type": "object",
             "required": [
                 "introduce",
@@ -2340,8 +2390,28 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "studentid": {
+                "title": {
                     "type": "string"
+                }
+            }
+        },
+        "req.CreatePostReq": {
+            "type": "object",
+            "required": [
+                "introduce",
+                "showImg",
+                "title"
+            ],
+            "properties": {
+                "introduce": {
+                    "type": "string"
+                },
+                "showImg": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "title": {
                     "type": "string"
@@ -2351,13 +2421,9 @@ const docTemplate = `{
         "req.DeleteCommentReq": {
             "type": "object",
             "required": [
-                "studentid",
                 "target_id"
             ],
             "properties": {
-                "studentid": {
-                    "type": "string"
-                },
                 "target_id": {
                     "type": "string"
                 }
@@ -2366,13 +2432,9 @@ const docTemplate = `{
         "req.DeletePostReq": {
             "type": "object",
             "required": [
-                "studentid",
                 "target_id"
             ],
             "properties": {
-                "studentid": {
-                    "type": "string"
-                },
                 "target_id": {
                     "type": "string"
                 }

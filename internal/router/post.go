@@ -30,10 +30,10 @@ func (pr *PostRouter) RegisterPostRouters() {
 	post.Use(pr.j.WrapCheckToken())
 	{
 		post.GET("/all", ginx.WrapWithClaims(pr.pch.GetAllPost))
-		post.POST("/create", ginx.WrapRequest(pr.pch.CreatePost))
+		post.POST("/create", ginx.WrapRequestWithClaims(pr.pch.CreatePost))
 		post.POST("/find", ginx.WrapRequest(pr.pch.FindPostByName))
-		post.POST("/draft", ginx.WrapRequest(pr.pch.CreateDraft))
-		post.POST("/delete", ginx.WrapRequest(pr.pch.DeletePost))
+		post.POST("/draft", ginx.WrapRequestWithClaims(pr.pch.CreateDraft))
+		post.POST("/delete", ginx.WrapRequestWithClaims(pr.pch.DeletePost))
 		post.GET("/load", ginx.WrapWithClaims(pr.pch.LoadDraft))
 		post.GET("/own", ginx.WrapWithClaims(pr.pch.FindPostByOwnerID))
 	}

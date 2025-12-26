@@ -12,7 +12,6 @@ type ActSearchReq struct {
 }
 
 type CreateActReq struct {
-	StudentID string   `json:"studentid" validate:"required"`
 	Title     string   `json:"title" validate:"required"`
 	Introduce string   `json:"introduce" validate:"required"`
 	ShowImg   []string `json:"showImg"`
@@ -24,7 +23,7 @@ type CreateActReq struct {
 		RegisterMethod string `json:"register_method"`
 		StartTime      string `json:"startTime" validate:"required,ltcsfield=EndTime"`
 		ActiveForm     string `json:"activeForm" validate:"required"`
-		EndTime        string `json:"endTime" validate:"required"`
+		EndTime        string `json:"endTime" validate:"required,gtcsfield=StartTime"`
 		Type           string `json:"type" validate:"required"`
 
 		Signer []struct {
@@ -35,7 +34,6 @@ type CreateActReq struct {
 }
 
 type CreateActDraftReq struct {
-	StudentID string   `json:"studentid"`
 	Title     string   `json:"title"`
 	Introduce string   `json:"introduce"`
 	ShowImg   []string `json:"showImg"`

@@ -45,8 +45,8 @@ func (pc *PostController) GetAllPost(ctx *gin.Context, claims jwt.RegisteredClai
 // @Param post body req.CreatePostReq true "帖子"
 // @Success 200 {object} resp.Resp{}
 // @Router /post/create [post]
-func (pc *PostController) CreatePost(ctx *gin.Context, req_ req.CreatePostReq) (resp.Resp, error) {
-	res, err := pc.ps.CreatePost(ctx, &req_)
+func (pc *PostController) CreatePost(ctx *gin.Context, req_ req.CreatePostReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := pc.ps.CreatePost(ctx, &req_, claims.Subject)
 	if err != nil {
 		return ginx.ReturnError(err)
 	}
@@ -78,8 +78,8 @@ func (pc *PostController) FindPostByName(ctx *gin.Context, req_ req.FindPostReq)
 // @Param post body req.DeletePostReq true "帖子"
 // @Success 200 {object} resp.Resp
 // @Router /post/delete [post]
-func (pc *PostController) DeletePost(ctx *gin.Context, req_ req.DeletePostReq) (resp.Resp, error) {
-	if err := pc.ps.DeletePost(ctx, &req_); err != nil {
+func (pc *PostController) DeletePost(ctx *gin.Context, req_ req.DeletePostReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	if err := pc.ps.DeletePost(ctx, &req_, claims.Subject); err != nil {
 		return ginx.ReturnError(err)
 	}
 
@@ -94,8 +94,8 @@ func (pc *PostController) DeletePost(ctx *gin.Context, req_ req.DeletePostReq) (
 // @Param post body req.CreatePostDraftReq true "草稿"
 // @Success 200 {object} resp.Resp{data=req.CreatePostReq}
 // @Router /post/draft [post]
-func (pc *PostController) CreateDraft(ctx *gin.Context, req_ req.CreatePostReq) (resp.Resp, error) {
-	res, err := pc.ps.CreateDraft(ctx, &req_)
+func (pc *PostController) CreateDraft(ctx *gin.Context, req_ req.CreatePostReq, claims jwt.RegisteredClaims) (resp.Resp, error) {
+	res, err := pc.ps.CreateDraft(ctx, &req_, claims.Subject)
 	if err != nil {
 		return ginx.ReturnError(err)
 	}
