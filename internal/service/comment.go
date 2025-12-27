@@ -88,7 +88,7 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq, 
 		return resp.CommentResp{}, err
 	}
 
-	return cs.toResp(c, cmt), nil
+	return cs.toResp(c, cmt, studentId), nil
 }
 
 func (cs *CommentService) DeleteComment(c *gin.Context, targetId, studentId string) error {
@@ -134,23 +134,28 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq, 
 		cs.l.Info("Publish Comment Feed Success", zap.Any("feed", f))
 	}
 
-	return cs.toReply(c, cmt), nil
+	return cs.toReply(c, cmt, studentId), nil
 }
 
-func (cs *CommentService) LoadComments(c *gin.Context, parentid string) ([]resp.CommentResp, error) {
+func (cs *CommentService) LoadComments(c *gin.Context, parentid string, studentId string) ([]resp.CommentResp, error) {
 	// 加载一级评论
 	cmts, err := cs.cd.LoadComments(c, parentid)
 	if err != nil {
 		cs.l.Error("Error load comments failed", zap.Error(err))
 		return nil, err
 	}
-	res := cs.toResps(c, cmts)
+	res := cs.toResps(c, cmts, studentId)
 	return res, nil
 }
 
-func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.CommentResp {
+func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment, studentId string) resp.CommentResp {
 	var res resp.CommentResp                         //返回值
 	user, err := cs.ud.GetUserInfo(c, cmt.StudentID) //该条评论用户信息
+	if err != nil {
+		cs.l.Error("Error get user info when comment to resp", zap.Error(err))
+		return resp.CommentResp{}
+	}
+	searcher, err := cs.ud.GetUserInfo(c, studentId) //当前用户信息
 	if err != nil {
 		cs.l.Error("Error get user info when comment to resp", zap.Error(err))
 		return resp.CommentResp{}
@@ -161,7 +166,7 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 		cs.l.Error("Error load answers when loading replies", zap.Error(err))
 		return resp.CommentResp{}
 	}
-	if strings.Contains(user.LikeComment, cmt.Bid) {
+	if strings.Contains(searcher.LikeComment, cmt.Bid) {
 		res.IsLike = "true"
 	} else {
 		res.IsLike = "false"
@@ -178,22 +183,27 @@ func (cs *CommentService) toResp(c *gin.Context, cmt *model.Comment) resp.Commen
 	res.Creator.Username = user.Name
 	res.Creator.Avatar = user.Avatar
 	for _, reply := range replys {
-		res.Reply = append(res.Reply, cs.toReply(c, &reply)) //处理成响应模型，嵌入回复评论一起加载
+		res.Reply = append(res.Reply, cs.toReply(c, &reply, studentId)) //处理成响应模型，嵌入回复评论一起加载
 	}
 	return res
 }
 
-func (cs *CommentService) toResps(c *gin.Context, cmts []model.Comment) []resp.CommentResp {
+func (cs *CommentService) toResps(c *gin.Context, cmts []model.Comment, studentId string) []resp.CommentResp {
 	var res []resp.CommentResp
 	for _, cmt := range cmts {
-		res = append(res, cs.toResp(c, &cmt))
+		res = append(res, cs.toResp(c, &cmt, studentId))
 	}
 	return res
 }
 
-func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment) resp.ReplyResp {
+func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment, studentId string) resp.ReplyResp {
 	var res resp.ReplyResp                           //返回值
 	user, err := cs.ud.GetUserInfo(c, cmt.StudentID) //该条回复用户信息
+	if err != nil {
+		cs.l.Error("Error get user info when comment to reply", zap.Error(err))
+		return resp.ReplyResp{}
+	}
+	searcher, err := cs.ud.GetUserInfo(c, studentId)
 	if err != nil {
 		cs.l.Error("Error get user info when comment to reply", zap.Error(err))
 		return resp.ReplyResp{}
@@ -210,7 +220,7 @@ func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment) resp.Reply
 		return resp.ReplyResp{}
 	}
 
-	if strings.Contains(user.LikeComment, cmt.Bid) {
+	if strings.Contains(searcher.LikeComment, cmt.Bid) {
 		res.IsLike = "true"
 	} else {
 		res.IsLike = "false"
