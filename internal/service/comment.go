@@ -17,20 +17,23 @@ type CommentServiceHdl interface {
 }
 
 type CommentService struct {
-	cd *dao.CommentDao
-	ud *dao.UserDao
-	id *dao.InteractionDao
-	mq mq.MQHdl
-	l  *zap.Logger
+	cd  *dao.CommentDao
+	ud  *dao.UserDao
+	id  *dao.InteractionDao
+	mq  mq.MQHdl
+	apg ActPostCommentGetter
+	l   *zap.Logger
 }
 
-func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao, id *dao.InteractionDao, l *zap.Logger, mq mq.MQHdl) *CommentService {
+func NewCommentService(cd *dao.CommentDao, ud *dao.UserDao, id *dao.InteractionDao, l *zap.Logger, mq mq.MQHdl,
+	apg ActPostCommentGetter) *CommentService {
 	return &CommentService{
-		cd: cd,
-		ud: ud,
-		id: id,
-		mq: mq,
-		l:  l.Named("comment/service"),
+		cd:  cd,
+		ud:  ud,
+		id:  id,
+		mq:  mq,
+		apg: apg,
+		l:   l.Named("comment/service"),
 	}
 }
 
@@ -59,12 +62,18 @@ func (cs *CommentService) CreateComment(c *gin.Context, r req.CreateCommentReq, 
 		return resp.CommentResp{}, err
 	}
 
+	ap, err := cs.apg.GetActivityOrPostOrComment(c, r.Subject, r.ParentID)
+	if err != nil {
+		cs.l.Error("Error get activity or post or comment failed", zap.Error(err))
+		return resp.CommentResp{}, err
+	}
+
 	f := model.Feed{
 		StudentId: studentId,
 		TargetBid: r.ParentID,
 		Object:    r.Subject,
 		Action:    "comment",
-		Receiver:  r.Receiver,
+		Receiver:  ap.GetStudentID(),
 	}
 
 	err = cs.mq.Publish(c.Request.Context(), "feed_stream", f)
@@ -119,12 +128,18 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq, 
 		zap.String("studentid", cmt.StudentID),
 	)
 
+	ap, err := cs.apg.GetActivityOrPostOrComment(c, r.Subject, r.ParentID)
+	if err != nil {
+		cs.l.Error("Error get activity or post or comment failed", zap.Error(err))
+		return resp.ReplyResp{}, err
+	}
+
 	f := model.Feed{
 		StudentId: studentId,
 		TargetBid: r.ParentID,
 		Object:    "comment",
 		Action:    "at",
-		Receiver:  r.Receiver,
+		Receiver:  ap.GetStudentID(),
 	}
 
 	err = cs.mq.Publish(c.Request.Context(), "feed_stream", f)

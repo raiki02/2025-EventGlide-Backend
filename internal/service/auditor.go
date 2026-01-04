@@ -17,11 +17,6 @@ import (
 
 var _ dao.AuditorRepository = (*dao.AuditorRepo)(nil)
 
-const (
-	SubjectActivity = "activities"
-	SubjectPost     = "posts"
-)
-
 type AuditorService interface {
 	UploadForm(c *gin.Context, aw *req.AuditWrapper, FormId uint) error
 	CreateAuditorForm(c *gin.Context, ActId, FormUrl, Sub string) (*model.AuditorForm, error)

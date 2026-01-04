@@ -8,7 +8,6 @@ type CreateCommentReq struct {
 	Content  string `json:"content" validate:"required"`
 	ParentID string `json:"parent_id" validate:"required"`
 	Subject  string `json:"subject" validate:"required"`
-	Receiver string `json:"receiver" validate:"required"`
 }
 
 type LoadCommentsReq struct {
