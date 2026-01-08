@@ -41,13 +41,13 @@ func (cd *CommentDao) AnswerComment(c *gin.Context, cmt *model.Comment) error {
 
 func (cd *CommentDao) LoadComments(c *gin.Context, parentid string) ([]model.Comment, error) {
 	var cmts []model.Comment
-	err := cd.db.Where("parent_id = ? and type = 0", parentid).Find(&cmts).Error
+	err := cd.db.Where("parent_id = ?", parentid).Find(&cmts).Error
 	return cmts, err
 }
 
 func (cd *CommentDao) LoadAnswers(c *gin.Context, pid string) ([]model.Comment, error) {
 	var cmts []model.Comment
-	err := cd.db.Where("root_id = ? and type = 1", pid).Find(&cmts).Error
+	err := cd.db.Where("root_id = ? and subject = 'comment'", pid).Find(&cmts).Error
 	return cmts, err
 }
 
