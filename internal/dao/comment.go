@@ -36,7 +36,6 @@ func (cd *CommentDao) DeleteComment(c *gin.Context, sid, bid string) error {
 }
 
 func (cd *CommentDao) AnswerComment(c *gin.Context, cmt *model.Comment) error {
-	cmt.Type = 1
 	return cd.db.Create(cmt).Error
 }
 

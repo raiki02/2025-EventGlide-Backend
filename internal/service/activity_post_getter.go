@@ -32,6 +32,19 @@ func (apw *ActPostCommentWrapper) GetStudentID() string {
 	return ""
 }
 
+func (apw *ActPostCommentWrapper) GetBid() string {
+	if apw.Activity != nil {
+		return apw.Activity.Bid
+	}
+	if apw.Post != nil {
+		return apw.Post.Bid
+	}
+	if apw.Comment != nil {
+		return apw.Comment.Bid
+	}
+	return ""
+}
+
 type ActPostCommentGetter interface {
 	GetActivityOrPostOrComment(ctx *gin.Context, bid string, sub string) (ActPostCommentWrapper, error)
 }

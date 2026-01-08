@@ -261,14 +261,11 @@ definitions:
         type: string
       parent_id:
         type: string
-      receiver:
-        type: string
       subject:
         type: string
     required:
     - content
     - parent_id
-    - receiver
     - subject
     type: object
   req.CreatePostDraftReq:
@@ -336,14 +333,11 @@ definitions:
     type: object
   req.InteractionReq:
     properties:
-      receiver:
-        type: string
       subject:
         type: string
       targetid:
         type: string
     required:
-    - receiver
     - subject
     - targetid
     type: object

@@ -2263,7 +2263,6 @@
             "required": [
                 "content",
                 "parent_id",
-                "receiver",
                 "subject"
             ],
             "properties": {
@@ -2271,9 +2270,6 @@
                     "type": "string"
                 },
                 "parent_id": {
-                    "type": "string"
-                },
-                "receiver": {
                     "type": "string"
                 },
                 "subject": {
@@ -2380,14 +2376,10 @@
         "req.InteractionReq": {
             "type": "object",
             "required": [
-                "receiver",
                 "subject",
                 "targetid"
             ],
             "properties": {
-                "receiver": {
-                    "type": "string"
-                },
                 "subject": {
                     "type": "string"
                 },

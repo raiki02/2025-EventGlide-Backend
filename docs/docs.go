@@ -2272,7 +2272,6 @@ const docTemplate = `{
             "required": [
                 "content",
                 "parent_id",
-                "receiver",
                 "subject"
             ],
             "properties": {
@@ -2280,9 +2279,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "parent_id": {
-                    "type": "string"
-                },
-                "receiver": {
                     "type": "string"
                 },
                 "subject": {
@@ -2389,14 +2385,10 @@ const docTemplate = `{
         "req.InteractionReq": {
             "type": "object",
             "required": [
-                "receiver",
                 "subject",
                 "targetid"
             ],
             "properties": {
-                "receiver": {
-                    "type": "string"
-                },
                 "subject": {
                     "type": "string"
                 },

@@ -45,6 +45,7 @@ func (cs *CommentService) toComment(r req.CreateCommentReq, studentId string) *m
 		CreatedAt: time.Now(),
 		Bid:       tools.GenUUID(),
 		Position:  "华中师范大学",
+		Subject:   r.Subject,
 	}
 }
 
@@ -112,7 +113,7 @@ func (cs *CommentService) DeleteComment(c *gin.Context, targetId, studentId stri
 // 二级评论
 func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq, studentId string) (resp.ReplyResp, error) {
 	cmt := cs.toComment(r, studentId)
-	var parentCmt *model.Comment
+	var parentCmt *model.Comment // 根评论
 
 	for parentCmt = cs.cd.FindCmtByID(c, r.ParentID); parentCmt != nil && parentCmt.RootId != ""; parentCmt = cs.cd.FindCmtByID(c, parentCmt.ParentID) {
 	}
@@ -128,9 +129,20 @@ func (cs *CommentService) AnswerComment(c *gin.Context, r req.CreateCommentReq, 
 		zap.String("studentid", cmt.StudentID),
 	)
 
-	ap, err := cs.apg.GetActivityOrPostOrComment(c, r.Subject, r.ParentID)
+	ap, err := cs.apg.GetActivityOrPostOrComment(c, r.ParentID, r.Subject)
 	if err != nil {
 		cs.l.Error("Error get activity or post or comment failed", zap.Error(err))
+		return resp.ReplyResp{}, err
+	}
+
+	ap2, err := cs.apg.GetActivityOrPostOrComment(c, parentCmt.ParentID, parentCmt.Subject)
+	if err != nil {
+		cs.l.Error("Error get activity or post or comment failed", zap.Error(err))
+		return resp.ReplyResp{}, err
+	}
+
+	if err = cs.IncreaseCommentNum(c, &ap2); err != nil {
+		cs.l.Error("Error increase comment num failed", zap.Error(err))
 		return resp.ReplyResp{}, err
 	}
 
@@ -253,4 +265,19 @@ func (cs *CommentService) toReply(c *gin.Context, cmt *model.Comment, studentId 
 	res.ReplyCreator.Avatar = user.Avatar
 	res.ParentUserName = pu.Name
 	return res
+}
+
+func (cs *CommentService) IncreaseCommentNum(c *gin.Context, parent *ActPostCommentWrapper) error {
+	studentId := parent.GetStudentID()
+	bid := parent.GetBid()
+	switch {
+	case parent.Activity != nil:
+		return cs.id.CommentActivity(c, studentId, bid)
+	case parent.Post != nil:
+		return cs.id.CommentPost(c, studentId, bid)
+	case parent.Comment != nil:
+		return cs.id.CommentComment(c, studentId, bid)
+	default:
+		return nil
+	}
 }
