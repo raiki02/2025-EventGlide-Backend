@@ -2027,7 +2027,7 @@ const docTemplate = `{
                 "showImg": {
                     "type": "string"
                 },
-                "studentID": {
+                "studentId": {
                     "type": "string"
                 },
                 "title": {
@@ -2064,31 +2064,31 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
-                "collectact": {
+                "collectAct": {
                     "type": "string"
                 },
-                "collectpost": {
+                "collectPost": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "likeact": {
+                "likeAct": {
                     "type": "string"
                 },
-                "likecomment": {
+                "likeComment": {
                     "type": "string"
                 },
-                "likepost": {
-                    "type": "string"
-                },
-                "name": {
+                "likePost": {
                     "type": "string"
                 },
                 "school": {
                     "type": "string"
                 },
-                "student_id": {
+                "studentId": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
