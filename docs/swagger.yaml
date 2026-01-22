@@ -143,16 +143,16 @@ definitions:
     properties:
       detailTime:
         properties:
-          end_time:
+          endTime:
             type: string
-          start_time:
+          startTime:
             type: string
         type: object
       holderType:
         items:
           type: string
         type: array
-      if_register:
+      ifRegister:
         type: string
       location:
         items:
@@ -175,18 +175,18 @@ definitions:
             type: string
           holderType:
             type: string
-          if_register:
+          ifRegister:
             type: string
           position:
             type: string
-          register_method:
+          registerMethod:
             type: string
           signer:
             items:
               properties:
                 name:
                   type: string
-                studentid:
+                studentId:
                   type: string
               type: object
             type: array
@@ -214,21 +214,21 @@ definitions:
             type: string
           holderType:
             type: string
-          if_register:
+          ifRegister:
             enum:
             - 是
             - 否
             type: string
           position:
             type: string
-          register_method:
+          registerMethod:
             type: string
           signer:
             items:
               properties:
                 name:
                   type: string
-                studentid:
+                studentId:
                   type: string
               type: object
             type: array
@@ -240,7 +240,7 @@ definitions:
         - activeForm
         - endTime
         - holderType
-        - if_register
+        - ifRegister
         - position
         - startTime
         - type
@@ -259,13 +259,13 @@ definitions:
     properties:
       content:
         type: string
-      parent_id:
+      parentID:
         type: string
       subject:
         type: string
     required:
     - content
-    - parent_id
+    - parentID
     - subject
     type: object
   req.CreatePostDraftReq:
@@ -297,17 +297,17 @@ definitions:
     type: object
   req.DeleteCommentReq:
     properties:
-      target_id:
+      targetID:
         type: string
     required:
-    - target_id
+    - targetID
     type: object
   req.DeletePostReq:
     properties:
-      target_id:
+      targetId:
         type: string
     required:
-    - target_id
+    - targetId
     type: object
   req.FindActByDateReq:
     properties:
@@ -335,21 +335,21 @@ definitions:
     properties:
       subject:
         type: string
-      targetid:
+      targetId:
         type: string
     required:
     - subject
-    - targetid
+    - targetId
     type: object
   req.LoginReq:
     properties:
       password:
         type: string
-      studentid:
+      studentId:
         type: string
     required:
     - password
-    - studentid
+    - studentId
     type: object
   req.NumReq:
     properties:
@@ -357,20 +357,22 @@ definitions:
         type: string
       object:
         type: string
-      target_id:
+      targetId:
         type: string
     type: object
   req.UpdateNameReq:
     properties:
-      new_name:
+      newName:
         type: string
+    required:
+    - newName
     type: object
   req.UserAvatarReq:
     properties:
-      avatar_url:
+      avatarUrl:
         type: string
     required:
-    - avatar_url
+    - avatarUrl
     type: object
   req.UserSearchReq:
     properties:
@@ -684,13 +686,13 @@ definitions:
         type: integer
       avatar:
         type: string
-      name:
-        type: string
       school:
         type: string
-      sid:
+      studentId:
         type: string
       token:
+        type: string
+      username:
         type: string
     type: object
   resp.ReplyResp:

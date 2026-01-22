@@ -2090,10 +2090,10 @@
                 "detailTime": {
                     "type": "object",
                     "properties": {
-                        "end_time": {
+                        "endTime": {
                             "type": "string"
                         },
-                        "start_time": {
+                        "startTime": {
                             "type": "string"
                         }
                     }
@@ -2104,7 +2104,7 @@
                         "type": "string"
                     }
                 },
-                "if_register": {
+                "ifRegister": {
                     "type": "string"
                 },
                 "location": {
@@ -2139,13 +2139,13 @@
                         "holderType": {
                             "type": "string"
                         },
-                        "if_register": {
+                        "ifRegister": {
                             "type": "string"
                         },
                         "position": {
                             "type": "string"
                         },
-                        "register_method": {
+                        "registerMethod": {
                             "type": "string"
                         },
                         "signer": {
@@ -2156,7 +2156,7 @@
                                     "name": {
                                         "type": "string"
                                     },
-                                    "studentid": {
+                                    "studentId": {
                                         "type": "string"
                                     }
                                 }
@@ -2197,7 +2197,7 @@
                         "activeForm",
                         "endTime",
                         "holderType",
-                        "if_register",
+                        "ifRegister",
                         "position",
                         "startTime",
                         "type"
@@ -2212,7 +2212,7 @@
                         "holderType": {
                             "type": "string"
                         },
-                        "if_register": {
+                        "ifRegister": {
                             "type": "string",
                             "enum": [
                                 "是",
@@ -2222,7 +2222,7 @@
                         "position": {
                             "type": "string"
                         },
-                        "register_method": {
+                        "registerMethod": {
                             "type": "string"
                         },
                         "signer": {
@@ -2233,7 +2233,7 @@
                                     "name": {
                                         "type": "string"
                                     },
-                                    "studentid": {
+                                    "studentId": {
                                         "type": "string"
                                     }
                                 }
@@ -2262,14 +2262,14 @@
             "type": "object",
             "required": [
                 "content",
-                "parent_id",
+                "parentID",
                 "subject"
             ],
             "properties": {
                 "content": {
                     "type": "string"
                 },
-                "parent_id": {
+                "parentID": {
                     "type": "string"
                 },
                 "subject": {
@@ -2320,10 +2320,10 @@
         "req.DeleteCommentReq": {
             "type": "object",
             "required": [
-                "target_id"
+                "targetID"
             ],
             "properties": {
-                "target_id": {
+                "targetID": {
                     "type": "string"
                 }
             }
@@ -2331,10 +2331,10 @@
         "req.DeletePostReq": {
             "type": "object",
             "required": [
-                "target_id"
+                "targetId"
             ],
             "properties": {
-                "target_id": {
+                "targetId": {
                     "type": "string"
                 }
             }
@@ -2377,13 +2377,13 @@
             "type": "object",
             "required": [
                 "subject",
-                "targetid"
+                "targetId"
             ],
             "properties": {
                 "subject": {
                     "type": "string"
                 },
-                "targetid": {
+                "targetId": {
                     "type": "string"
                 }
             }
@@ -2392,13 +2392,13 @@
             "type": "object",
             "required": [
                 "password",
-                "studentid"
+                "studentId"
             ],
             "properties": {
                 "password": {
                     "type": "string"
                 },
-                "studentid": {
+                "studentId": {
                     "type": "string"
                 }
             }
@@ -2412,15 +2412,18 @@
                 "object": {
                     "type": "string"
                 },
-                "target_id": {
+                "targetId": {
                     "type": "string"
                 }
             }
         },
         "req.UpdateNameReq": {
             "type": "object",
+            "required": [
+                "newName"
+            ],
             "properties": {
-                "new_name": {
+                "newName": {
                     "type": "string"
                 }
             }
@@ -2428,10 +2431,10 @@
         "req.UserAvatarReq": {
             "type": "object",
             "required": [
-                "avatar_url"
+                "avatarUrl"
             ],
             "properties": {
-                "avatar_url": {
+                "avatarUrl": {
                     "type": "string"
                 }
             }
@@ -2914,16 +2917,16 @@
                 "avatar": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "school": {
                     "type": "string"
                 },
-                "sid": {
+                "studentId": {
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

@@ -2099,10 +2099,10 @@ const docTemplate = `{
                 "detailTime": {
                     "type": "object",
                     "properties": {
-                        "end_time": {
+                        "endTime": {
                             "type": "string"
                         },
-                        "start_time": {
+                        "startTime": {
                             "type": "string"
                         }
                     }
@@ -2113,7 +2113,7 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "if_register": {
+                "ifRegister": {
                     "type": "string"
                 },
                 "location": {
@@ -2148,13 +2148,13 @@ const docTemplate = `{
                         "holderType": {
                             "type": "string"
                         },
-                        "if_register": {
+                        "ifRegister": {
                             "type": "string"
                         },
                         "position": {
                             "type": "string"
                         },
-                        "register_method": {
+                        "registerMethod": {
                             "type": "string"
                         },
                         "signer": {
@@ -2165,7 +2165,7 @@ const docTemplate = `{
                                     "name": {
                                         "type": "string"
                                     },
-                                    "studentid": {
+                                    "studentId": {
                                         "type": "string"
                                     }
                                 }
@@ -2206,7 +2206,7 @@ const docTemplate = `{
                         "activeForm",
                         "endTime",
                         "holderType",
-                        "if_register",
+                        "ifRegister",
                         "position",
                         "startTime",
                         "type"
@@ -2221,7 +2221,7 @@ const docTemplate = `{
                         "holderType": {
                             "type": "string"
                         },
-                        "if_register": {
+                        "ifRegister": {
                             "type": "string",
                             "enum": [
                                 "是",
@@ -2231,7 +2231,7 @@ const docTemplate = `{
                         "position": {
                             "type": "string"
                         },
-                        "register_method": {
+                        "registerMethod": {
                             "type": "string"
                         },
                         "signer": {
@@ -2242,7 +2242,7 @@ const docTemplate = `{
                                     "name": {
                                         "type": "string"
                                     },
-                                    "studentid": {
+                                    "studentId": {
                                         "type": "string"
                                     }
                                 }
@@ -2271,14 +2271,14 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "content",
-                "parent_id",
+                "parentID",
                 "subject"
             ],
             "properties": {
                 "content": {
                     "type": "string"
                 },
-                "parent_id": {
+                "parentID": {
                     "type": "string"
                 },
                 "subject": {
@@ -2329,10 +2329,10 @@ const docTemplate = `{
         "req.DeleteCommentReq": {
             "type": "object",
             "required": [
-                "target_id"
+                "targetID"
             ],
             "properties": {
-                "target_id": {
+                "targetID": {
                     "type": "string"
                 }
             }
@@ -2340,10 +2340,10 @@ const docTemplate = `{
         "req.DeletePostReq": {
             "type": "object",
             "required": [
-                "target_id"
+                "targetId"
             ],
             "properties": {
-                "target_id": {
+                "targetId": {
                     "type": "string"
                 }
             }
@@ -2386,13 +2386,13 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "subject",
-                "targetid"
+                "targetId"
             ],
             "properties": {
                 "subject": {
                     "type": "string"
                 },
-                "targetid": {
+                "targetId": {
                     "type": "string"
                 }
             }
@@ -2401,13 +2401,13 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "password",
-                "studentid"
+                "studentId"
             ],
             "properties": {
                 "password": {
                     "type": "string"
                 },
-                "studentid": {
+                "studentId": {
                     "type": "string"
                 }
             }
@@ -2421,15 +2421,18 @@ const docTemplate = `{
                 "object": {
                     "type": "string"
                 },
-                "target_id": {
+                "targetId": {
                     "type": "string"
                 }
             }
         },
         "req.UpdateNameReq": {
             "type": "object",
+            "required": [
+                "newName"
+            ],
             "properties": {
-                "new_name": {
+                "newName": {
                     "type": "string"
                 }
             }
@@ -2437,10 +2440,10 @@ const docTemplate = `{
         "req.UserAvatarReq": {
             "type": "object",
             "required": [
-                "avatar_url"
+                "avatarUrl"
             ],
             "properties": {
-                "avatar_url": {
+                "avatarUrl": {
                     "type": "string"
                 }
             }
@@ -2923,16 +2926,16 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "school": {
                     "type": "string"
                 },
-                "sid": {
+                "studentId": {
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

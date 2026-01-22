@@ -36,12 +36,12 @@ func (uc *UserController) Login(ctx *gin.Context, req_ req.LoginReq) (resp.Resp,
 		return ginx.ReturnError(err)
 	}
 	res := resp.LoginResp{
-		Id:     user.Id,
-		Sid:    user.StudentID,
-		Name:   user.Name,
-		Avatar: user.Avatar,
-		School: user.School,
-		Token:  token,
+		Id:       user.Id,
+		Sid:      user.StudentID,
+		Username: user.Name,
+		Avatar:   user.Avatar,
+		School:   user.School,
+		Token:    token,
 	}
 
 	return ginx.ReturnSuccess(res)

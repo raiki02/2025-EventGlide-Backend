@@ -1,12 +1,12 @@
 package req
 
 type DeleteCommentReq struct {
-	TargetID string `json:"target_id" validate:"required"`
+	TargetID string `json:"targetID" validate:"required"`
 }
 
 type CreateCommentReq struct {
 	Content  string `json:"content" validate:"required"`
-	ParentID string `json:"parent_id" validate:"required"`
+	ParentID string `json:"parentID" validate:"required"`
 	Subject  string `json:"subject" validate:"required"`
 }
 
