@@ -2271,14 +2271,14 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "content",
-                "parentID",
+                "parentId",
                 "subject"
             ],
             "properties": {
                 "content": {
                     "type": "string"
                 },
-                "parentID": {
+                "parentId": {
                     "type": "string"
                 },
                 "subject": {
@@ -2329,10 +2329,10 @@ const docTemplate = `{
         "req.DeleteCommentReq": {
             "type": "object",
             "required": [
-                "targetID"
+                "targetId"
             ],
             "properties": {
-                "targetID": {
+                "targetId": {
                     "type": "string"
                 }
             }

@@ -259,13 +259,13 @@ definitions:
     properties:
       content:
         type: string
-      parentID:
+      parentId:
         type: string
       subject:
         type: string
     required:
     - content
-    - parentID
+    - parentId
     - subject
     type: object
   req.CreatePostDraftReq:
@@ -297,10 +297,10 @@ definitions:
     type: object
   req.DeleteCommentReq:
     properties:
-      targetID:
+      targetId:
         type: string
     required:
-    - targetID
+    - targetId
     type: object
   req.DeletePostReq:
     properties:
