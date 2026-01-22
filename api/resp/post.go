@@ -2,7 +2,7 @@ package resp
 
 type CreatePostResp struct {
 	Bid         string `json:"bid"`
-	StudentID   string `json:"studentid"`
+	StudentID   string `json:"studentId"`
 	PublishTime string `json:"publishTime"`
 
 	Title      string   `json:"title"`
@@ -11,7 +11,7 @@ type CreatePostResp struct {
 	IsChecking string   `json:"isChecking"`
 
 	UserInfo struct {
-		StudentID string `json:"studentid"`
+		StudentID string `json:"studentId"`
 		Avatar    string `json:"avatar"`
 		Username  string `json:"username"`
 		School    string `json:"school"`
@@ -21,7 +21,7 @@ type CreatePostResp struct {
 type ListPostsResp struct {
 	Bid      string `json:"bid"`
 	UserInfo struct {
-		StudentID string `json:"studentid"`
+		StudentID string `json:"studentId"`
 		Avatar    string `json:"avatar"`
 		Username  string `json:"username"`
 		School    string `json:"school"`
