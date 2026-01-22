@@ -240,7 +240,7 @@ func toAct(r *req.CreateActReq, studentId string) *model.Activity {
 }
 
 func joinSigners(signers []struct {
-	StudentID string `json:"studentid" validate:"len=10"`
+	StudentID string `json:"studentId" validate:"len=10"`
 	Name      string `json:"name"`
 }) []string {
 	var res []string

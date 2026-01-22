@@ -105,7 +105,7 @@ func (a *auditorService) toUploadReq(aw *req.AuditWrapper, id uint) request.Uplo
 }
 
 func extractAuthors(signers []struct {
-	StudentID string `json:"studentid" validate:"len=10"`
+	StudentID string `json:"studentId" validate:"len=10"`
 	Name      string `json:"name"`
 }) string {
 	builder := strings.Builder{}
