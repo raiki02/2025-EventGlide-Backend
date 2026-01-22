@@ -2459,10 +2459,10 @@ const docTemplate = `{
         "resp.BriefFeedResp": {
             "type": "object",
             "properties": {
-                "commentandat": {
+                "commentAndAt": {
                     "type": "integer"
                 },
-                "likeandcollect": {
+                "likeAndCollect": {
                     "type": "integer"
                 },
                 "total": {
@@ -2493,10 +2493,10 @@ const docTemplate = `{
                 "bid": {
                     "type": "string"
                 },
-                "commented_pos": {
+                "commentedPos": {
                     "type": "string"
                 },
-                "commented_time": {
+                "commentedTime": {
                     "type": "string"
                 },
                 "content": {
@@ -2508,7 +2508,7 @@ const docTemplate = `{
                         "avatar": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2522,7 +2522,7 @@ const docTemplate = `{
                 "likeNum": {
                     "type": "integer"
                 },
-                "parent_id": {
+                "parentId": {
                     "type": "string"
                 },
                 "reply": {
@@ -2534,7 +2534,7 @@ const docTemplate = `{
                 "replyNum": {
                     "type": "integer"
                 },
-                "root_id": {
+                "rootId": {
                     "type": "string"
                 }
             }
@@ -2548,7 +2548,7 @@ const docTemplate = `{
                 "bid": {
                     "type": "string"
                 },
-                "if_register": {
+                "ifRegister": {
                     "type": "string"
                 },
                 "introduce": {
@@ -2574,7 +2574,7 @@ const docTemplate = `{
                             "name": {
                                 "type": "string"
                             },
-                            "studentid": {
+                            "studentId": {
                                 "type": "string"
                             }
                         }
@@ -2595,7 +2595,7 @@ const docTemplate = `{
                         "school": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2608,7 +2608,7 @@ const docTemplate = `{
         "resp.FeedAtResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2617,13 +2617,13 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2634,7 +2634,7 @@ const docTemplate = `{
         "resp.FeedCollectResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2643,13 +2643,13 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2660,7 +2660,7 @@ const docTemplate = `{
         "resp.FeedCommentResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2669,13 +2669,13 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2686,7 +2686,7 @@ const docTemplate = `{
         "resp.FeedInvitationResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2695,13 +2695,13 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2712,7 +2712,7 @@ const docTemplate = `{
         "resp.FeedLikeResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2721,13 +2721,13 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2773,10 +2773,10 @@ const docTemplate = `{
         "resp.ImgBedResp": {
             "type": "object",
             "properties": {
-                "access_token": {
+                "accessToken": {
                     "type": "string"
                 },
-                "domain_name": {
+                "domainName": {
                     "type": "string"
                 }
             }
@@ -2807,7 +2807,7 @@ const docTemplate = `{
                 "holderType": {
                     "type": "string"
                 },
-                "if_register": {
+                "ifRegister": {
                     "type": "string"
                 },
                 "introduce": {
@@ -2849,7 +2849,7 @@ const docTemplate = `{
                         "school": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2907,7 +2907,7 @@ const docTemplate = `{
                         "school": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2952,25 +2952,22 @@ const docTemplate = `{
                 "likeNum": {
                     "type": "integer"
                 },
+                "parentId": {
+                    "type": "string"
+                },
                 "parentUserName": {
                     "type": "string"
                 },
-                "parent_id": {
+                "replyContent": {
                     "type": "string"
                 },
-                "replyNum": {
-                    "type": "integer"
-                },
-                "reply_content": {
-                    "type": "string"
-                },
-                "reply_creator": {
+                "replyCreator": {
                     "type": "object",
                     "properties": {
                         "avatar": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2978,13 +2975,16 @@ const docTemplate = `{
                         }
                     }
                 },
-                "reply_pos": {
+                "replyNum": {
+                    "type": "integer"
+                },
+                "replyPos": {
                     "type": "string"
                 },
-                "reply_time": {
+                "replyTime": {
                     "type": "string"
                 },
-                "root_id": {
+                "rootId": {
                     "type": "string"
                 }
             }
@@ -3007,7 +3007,7 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
-                "studentid": {
+                "studentId": {
                     "type": "string"
                 },
                 "username": {

@@ -381,9 +381,9 @@ definitions:
     type: object
   resp.BriefFeedResp:
     properties:
-      commentandat:
+      commentAndAt:
         type: integer
-      likeandcollect:
+      likeAndCollect:
         type: integer
       total:
         type: integer
@@ -403,9 +403,9 @@ definitions:
     properties:
       bid:
         type: string
-      commented_pos:
+      commentedPos:
         type: string
-      commented_time:
+      commentedTime:
         type: string
       content:
         type: string
@@ -413,7 +413,7 @@ definitions:
         properties:
           avatar:
             type: string
-          studentid:
+          studentId:
             type: string
           username:
             type: string
@@ -422,7 +422,7 @@ definitions:
         type: string
       likeNum:
         type: integer
-      parent_id:
+      parentId:
         type: string
       reply:
         items:
@@ -430,7 +430,7 @@ definitions:
         type: array
       replyNum:
         type: integer
-      root_id:
+      rootId:
         type: string
     type: object
   resp.CreateActivityResp:
@@ -439,7 +439,7 @@ definitions:
         type: string
       bid:
         type: string
-      if_register:
+      ifRegister:
         type: string
       introduce:
         type: string
@@ -456,7 +456,7 @@ definitions:
           properties:
             name:
               type: string
-            studentid:
+            studentId:
               type: string
           type: object
         type: array
@@ -470,7 +470,7 @@ definitions:
             type: string
           school:
             type: string
-          studentid:
+          studentId:
             type: string
           username:
             type: string
@@ -478,85 +478,85 @@ definitions:
     type: object
   resp.FeedAtResp:
     properties:
-      first_pic:
+      firstPic:
         type: string
       id:
         type: integer
       message:
         type: string
-      published_at:
+      publishedAt:
         type: string
       status:
         type: string
-      target_bid:
+      targetBid:
         type: string
       userInfo:
         $ref: '#/definitions/resp.UserInfo'
     type: object
   resp.FeedCollectResp:
     properties:
-      first_pic:
+      firstPic:
         type: string
       id:
         type: integer
       message:
         type: string
-      published_at:
+      publishedAt:
         type: string
       status:
         type: string
-      target_bid:
+      targetBid:
         type: string
       userInfo:
         $ref: '#/definitions/resp.UserInfo'
     type: object
   resp.FeedCommentResp:
     properties:
-      first_pic:
+      firstPic:
         type: string
       id:
         type: integer
       message:
         type: string
-      published_at:
+      publishedAt:
         type: string
       status:
         type: string
-      target_bid:
+      targetBid:
         type: string
       userInfo:
         $ref: '#/definitions/resp.UserInfo'
     type: object
   resp.FeedInvitationResp:
     properties:
-      first_pic:
+      firstPic:
         type: string
       id:
         type: integer
       message:
         type: string
-      published_at:
+      publishedAt:
         type: string
       status:
         type: string
-      target_bid:
+      targetBid:
         type: string
       userInfo:
         $ref: '#/definitions/resp.UserInfo'
     type: object
   resp.FeedLikeResp:
     properties:
-      first_pic:
+      firstPic:
         type: string
       id:
         type: integer
       message:
         type: string
-      published_at:
+      publishedAt:
         type: string
       status:
         type: string
-      target_bid:
+      targetBid:
         type: string
       userInfo:
         $ref: '#/definitions/resp.UserInfo'
@@ -586,9 +586,9 @@ definitions:
     type: object
   resp.ImgBedResp:
     properties:
-      access_token:
+      accessToken:
         type: string
-      domain_name:
+      domainName:
         type: string
     type: object
   resp.ListActivitiesResp:
@@ -608,7 +608,7 @@ definitions:
         type: object
       holderType:
         type: string
-      if_register:
+      ifRegister:
         type: string
       introduce:
         type: string
@@ -636,7 +636,7 @@ definitions:
             type: string
           school:
             type: string
-          studentid:
+          studentId:
             type: string
           username:
             type: string
@@ -674,7 +674,7 @@ definitions:
             type: string
           school:
             type: string
-          studentid:
+          studentId:
             type: string
           username:
             type: string
@@ -703,28 +703,28 @@ definitions:
         type: string
       likeNum:
         type: integer
-      parent_id:
+      parentId:
         type: string
       parentUserName:
         type: string
-      reply_content:
+      replyContent:
         type: string
-      reply_creator:
+      replyCreator:
         properties:
           avatar:
             type: string
-          studentid:
+          studentId:
             type: string
           username:
             type: string
         type: object
-      reply_pos:
-        type: string
-      reply_time:
-        type: string
       replyNum:
         type: integer
-      root_id:
+      replyPos:
+        type: string
+      replyTime:
+        type: string
+      rootId:
         type: string
     type: object
   resp.Resp:
@@ -739,7 +739,7 @@ definitions:
     properties:
       avatar:
         type: string
-      studentid:
+      studentId:
         type: string
       username:
         type: string

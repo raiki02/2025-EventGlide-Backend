@@ -2450,10 +2450,10 @@
         "resp.BriefFeedResp": {
             "type": "object",
             "properties": {
-                "commentandat": {
+                "commentAndAt": {
                     "type": "integer"
                 },
-                "likeandcollect": {
+                "likeAndCollect": {
                     "type": "integer"
                 },
                 "total": {
@@ -2484,10 +2484,10 @@
                 "bid": {
                     "type": "string"
                 },
-                "commented_pos": {
+                "commentedPos": {
                     "type": "string"
                 },
-                "commented_time": {
+                "commentedTime": {
                     "type": "string"
                 },
                 "content": {
@@ -2499,7 +2499,7 @@
                         "avatar": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2513,7 +2513,7 @@
                 "likeNum": {
                     "type": "integer"
                 },
-                "parent_id": {
+                "parentId": {
                     "type": "string"
                 },
                 "reply": {
@@ -2525,7 +2525,7 @@
                 "replyNum": {
                     "type": "integer"
                 },
-                "root_id": {
+                "rootId": {
                     "type": "string"
                 }
             }
@@ -2539,7 +2539,7 @@
                 "bid": {
                     "type": "string"
                 },
-                "if_register": {
+                "ifRegister": {
                     "type": "string"
                 },
                 "introduce": {
@@ -2565,7 +2565,7 @@
                             "name": {
                                 "type": "string"
                             },
-                            "studentid": {
+                            "studentId": {
                                 "type": "string"
                             }
                         }
@@ -2586,7 +2586,7 @@
                         "school": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2599,7 +2599,7 @@
         "resp.FeedAtResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2608,13 +2608,13 @@
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2625,7 +2625,7 @@
         "resp.FeedCollectResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2634,13 +2634,13 @@
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2651,7 +2651,7 @@
         "resp.FeedCommentResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2660,13 +2660,13 @@
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2677,7 +2677,7 @@
         "resp.FeedInvitationResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2686,13 +2686,13 @@
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2703,7 +2703,7 @@
         "resp.FeedLikeResp": {
             "type": "object",
             "properties": {
-                "first_pic": {
+                "firstPic": {
                     "type": "string"
                 },
                 "id": {
@@ -2712,13 +2712,13 @@
                 "message": {
                     "type": "string"
                 },
-                "published_at": {
+                "publishedAt": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "target_bid": {
+                "targetBid": {
                     "type": "string"
                 },
                 "userInfo": {
@@ -2764,10 +2764,10 @@
         "resp.ImgBedResp": {
             "type": "object",
             "properties": {
-                "access_token": {
+                "accessToken": {
                     "type": "string"
                 },
-                "domain_name": {
+                "domainName": {
                     "type": "string"
                 }
             }
@@ -2798,7 +2798,7 @@
                 "holderType": {
                     "type": "string"
                 },
-                "if_register": {
+                "ifRegister": {
                     "type": "string"
                 },
                 "introduce": {
@@ -2840,7 +2840,7 @@
                         "school": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2898,7 +2898,7 @@
                         "school": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2943,25 +2943,22 @@
                 "likeNum": {
                     "type": "integer"
                 },
+                "parentId": {
+                    "type": "string"
+                },
                 "parentUserName": {
                     "type": "string"
                 },
-                "parent_id": {
+                "replyContent": {
                     "type": "string"
                 },
-                "replyNum": {
-                    "type": "integer"
-                },
-                "reply_content": {
-                    "type": "string"
-                },
-                "reply_creator": {
+                "replyCreator": {
                     "type": "object",
                     "properties": {
                         "avatar": {
                             "type": "string"
                         },
-                        "studentid": {
+                        "studentId": {
                             "type": "string"
                         },
                         "username": {
@@ -2969,13 +2966,16 @@
                         }
                     }
                 },
-                "reply_pos": {
+                "replyNum": {
+                    "type": "integer"
+                },
+                "replyPos": {
                     "type": "string"
                 },
-                "reply_time": {
+                "replyTime": {
                     "type": "string"
                 },
-                "root_id": {
+                "rootId": {
                     "type": "string"
                 }
             }
@@ -2998,7 +2998,7 @@
                 "avatar": {
                     "type": "string"
                 },
-                "studentid": {
+                "studentId": {
                     "type": "string"
                 },
                 "username": {
